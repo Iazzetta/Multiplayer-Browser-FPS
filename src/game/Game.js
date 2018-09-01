@@ -6,6 +6,12 @@ export class Game {
     constructor() {
         this.scene = new THREE.Scene();
 
+        // Add a floor
+        const geometry = new THREE.BoxGeometry(1, 1, 0.1);
+        const material = new THREE.MeshBasicMaterial();
+        const floor = new THREE.Mesh(geometry, material);
+        this.scene.add(floor);
+
         /**
          * @type {Map<string,Player>}
          */
