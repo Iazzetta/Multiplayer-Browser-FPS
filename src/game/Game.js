@@ -23,12 +23,9 @@ export class Game {
     }
 
     initCamera() {
-        this.camera = new THREE.PerspectiveCamera(
-            70,
-            window.innerWidth / window.innerHeight,
-            0.01,
-            10
-        );
+        const fov = 70;
+        const aspect = window.innerWidth / window.innerHeight;
+        this.camera = new THREE.PerspectiveCamera(fov, aspect);
         this.camera.position.z = 1;
     }
 
@@ -47,7 +44,7 @@ export class Game {
             }
 
             if (this.camera !== null) {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.initCamera();
             }
         });
     }
