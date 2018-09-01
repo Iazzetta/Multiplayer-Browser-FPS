@@ -1,8 +1,15 @@
 import * as THREE from "three";
+import { Action } from "./actions.js";
+import { Player } from "./player.js";
 
 export class Game {
     constructor() {
         this.scene = new THREE.Scene();
+
+        /**
+         * @type {Map<string,Player>}
+         */
+        this.players = new Map();
 
         /**
          * @type {THREE.PerspectiveCamera}
@@ -22,6 +29,7 @@ export class Game {
             0.01,
             10
         );
+        this.camera.position.z = 1;
     }
 
     initRenderer() {
@@ -42,6 +50,20 @@ export class Game {
                 this.camera.aspect = window.innerWidth / window.innerHeight;
             }
         });
+    }
+
+    /**
+     * @param {Action} action
+     */
+    dispatch(action) {
+        switch (action.type) {
+            case "ADD_PLAYER": {
+                const { playerId } = action.data;
+                const player = new Player(playerId);
+                this.players.set(player.id, player);
+                this.scene.add(player.mesh);
+            }
+        }
     }
 
     render() {
