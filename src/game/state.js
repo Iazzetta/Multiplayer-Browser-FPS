@@ -14,5 +14,7 @@ export class State {
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(70, 1);
+        this.camera.position.z = 0.3;
+        this.camera.rotation.x = (90 * Math.PI) / 180;
     }
 }

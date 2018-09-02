@@ -31,9 +31,8 @@ export function dispatch(state, action) {
         }
         case "SET_SCREEN_SIZE": {
             const { width, height } = action.data;
-            state.camera = new THREE.PerspectiveCamera(70, width / height);
-            state.camera.position.z = 0.3;
-            state.camera.rotation.x = (90 * Math.PI) / 180;
+            state.camera.aspect = width / height;
+            state.camera.updateProjectionMatrix();
             return state;
         }
     }
