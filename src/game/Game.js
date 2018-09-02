@@ -1,75 +1,61 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
-import { Player } from "./player.js";
+import { State } from "./state.js";
+import { dispatch } from "./dispatch.js";
 
+/**
+ * @typedef {(action:Action,state:State) => any} Subscription
+ */
 export class Game {
     constructor() {
-        this.scene = new THREE.Scene();
-
-        // Add a floor
-        const geometry = new THREE.BoxGeometry(1, 1, 0.1);
-        const material = new THREE.MeshBasicMaterial();
-        const floor = new THREE.Mesh(geometry, material);
-        this.scene.add(floor);
-
         /**
-         * @type {Map<string,Player>}
+         * @type {State}
          */
-        this.players = new Map();
-
-        /**
-         * @type {THREE.PerspectiveCamera}
-         */
-        this.camera = null;
+        this.state = new State();
 
         /**
          * @type {THREE.WebGLRenderer}
          */
         this.renderer = null;
-    }
 
-    initCamera() {
-        const fov = 70;
-        const aspect = window.innerWidth / window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(fov, aspect);
-        this.camera.position.z = 1;
+        /**
+         * @type {Subscription[]}
+         */
+        this.subscriptions = [];
     }
 
     initRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.subscribe(action => {
+            if (action.type === "SET_SCREEN_SIZE") {
+                const { width, height } = action.data;
+                this.renderer.setSize(width, height);
+                console.log(width, height);
+            }
+        });
 
         document.body.innerHTML = "";
         document.body.appendChild(this.renderer.domElement);
-    }
-
-    handleResize() {
-        window.addEventListener("resize", () => {
-            if (this.renderer !== null) {
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-
-            if (this.camera !== null) {
-                this.initCamera();
-            }
-        });
     }
 
     /**
      * @param {Action} action
      */
     dispatch(action) {
-        switch (action.type) {
-            case "ADD_PLAYER": {
-                const { playerId } = action.data;
-                const player = new Player(playerId);
-                this.players.set(player.id, player);
-                this.scene.add(player.mesh);
-            }
+        this.state = dispatch(this.state, action);
+        for (let i = 0; i < this.subscriptions.length; i++) {
+            this.subscriptions[i](action, this.state);
         }
     }
 
+    /**
+     * @param {Subscription} f
+     */
+    subscribe(f) {
+        this.subscriptions.push(f);
+    }
+
     render() {
-        this.renderer.render(this.scene, this.camera);
+        this.renderer.render(this.state.scene, this.state.camera);
     }
 }

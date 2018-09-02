@@ -1,14 +1,18 @@
 import { Game } from "./game/game.js";
-import { addPlayer } from "./game/actions.js";
+import { initGame, setScreenSize } from "./game/actions.js";
+
+const PLAYER_ID = "player-1";
 
 const game = new Game();
-game.initCamera();
 game.initRenderer();
-game.handleResize();
 
-game.dispatch(addPlayer("PLAYER_1"));
+game.dispatch(initGame([PLAYER_ID]));
+game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
+window.addEventListener("resize", ev => {
+    game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
+});
 
-requestAnimationFrame(function next() {
+requestAnimationFrame(function next(elapsed) {
     game.render();
     requestAnimationFrame(next);
 });
