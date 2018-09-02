@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import SocketIO from "socket.io-client";
 import {
     Action,
     setScreenSize,
@@ -20,6 +21,11 @@ export class Game {
         this.state = new State();
 
         /**
+         * @type {SocketIOClient.Socket}
+         */
+        this.socket = null;
+
+        /**
          * @type {THREE.WebGLRenderer}
          */
         this.renderer = null;
@@ -28,6 +34,25 @@ export class Game {
          * @type {Subscription[]}
          */
         this.subscriptions = [];
+    }
+
+    playerId() {
+        return this.socket ? this.socket.id : "single-player";
+    }
+
+    initSocket() {
+        this.socket = SocketIO("http://localhost:8080");
+        this.socket.on("connect", () => {
+            console.log("Connected");
+
+            this.socket.on("dispatch", action => {
+                this.dispatch(action);
+            });
+
+            this.socket.on("disconnect", () => {
+                console.log("Disconnect");
+            });
+        });
     }
 
     initRenderer() {
@@ -46,10 +71,7 @@ export class Game {
         resize();
     }
 
-    /**
-     * @param {string} playerId
-     */
-    initMouseInput(playerId) {
+    initMouseInput() {
         const canvas = this.renderer.domElement;
 
         canvas.addEventListener("click", ev => {
@@ -60,6 +82,7 @@ export class Game {
 
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
+                const playerId = this.playerId();
                 const player = this.state.players.get(playerId);
                 if (player !== undefined) {
                     let ver = player.mesh.rotation.y - ev.movementX * 0.01;
@@ -71,10 +94,7 @@ export class Game {
         });
     }
 
-    /**
-     * @param {string} playerId
-     */
-    initKeyboardInput(playerId) {
+    initKeyboardInput() {
         const [W, A, S, D] = [87, 65, 83, 68];
         const keyBinds = {
             [W]: "forward",
@@ -88,7 +108,9 @@ export class Game {
             const input = keyBinds[keyCode];
             if (kesy.get(input) !== value && input !== undefined) {
                 kesy.set(input, value);
-                this.dispatch(setPlayerInput(playerId, input, value));
+                const playerId = this.playerId();
+                const action = setPlayerInput(playerId, input, value);
+                this.dispatch(action);
             }
         };
 
