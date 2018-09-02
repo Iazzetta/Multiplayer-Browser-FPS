@@ -4,7 +4,15 @@ import SocketIO from "socket.io-client";
 
 const socket = SocketIO("http://localhost:8080");
 socket.on("connect", () => {
-    console.log("OK");
+    console.log("Connected");
+
+    socket.on("dispatch", action => {
+        game.dispatch(action);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Disconnect");
+    });
 });
 
 const PLAYER_ID = "player-1";
