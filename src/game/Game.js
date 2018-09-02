@@ -41,6 +41,31 @@ export class Game {
     }
 
     /**
+     * @param {string} playerId
+     */
+    initKeyboard(playerId) {
+        const [W, A, S, D] = [87, 65, 83, 68];
+        const keyBinds = {
+            [W]: "forward",
+            [A]: "left",
+            [S]: "back",
+            [D]: "right"
+        };
+
+        const kesy = new Map();
+        const input = (keyCode, value) => {
+            const input = keyBinds[keyCode];
+            if (kesy.get(input) !== value && input !== undefined) {
+                kesy.set(input, value);
+                console.log("dispatch", { playerId, input, value });
+            }
+        };
+
+        document.addEventListener("keydown", ev => input(ev.keyCode, true));
+        document.addEventListener("keyup", ev => input(ev.keyCode, false));
+    }
+
+    /**
      * @param {Action} action
      */
     dispatch(action) {
