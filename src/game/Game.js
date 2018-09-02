@@ -80,22 +80,7 @@ export class Game {
      */
     update(elasped) {
         this.state.players.forEach(player => {
-            const speed = 0.01;
-            if (player.input.forward) {
-                player.mesh.position.z -= speed;
-            }
-
-            if (player.input.back) {
-                player.mesh.position.z += speed;
-            }
-
-            if (player.input.right) {
-                player.mesh.position.x += speed;
-            }
-
-            if (player.input.left) {
-                player.mesh.position.x -= speed;
-            }
+            player.update(elasped);
         });
     }
 
