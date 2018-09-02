@@ -6,19 +6,18 @@ export class Player {
      */
     constructor(id) {
         this.id = id;
-
-        this.geometry = new THREE.BoxGeometry(1, 1, 1);
-        this.material = new THREE.MeshNormalMaterial();
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-
         this.speed = 0.01;
-
         this.input = {
             forward: false,
             left: false,
             back: false,
             right: false
         };
+
+        // Mesha data
+        this.geometry = new THREE.BoxGeometry(1, 1, 1);
+        this.material = new THREE.MeshNormalMaterial();
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
     }
 
     /**

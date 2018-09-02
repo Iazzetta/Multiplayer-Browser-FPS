@@ -40,6 +40,14 @@ export function dispatch(state, action) {
             }
             return state;
         }
+        case "SET_PLAYER_AIM": {
+            const { playerId, ver, hor } = action.data;
+            const player = state.players.get(playerId);
+            if (player !== undefined) {
+                player.mesh.rotation.y = ver;
+            }
+            return state;
+        }
     }
     return state;
 }

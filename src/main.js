@@ -5,7 +5,8 @@ const PLAYER_ID = "player-1";
 
 const game = new Game();
 game.initRenderer();
-game.initKeyboard(PLAYER_ID);
+game.initMouseInput(PLAYER_ID);
+game.initKeyboardInput(PLAYER_ID);
 
 game.dispatch(initGame([PLAYER_ID]));
 game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));

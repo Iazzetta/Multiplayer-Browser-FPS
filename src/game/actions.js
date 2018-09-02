@@ -32,3 +32,12 @@ export function setScreenSize(width, height) {
 export function setPlayerInput(playerId, input, value) {
     return new Action("SET_PLAYER_INPUT", { playerId, input, value });
 }
+
+/**
+ * @param {string} playerId
+ * @param {number} ver
+ * @param {number} hor
+ */
+export function setPlayerAim(playerId, ver, hor) {
+    return new Action("SET_PLAYER_AIM", { playerId, ver, hor });
+}

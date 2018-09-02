@@ -1,5 +1,10 @@
 import * as THREE from "three";
-import { Action, setScreenSize, setPlayerInput } from "./actions.js";
+import {
+    Action,
+    setScreenSize,
+    setPlayerInput,
+    setPlayerAim
+} from "./actions.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
 
@@ -43,7 +48,30 @@ export class Game {
     /**
      * @param {string} playerId
      */
-    initKeyboard(playerId) {
+    initMouseInput(playerId) {
+        const canvas = this.renderer.domElement;
+
+        canvas.addEventListener("click", ev => {
+            if (document.pointerLockElement !== canvas) {
+                canvas.requestPointerLock();
+            }
+        });
+
+        canvas.addEventListener("mousemove", ev => {
+            if (document.pointerLockElement === canvas) {
+                const player = this.state.players.get(playerId);
+                if (player !== undefined) {
+                    const ver = player.mesh.rotation.y + ev.movementX * 0.01;
+                    this.dispatch(setPlayerAim(playerId, ver, 0));
+                }
+            }
+        });
+    }
+
+    /**
+     * @param {string} playerId
+     */
+    initKeyboardInput(playerId) {
         const [W, A, S, D] = [87, 65, 83, 68];
         const keyBinds = {
             [W]: "forward",
