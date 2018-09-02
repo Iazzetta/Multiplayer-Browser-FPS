@@ -1,11 +1,7 @@
-import { Game } from "../game/game.js";
+import { Game } from "./game.js";
 import { initGame, setScreenSize } from "../game/actions.js";
 
 const game = new Game();
-game.initSocket();
-game.initRenderer();
-game.initMouseInput();
-game.initKeyboardInput();
 
 game.dispatch(initGame([game.playerId()]));
 game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
