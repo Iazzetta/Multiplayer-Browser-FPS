@@ -26,7 +26,7 @@ export class Game {
 
     initRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.subscribe(action => {
+        this.subscriptions.push(action => {
             if (action.type === "SET_SCREEN_SIZE") {
                 const { width, height } = action.data;
                 this.renderer.setSize(width, height);
@@ -45,13 +45,6 @@ export class Game {
         for (let i = 0; i < this.subscriptions.length; i++) {
             this.subscriptions[i](action, this.state);
         }
-    }
-
-    /**
-     * @param {Subscription} f
-     */
-    subscribe(f) {
-        this.subscriptions.push(f);
     }
 
     render() {
