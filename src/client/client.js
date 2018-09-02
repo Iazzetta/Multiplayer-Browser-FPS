@@ -1,6 +1,5 @@
 import { Game } from "../game/game.js";
 import { initGame, setScreenSize } from "../game/actions.js";
-import SocketIO from "socket.io-client";
 
 const game = new Game();
 game.initSocket();
