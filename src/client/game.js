@@ -26,6 +26,19 @@ export class Game extends BaseGame {
         this.initRenderer();
         this.initMouseInput();
         this.initKeyboardInput();
+
+        this.subscriptions.push(action => {
+            switch (action.type) {
+                case "INIT_GAME": {
+                    const playerId = this.playerId();
+                    const player = this.state.players.get(playerId);
+                    if (player !== undefined) {
+                        player.head.add(this.state.camera);
+                    }
+                    break;
+                }
+            }
+        });
     }
 
     playerId() {
