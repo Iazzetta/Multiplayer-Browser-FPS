@@ -4,7 +4,8 @@ import { Game as BaseGame } from "../game/game.js";
 import {
     setScreenSize,
     setPlayerInput,
-    setPlayerAim
+    setPlayerAim,
+    Action
 } from "../game/actions.js";
 import clamp from "lodash/clamp";
 
@@ -43,6 +44,14 @@ export class Game extends BaseGame {
 
     playerId() {
         return this.socket ? this.socket.id : "single-player";
+    }
+
+    /**
+     * @param {Action} action
+     */
+    syncDispatch(action) {
+        this.dispatch(action);
+        this.socket.emit("dispatch", action);
     }
 
     initSocket() {
@@ -93,7 +102,7 @@ export class Game extends BaseGame {
                     let ver = player.mesh.rotation.y - ev.movementX * 0.01;
                     let hor = player.head.rotation.x + ev.movementY * 0.01;
                     hor = clamp(hor, -1.6, 1.6);
-                    this.dispatch(setPlayerAim(playerId, ver, hor));
+                    this.syncDispatch(setPlayerAim(playerId, ver, hor));
                 }
             }
         });
@@ -115,7 +124,7 @@ export class Game extends BaseGame {
                 kesy.set(input, value);
                 const playerId = this.playerId();
                 const action = setPlayerInput(playerId, input, value);
-                this.dispatch(action);
+                this.syncDispatch(action);
             }
         };
 

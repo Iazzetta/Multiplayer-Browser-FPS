@@ -31,6 +31,10 @@ io.sockets.on("connection", socket => {
     console.log("Connection", socket.id);
     newGame();
 
+    socket.on("dispatch", action => {
+        socket.broadcast.emit("dispatch", action);
+    });
+
     socket.on("disconnect", () => {
         console.log("Disconnect", socket.id);
     });
