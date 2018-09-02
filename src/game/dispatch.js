@@ -45,6 +45,7 @@ export function dispatch(state, action) {
             const player = state.players.get(playerId);
             if (player !== undefined) {
                 player.mesh.rotation.y = ver;
+                player.head.rotation.x = hor;
             }
             return state;
         }

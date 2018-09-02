@@ -7,6 +7,7 @@ import {
 } from "./actions.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
+import clamp from "lodash/clamp";
 
 /**
  * @typedef {(action:Action,state:State) => any} Subscription
@@ -61,8 +62,10 @@ export class Game {
             if (document.pointerLockElement === canvas) {
                 const player = this.state.players.get(playerId);
                 if (player !== undefined) {
-                    const ver = player.mesh.rotation.y + ev.movementX * 0.01;
-                    this.dispatch(setPlayerAim(playerId, ver, 0));
+                    let ver = player.mesh.rotation.y + ev.movementX * 0.01;
+                    let hor = player.head.rotation.x + ev.movementY * 0.01;
+                    hor = clamp(hor, -1.6, 1.6);
+                    this.dispatch(setPlayerAim(playerId, ver, hor));
                 }
             }
         });

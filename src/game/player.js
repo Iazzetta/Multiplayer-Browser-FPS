@@ -18,6 +18,10 @@ export class Player {
         this.geometry = new THREE.BoxGeometry(1, 1, 1);
         this.material = new THREE.MeshNormalMaterial();
         this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+        this.head = new THREE.Mesh(this.geometry, this.material);
+        this.head.position.y = 1.2;
+        this.mesh.add(this.head);
     }
 
     /**
