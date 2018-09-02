@@ -22,12 +22,6 @@ export function dispatch(state, action) {
                 state.scene.add(player.mesh);
             });
 
-            // Add a floor
-            const geometry = new THREE.BoxGeometry(1, 1, 0.1);
-            const material = new THREE.MeshNormalMaterial();
-            const floor = new THREE.Mesh(geometry, material);
-            state.scene.add(floor);
-
             return state;
         }
         case "SET_SCREEN_SIZE": {

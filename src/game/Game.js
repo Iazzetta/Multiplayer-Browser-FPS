@@ -95,9 +95,6 @@ export class Game {
             if (player.input.left) {
                 player.mesh.position.y -= 0.01;
             }
-
-            this.state.camera.position.x = player.mesh.position.x;
-            this.state.camera.position.y = player.mesh.position.y;
         });
     }
 
