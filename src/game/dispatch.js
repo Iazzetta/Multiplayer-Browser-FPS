@@ -36,6 +36,16 @@ export function dispatch(state, action) {
             state.camera.updateProjectionMatrix();
             return state;
         }
+        case "SET_PLAYER_INPUT": {
+            const { playerId, input, value } = action.data;
+            const player = state.players.get(playerId);
+            if (player !== undefined) {
+                if (player.input[input] !== undefined) {
+                    player.input[input] = value;
+                }
+            }
+            return state;
+        }
     }
     return state;
 }

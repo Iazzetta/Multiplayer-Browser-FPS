@@ -23,3 +23,12 @@ export function initGame(playerIds) {
 export function setScreenSize(width, height) {
     return new Action("SET_SCREEN_SIZE", { width, height });
 }
+
+/**
+ * @param {string} playerId
+ * @param {string} input
+ * @param {boolean} value
+ */
+export function setPlayerInput(playerId, input, value) {
+    return new Action("SET_PLAYER_INPUT", { playerId, input, value });
+}

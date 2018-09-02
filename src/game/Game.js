@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Action, setScreenSize } from "./actions.js";
+import { Action, setScreenSize, setPlayerInput } from "./actions.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
 
@@ -57,7 +57,7 @@ export class Game {
             const input = keyBinds[keyCode];
             if (kesy.get(input) !== value && input !== undefined) {
                 kesy.set(input, value);
-                console.log("dispatch", { playerId, input, value });
+                this.dispatch(setPlayerInput(playerId, input, value));
             }
         };
 
@@ -73,6 +73,32 @@ export class Game {
         for (let i = 0; i < this.subscriptions.length; i++) {
             this.subscriptions[i](action, this.state);
         }
+    }
+
+    /**
+     * @param {number} elasped
+     */
+    update(elasped) {
+        this.state.players.forEach(player => {
+            if (player.input.forward) {
+                player.mesh.position.x += 0.01;
+            }
+
+            if (player.input.back) {
+                player.mesh.position.x -= 0.01;
+            }
+
+            if (player.input.right) {
+                player.mesh.position.y += 0.01;
+            }
+
+            if (player.input.left) {
+                player.mesh.position.y -= 0.01;
+            }
+
+            this.state.camera.position.x = player.mesh.position.x;
+            this.state.camera.position.y = player.mesh.position.y;
+        });
     }
 
     render() {
