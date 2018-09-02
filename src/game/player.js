@@ -6,7 +6,7 @@ export class Player {
      */
     constructor(id) {
         this.id = id;
-        this.speed = 0.01;
+        this.speed = 0.05;
         this.input = {
             forward: false,
             left: false,
@@ -24,24 +24,27 @@ export class Player {
         this.mesh.add(this.head);
     }
 
-    /**
-     * @param {number} elapsed
-     */
-    update(elapsed) {
-        if (this.input.forward) {
-            this.mesh.position.z -= this.speed;
+    velocity() {
+        const velocity = {
+            z: (this.input.forward ? -1 : 0) + (this.input.back ? 1 : 0),
+            x: (this.input.left ? -1 : 0) + (this.input.right ? 1 : 0)
+        };
+
+        if (velocity.z !== 0 || velocity.x !== 0) {
+            let angle = Math.atan2(velocity.x, velocity.z);
+            angle = angle > 0 ? angle : angle + 2 * Math.PI;
+            angle += this.mesh.rotation.y;
+
+            velocity.z = Math.cos(angle);
+            velocity.x = Math.sin(angle);
         }
 
-        if (this.input.back) {
-            this.mesh.position.z += this.speed;
-        }
+        return velocity;
+    }
 
-        if (this.input.right) {
-            this.mesh.position.x += this.speed;
-        }
-
-        if (this.input.left) {
-            this.mesh.position.x -= this.speed;
-        }
+    update() {
+        const velocity = this.velocity();
+        this.mesh.position.z += velocity.z * this.speed;
+        this.mesh.position.x += velocity.x * this.speed;
     }
 }

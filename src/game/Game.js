@@ -62,7 +62,7 @@ export class Game {
             if (document.pointerLockElement === canvas) {
                 const player = this.state.players.get(playerId);
                 if (player !== undefined) {
-                    let ver = player.mesh.rotation.y + ev.movementX * 0.01;
+                    let ver = player.mesh.rotation.y - ev.movementX * 0.01;
                     let hor = player.head.rotation.x + ev.movementY * 0.01;
                     hor = clamp(hor, -1.6, 1.6);
                     this.dispatch(setPlayerAim(playerId, ver, hor));
@@ -111,7 +111,7 @@ export class Game {
      */
     update(elasped) {
         this.state.players.forEach(player => {
-            player.update(elasped);
+            player.update();
         });
     }
 
