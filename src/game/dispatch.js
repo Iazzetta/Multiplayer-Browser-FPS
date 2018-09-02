@@ -23,7 +23,7 @@ export function dispatch(state, action) {
 
             // Add a floor
             const geometry = new THREE.BoxGeometry(1, 1, 0.1);
-            const material = new THREE.MeshBasicMaterial();
+            const material = new THREE.MeshNormalMaterial();
             const floor = new THREE.Mesh(geometry, material);
             state.scene.add(floor);
 
@@ -32,7 +32,8 @@ export function dispatch(state, action) {
         case "SET_SCREEN_SIZE": {
             const { width, height } = action.data;
             state.camera = new THREE.PerspectiveCamera(70, width / height);
-            state.camera.position.z = 1;
+            state.camera.position.z = 0.3;
+            state.camera.rotation.x = (90* Math.PI) / 180;
             return state;
         }
     }
