@@ -36,6 +36,7 @@ export class Game extends BaseGame {
                     if (player !== undefined) {
                         player.head.add(this.state.camera);
                     }
+                    this.resize();
                     break;
                 }
             }
@@ -71,18 +72,11 @@ export class Game extends BaseGame {
 
     initRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-
-        const resize = () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            this.renderer.setSize(width, height);
-            this.dispatch(setScreenSize(width, height));
-        };
+        this.resize();
 
         document.body.innerHTML = "";
         document.body.appendChild(this.renderer.domElement);
-        window.addEventListener("resize", resize);
-        resize();
+        window.addEventListener("resize", this.resize.bind(this));
     }
 
     initMouseInput() {
@@ -130,6 +124,13 @@ export class Game extends BaseGame {
 
         document.addEventListener("keydown", ev => input(ev.keyCode, true));
         document.addEventListener("keyup", ev => input(ev.keyCode, false));
+    }
+
+    resize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        this.renderer.setSize(width, height);
+        this.dispatch(setScreenSize(width, height));
     }
 
     render() {
