@@ -8,9 +8,6 @@ game.initRenderer();
 
 game.dispatch(initGame([PLAYER_ID]));
 game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
-window.addEventListener("resize", ev => {
-    game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
-});
 
 requestAnimationFrame(function next(elapsed) {
     game.render();

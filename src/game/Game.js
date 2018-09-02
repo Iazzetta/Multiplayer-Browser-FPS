@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Action } from "./actions.js";
+import { Action, setScreenSize } from "./actions.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
 
@@ -26,15 +26,18 @@ export class Game {
 
     initRenderer() {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.subscriptions.push(action => {
-            if (action.type === "SET_SCREEN_SIZE") {
-                const { width, height } = action.data;
-                this.renderer.setSize(width, height);
-            }
-        });
+
+        const resize = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            this.renderer.setSize(width, height);
+            this.dispatch(setScreenSize(width, height));
+        };
 
         document.body.innerHTML = "";
         document.body.appendChild(this.renderer.domElement);
+        window.addEventListener("resize", resize);
+        resize();
     }
 
     /**
