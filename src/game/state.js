@@ -13,9 +13,7 @@ export class State {
         /**
          * @type {THREE.PerspectiveCamera}
          */
-        this.camera = new THREE.PerspectiveCamera(70, 1);
-        this.camera.position.z = 5;
-        this.camera.position.y = 1;
+        this.camera = new THREE.PerspectiveCamera(90, 1);
 
         // Add a floor
         const geometry = new THREE.BoxGeometry(10, 1, 10);

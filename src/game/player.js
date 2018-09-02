@@ -21,6 +21,7 @@ export class Player {
 
         this.head = new THREE.Mesh(this.geometry, this.material);
         this.head.position.y = 1.2;
+        this.head.position.z = -0.25;
         this.mesh.add(this.head);
     }
 
