@@ -1,5 +1,5 @@
-import { Game } from "./game/game.js";
-import { initGame, setScreenSize } from "./game/actions.js";
+import { Game } from "../game/game.js";
+import { initGame, setScreenSize } from "../game/actions.js";
 import SocketIO from "socket.io-client";
 
 const socket = SocketIO("http://localhost:8080");
