@@ -30,7 +30,6 @@ export class Game {
             if (action.type === "SET_SCREEN_SIZE") {
                 const { width, height } = action.data;
                 this.renderer.setSize(width, height);
-                console.log(width, height);
             }
         });
 
