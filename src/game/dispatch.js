@@ -17,6 +17,7 @@ export function dispatch(state, action) {
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
+                player.mesh.position.y = 0.5;
                 state.players.set(player.id, player);
                 state.scene.add(player.mesh);
             });
