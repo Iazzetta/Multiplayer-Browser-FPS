@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Player } from "./player.js";
+import random from "lodash/random";
 
 export class State {
     constructor() {
@@ -21,5 +22,15 @@ export class State {
         const floor = new THREE.Mesh(geometry, material);
         floor.position.y = -0.5;
         this.scene.add(floor);
+
+        // Create random cubes, for orientation
+        const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+        for (let i = 0; i < 500; i++) {
+            const box = new THREE.Mesh(boxGeometry, material);
+            box.position.y = random(-50, 50);
+            box.position.x = random(-50, 50);
+            box.position.z = random(-50, 50);
+            this.scene.add(box);
+        }
     }
 }
