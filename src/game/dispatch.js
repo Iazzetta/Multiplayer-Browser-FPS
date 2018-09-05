@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player } from "./player.js";
+import { Player } from "./entities";
 
 /**
  * @param {State} state

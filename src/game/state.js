@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Player } from "./player.js";
+import { Player } from "./entities.js";
 import random from "lodash/random";
 
 export class State {
