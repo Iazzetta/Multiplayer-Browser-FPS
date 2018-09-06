@@ -6,8 +6,8 @@ const game = new Game();
 game.dispatch(initGame([game.playerId()]));
 game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
 
-requestAnimationFrame(function next(elapsed) {
-    game.update(elapsed);
+requestAnimationFrame(function next() {
+    game.update();
     game.render();
     requestAnimationFrame(next);
 });

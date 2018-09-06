@@ -4,6 +4,11 @@ import random from "lodash/random";
 
 export class State {
     constructor() {
+        this.time = { start: 0, elapsed: 0, delta: 0 };
+
+        /**
+         * @type {THREE.Scene}
+         */
         this.scene = new THREE.Scene();
 
         /**

@@ -13,6 +13,7 @@ export function dispatch(state, action) {
             const { playerIds } = action.data;
 
             const state = new State();
+            state.time.start = Date.now();
             state.playerIds = playerIds;
 
             // Add players
@@ -33,10 +34,10 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_INPUT": {
             const { playerId, input, value } = action.data;
-            const { constroller } = state.getEntity(playerId);
-            if (constroller !== undefined) {
-                if (constroller.input[input] !== undefined) {
-                    constroller.input[input] = value;
+            const { controller } = state.getEntity(playerId);
+            if (controller !== undefined) {
+                if (controller.input[input] !== undefined) {
+                    controller.input[input] = value;
                 }
             }
             return state;

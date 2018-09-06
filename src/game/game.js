@@ -1,6 +1,7 @@
 import { Action } from "./actions.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
+import { update } from "./update.js";
 
 /**
  * @typedef {(action:Action,state:State) => any} Subscription
@@ -16,24 +17,19 @@ export class Game {
          * @type {Subscription[]}
          */
         this.subscriptions = [];
+
+        /**
+         * @param {Action} action
+         */
+        this.dispatch = action => {
+            this.state = dispatch(this.state, action);
+            for (let i = 0; i < this.subscriptions.length; i++) {
+                this.subscriptions[i](action, this.state);
+            }
+        };
     }
 
-    /**
-     * @param {Action} action
-     */
-    dispatch(action) {
-        this.state = dispatch(this.state, action);
-        for (let i = 0; i < this.subscriptions.length; i++) {
-            this.subscriptions[i](action, this.state);
-        }
-    }
-
-    /**
-     * @param {number} elasped
-     */
-    update(elasped) {
-        this.state.entities.forEach(player => {
-            // player.update();
-        });
+    update() {
+        update(this.state, this.dispatch);
     }
 }
