@@ -13,12 +13,13 @@ export function dispatch(state, action) {
             const { playerIds } = action.data;
 
             const state = new State();
+            state.playerIds = playerIds;
 
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
                 player.mesh.body.position.y = 0.5;
-                state.players.set(player.id, player);
+                state.entities.set(player.id, player);
                 state.scene.add(player.mesh.body);
             });
 

@@ -32,7 +32,7 @@ export class Game extends BaseGame {
             switch (action.type) {
                 case "INIT_GAME": {
                     const playerId = this.playerId();
-                    const player = this.state.players.get(playerId);
+                    const player = this.state.entities.get(playerId);
                     if (player !== undefined) {
                         player.mesh.head.add(this.state.camera);
                         player.mesh.body.visible = false;
@@ -92,7 +92,7 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const player = this.state.players.get(playerId);
+                const player = this.state.entities.get(playerId);
                 if (player !== undefined) {
                     let ver = player.mesh.body.rotation.y - ev.movementX * 0.01;
                     let hor = player.mesh.head.rotation.x - ev.movementY * 0.01;

@@ -7,9 +7,14 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
+         * @type {string[]}
+         */
+        this.playerIds = [];
+
+        /**
          * @type {Map<string,Player>}
          */
-        this.players = new Map();
+        this.entities = new Map();
 
         /**
          * @type {THREE.PerspectiveCamera}
@@ -39,6 +44,6 @@ export class State {
      * @returns {Entity}
      */
     getEntity(id) {
-        return this.players.get(id) || Entity.empty;
+        return this.entities.get(id) || Entity.empty;
     }
 }

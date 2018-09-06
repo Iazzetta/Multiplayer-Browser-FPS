@@ -32,7 +32,7 @@ export class Game {
      * @param {number} elasped
      */
     update(elasped) {
-        this.state.players.forEach(player => {
+        this.state.entities.forEach(player => {
             // player.update();
         });
     }
