@@ -104,12 +104,13 @@ export class Game extends BaseGame {
     }
 
     initKeyboardInput() {
-        const [W, A, S, D] = [87, 65, 83, 68];
+        const [W, A, S, D, SPACE] = [87, 65, 83, 68, 32];
         const keyBinds = {
             [W]: "forward",
             [A]: "left",
             [S]: "back",
-            [D]: "right"
+            [D]: "right",
+            [SPACE]: "jump"
         };
 
         const kesy = new Map();

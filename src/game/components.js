@@ -12,7 +12,8 @@ export class ControllerComponent {
             forward: false,
             left: false,
             back: false,
-            right: false
+            right: false,
+            jump: false
         };
     }
 }

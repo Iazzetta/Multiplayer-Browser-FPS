@@ -50,6 +50,10 @@ export function controllerSystem(entity, state, dispatch) {
         const input = controller.input;
 
         // vetical movement - jumping
+        if (input.jump && mesh.body.position.y <= 0) {
+            // velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01; // JET-PACK
+            velocity.y = 0.05;
+        }
 
         // Horizontal movement
         velocity.z = (input.forward ? -1 : 0) + (input.back ? 1 : 0);
@@ -77,7 +81,7 @@ export function controllerSystem(entity, state, dispatch) {
 export function physicsSystem(entity, state, dispatch) {
     const { mesh, velocity } = entity;
     if (mesh && velocity) {
-        if (mesh.body.position.y <= 0) {
+        if (mesh.body.position.y <= 0 && velocity.y <= 0) {
             mesh.body.position.y = 0;
             velocity.y = 0;
         }
