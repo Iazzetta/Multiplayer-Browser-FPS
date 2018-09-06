@@ -26,6 +26,14 @@ export class VelocityComponent {
     }
 }
 
+export class JetpackComponent {
+    constructor() {
+        this.maxFuel = 2000;
+        this.minFuel = -1000;
+        this.fuel = this.maxFuel;
+    }
+}
+
 export class MeshComponent {
     constructor() {
         this.body = new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL);

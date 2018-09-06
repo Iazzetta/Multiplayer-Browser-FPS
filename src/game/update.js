@@ -11,6 +11,7 @@ export function update(state, dispatch) {
 
     state.entities.forEach(entity => {
         gravitySystem(entity, state, dispatch);
+        jetpackFuelSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
@@ -43,6 +44,35 @@ export function gravitySystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
+export function jetpackFuelSystem(entity, state, dispatch) {
+    const { jetpack, controller } = entity;
+
+    const jump = controller.input.jump;
+
+    // Fly - burn fuel
+    if (!jump && jetpack.fuel < jetpack.maxFuel) {
+        jetpack.fuel = Math.min(
+            jetpack.fuel + state.time.delta,
+            jetpack.maxFuel
+        );
+        console.log(["A", jetpack.fuel, "/", jetpack.maxFuel].join(" "));
+    }
+
+    // Recharge
+    if (jump && jetpack.fuel > jetpack.minFuel) {
+        jetpack.fuel = Math.max(
+            jetpack.fuel - state.time.delta,
+            jetpack.minFuel
+        );
+        console.log(["V", jetpack.fuel, "/", jetpack.maxFuel].join(" "));
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
 export function controllerSystem(entity, state, dispatch) {
     const { controller, velocity, mesh } = entity;
 
@@ -50,9 +80,13 @@ export function controllerSystem(entity, state, dispatch) {
         const input = controller.input;
 
         // vetical movement - jumping
-        if (input.jump && mesh.body.position.y <= 0) {
-            // velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01; // JET-PACK
-            velocity.y = 0.05;
+        if (input.jump) {
+            const { jetpack } = entity;
+            if (jetpack && jetpack.fuel > 0) {
+                velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
+            } else if (mesh.body.position.y <= 0) {
+                velocity.y = 0.01;
+            }
         }
 
         // Horizontal movement

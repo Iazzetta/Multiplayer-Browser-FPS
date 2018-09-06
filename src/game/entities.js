@@ -1,7 +1,8 @@
 import {
     MeshComponent,
     ControllerComponent,
-    VelocityComponent
+    VelocityComponent,
+    JetpackComponent
 } from "./components";
 
 export class Entity {
@@ -19,6 +20,11 @@ export class Entity {
          * @type {MeshComponent}
          */
         this.mesh = undefined;
+
+        /**
+         * @type {JetpackComponent}
+         */
+        this.jetpack = undefined;
 
         /**
          * @type {ControllerComponent}
@@ -42,6 +48,7 @@ export class Player extends Entity {
         super(id);
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
+        this.jetpack = new JetpackComponent();
         this.mesh = new MeshComponent();
     }
 }
