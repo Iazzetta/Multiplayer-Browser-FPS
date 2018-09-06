@@ -188,6 +188,21 @@ export class Game extends BaseGame {
             this.ctx.fillRect(pad + emptyFuel, pad - 2, 2, barHeight + 4);
         }
 
+        // Cursor
+        const cursor = { x: this.hud.width * 0.5, y: this.hud.height * 0.5 };
+        const radius = 32;
+
+        this.ctx.lineWidth = 2;
+
+        this.ctx.strokeStyle = "#fff";
+        this.ctx.beginPath();
+        this.ctx.arc(cursor.x, cursor.y, radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.arc(cursor.x, cursor.y, 1, 0, Math.PI * 2);
+        this.ctx.stroke();
+
         // Blit
         const ctx = this.hud.getContext("2d");
         ctx.clearRect(0, 0, this.hud.width, this.hud.height);
