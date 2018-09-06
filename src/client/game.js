@@ -172,13 +172,20 @@ export class Game extends BaseGame {
             const barHeight = 8;
             const barWidth = 800;
 
-            const fuelWidth = barWidth * (jetpack.fuel / jetpack.maxFuel);
+            const empty = Math.abs(jetpack.minFuel);
+            const fuel = empty + jetpack.fuel;
+            const full = empty + jetpack.maxFuel;
 
-            this.ctx.fillStyle = "gray";
+            this.ctx.fillStyle = "black";
             this.ctx.fillRect(pad, pad, barWidth, barHeight);
 
+            const fuelWidth = barWidth * (fuel / full);
             this.ctx.fillStyle = jetpack.fuel > 0 ? "cornflowerblue" : "red";
             this.ctx.fillRect(pad, pad, fuelWidth, barHeight);
+
+            const emptyFuel = barWidth * (empty / full);
+            this.ctx.fillStyle = "white";
+            this.ctx.fillRect(pad + emptyFuel, pad - 2, 2, barHeight + 4);
         }
 
         // Blit

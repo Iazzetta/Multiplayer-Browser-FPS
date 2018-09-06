@@ -55,7 +55,6 @@ export function jetpackFuelSystem(entity, state, dispatch) {
             jetpack.fuel + state.time.delta,
             jetpack.maxFuel
         );
-        console.log(["A", jetpack.fuel, "/", jetpack.maxFuel].join(" "));
     }
 
     // Recharge
@@ -64,7 +63,6 @@ export function jetpackFuelSystem(entity, state, dispatch) {
             jetpack.fuel - state.time.delta,
             jetpack.minFuel
         );
-        console.log(["V", jetpack.fuel, "/", jetpack.maxFuel].join(" "));
     }
 }
 
