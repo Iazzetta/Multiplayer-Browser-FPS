@@ -17,9 +17,9 @@ export function dispatch(state, action) {
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
-                player.mesh.position.y = 0.5;
+                player.mesh.body.position.y = 0.5;
                 state.players.set(player.id, player);
-                state.scene.add(player.mesh);
+                state.scene.add(player.mesh.body);
             });
 
             return state;
@@ -32,20 +32,20 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_INPUT": {
             const { playerId, input, value } = action.data;
-            const player = state.players.get(playerId);
-            if (player !== undefined) {
-                if (player.input[input] !== undefined) {
-                    player.input[input] = value;
+            const { constroller } = state.getEntity(playerId);
+            if (constroller !== undefined) {
+                if (constroller.input[input] !== undefined) {
+                    constroller.input[input] = value;
                 }
             }
             return state;
         }
         case "SET_PLAYER_AIM": {
             const { playerId, ver, hor } = action.data;
-            const player = state.players.get(playerId);
-            if (player !== undefined) {
-                player.mesh.rotation.y = ver;
-                player.head.rotation.x = hor;
+            const { mesh } = state.getEntity(playerId);
+            if (mesh !== undefined) {
+                mesh.body.rotation.y = ver;
+                mesh.head.rotation.x = hor;
             }
             return state;
         }

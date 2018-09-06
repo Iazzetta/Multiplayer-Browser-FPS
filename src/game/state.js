@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Player } from "./entities.js";
+import { Player, Entity } from "./entities.js";
 import random from "lodash/random";
 
 export class State {
@@ -32,5 +32,13 @@ export class State {
             box.position.z = random(-50, 50);
             this.scene.add(box);
         }
+    }
+
+    /**
+     * @param {string} id
+     * @returns {Entity}
+     */
+    getEntity(id) {
+        return this.players.get(id) || Entity.empty;
     }
 }

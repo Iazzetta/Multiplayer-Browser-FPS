@@ -34,8 +34,8 @@ export class Game extends BaseGame {
                     const playerId = this.playerId();
                     const player = this.state.players.get(playerId);
                     if (player !== undefined) {
-                        player.head.add(this.state.camera);
-                        player.mesh.visible = false;
+                        player.mesh.head.add(this.state.camera);
+                        player.mesh.body.visible = false;
                     }
                     this.resize();
                     break;
@@ -94,8 +94,8 @@ export class Game extends BaseGame {
                 const playerId = this.playerId();
                 const player = this.state.players.get(playerId);
                 if (player !== undefined) {
-                    let ver = player.mesh.rotation.y - ev.movementX * 0.01;
-                    let hor = player.head.rotation.x - ev.movementY * 0.01;
+                    let ver = player.mesh.body.rotation.y - ev.movementX * 0.01;
+                    let hor = player.mesh.head.rotation.x - ev.movementY * 0.01;
                     hor = clamp(hor, -1, 1);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
                 }

@@ -33,7 +33,7 @@ export class Game {
      */
     update(elasped) {
         this.state.players.forEach(player => {
-            player.update();
+            // player.update();
         });
     }
 }
