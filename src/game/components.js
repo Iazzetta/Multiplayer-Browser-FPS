@@ -7,7 +7,7 @@ export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
 
 export class ControllerComponent {
     constructor() {
-        this.speed = 0.05;
+        this.speed = 0.01;
         this.input = {
             forward: false,
             left: false,
