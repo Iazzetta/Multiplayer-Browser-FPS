@@ -23,10 +23,15 @@ export class Game extends BaseGame {
          */
         this.renderer = null;
 
-        this.initSocket();
-        this.initRenderer();
-        this.initMouseInput();
-        this.initKeyboardInput();
+        /**
+         * @type {HTMLCanvasElement}
+         */
+        this.hud = null;
+
+        /**
+         * @type {CanvasRenderingContext2D}
+         */
+        this.ctx = null;
 
         this.subscriptions.push(action => {
             switch (action.type) {
@@ -42,6 +47,11 @@ export class Game extends BaseGame {
                 }
             }
         });
+
+        this.initSocket();
+        this.initRenderer();
+        this.initMouseInput();
+        this.initKeyboardInput();
     }
 
     playerId() {
@@ -72,11 +82,19 @@ export class Game extends BaseGame {
     }
 
     initRenderer() {
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.resize();
+        this.hud = document.createElement("canvas");
+        this.ctx = document.createElement("canvas").getContext("2d");
+        this.hud.classList.add("hud");
 
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        // Append to dom
         document.body.innerHTML = "";
+        document.body.appendChild(this.hud);
         document.body.appendChild(this.renderer.domElement);
+
+        // Resize - full screen
+        this.resize();
         window.addEventListener("resize", this.resize.bind(this));
     }
 
@@ -131,11 +149,41 @@ export class Game extends BaseGame {
     resize() {
         const width = window.innerWidth;
         const height = window.innerHeight;
+
+        Object.assign(this.hud, { width, height });
+        Object.assign(this.ctx.canvas, { width, height });
         this.renderer.setSize(width, height);
         this.dispatch(setScreenSize(width, height));
     }
 
     render() {
+        // World
         this.renderer.render(this.state.scene, this.state.camera);
+        this.renderHUD();
+    }
+
+    renderHUD() {
+        this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
+
+        // Fuel
+        const { jetpack } = this.state.getEntity(this.playerId());
+        if (jetpack) {
+            const pad = 16;
+            const barHeight = 8;
+            const barWidth = 800;
+
+            const fuelWidth = barWidth * (jetpack.fuel / jetpack.maxFuel);
+
+            this.ctx.fillStyle = "gray";
+            this.ctx.fillRect(pad, pad, barWidth, barHeight);
+
+            this.ctx.fillStyle = jetpack.fuel > 0 ? "cornflowerblue" : "red";
+            this.ctx.fillRect(pad, pad, fuelWidth, barHeight);
+        }
+
+        // Blit
+        const ctx = this.hud.getContext("2d");
+        ctx.clearRect(0, 0, this.hud.width, this.hud.height);
+        ctx.drawImage(this.ctx.canvas, 0, 0);
     }
 }
