@@ -47,22 +47,24 @@ export function gravitySystem(entity, state, dispatch) {
 export function jetpackFuelSystem(entity, state, dispatch) {
     const { jetpack, controller } = entity;
 
-    const jump = controller.input.jump;
+    if (jetpack && controller) {
+        const jump = controller.input.jump;
 
-    // Fly - burn fuel
-    if (!jump && jetpack.fuel < jetpack.maxFuel) {
-        jetpack.fuel = Math.min(
-            jetpack.fuel + state.time.delta,
-            jetpack.maxFuel
-        );
-    }
+        // Fly - burn fuel
+        if (!jump && jetpack.fuel < jetpack.maxFuel) {
+            jetpack.fuel = Math.min(
+                jetpack.fuel + state.time.delta,
+                jetpack.maxFuel
+            );
+        }
 
-    // Recharge
-    if (jump && jetpack.fuel > jetpack.minFuel) {
-        jetpack.fuel = Math.max(
-            jetpack.fuel - state.time.delta,
-            jetpack.minFuel
-        );
+        // Recharge
+        if (jump && jetpack.fuel > jetpack.minFuel) {
+            jetpack.fuel = Math.max(
+                jetpack.fuel - state.time.delta,
+                jetpack.minFuel
+            );
+        }
     }
 }
 
