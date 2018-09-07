@@ -115,7 +115,7 @@ export class Game extends BaseGame {
                 if (mesh) {
                     let ver = mesh.body.rotation.y - ev.movementX * 0.01;
                     let hor = mesh.head.rotation.x - ev.movementY * 0.01;
-                    hor = clamp(hor, -1, 1);
+                    hor = clamp(hor, -1.6, 1.6);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
                 }
             }
