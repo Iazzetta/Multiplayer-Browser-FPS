@@ -45,6 +45,17 @@ export class State {
     }
 
     /**
+     * @param {Entity} entity
+     */
+    addEntity(entity) {
+        const { mesh } = entity;
+        if (mesh) {
+            this.scene.add(mesh.body);
+        }
+        this.entities.set(entity.id, entity);
+    }
+
+    /**
      * @param {string} id
      * @returns {Entity}
      */
