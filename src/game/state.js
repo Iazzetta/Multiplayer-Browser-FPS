@@ -48,9 +48,11 @@ export class State {
      * @param {Entity} entity
      */
     addEntity(entity) {
-        const { mesh } = entity;
-        if (mesh) {
-            this.scene.add(mesh.body);
+        if (this.entities.has(entity.id)) {
+            this.deleteEntity(entity.id);
+        }
+        if (entity.mesh) {
+            this.scene.add(entity.mesh.body);
         }
         this.entities.set(entity.id, entity);
     }
@@ -61,5 +63,16 @@ export class State {
      */
     getEntity(id) {
         return this.entities.get(id) || Entity.empty;
+    }
+
+    /**
+     * @param {string} id
+     */
+    deleteEntity(id) {
+        const entity = this.getEntity(id);
+        if (entity.mesh) {
+            this.scene.remove(entity.mesh.body);
+        }
+        this.entities.delete(id);
     }
 }
