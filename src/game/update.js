@@ -33,8 +33,8 @@ export function updateTime(state) {
  * @param {(action:Action)=>any} dispatch
  */
 export function gravitySystem(entity, state, dispatch) {
-    const { velocity } = entity;
-    if (velocity) {
+    const { gravity, velocity } = entity;
+    if (gravity && velocity) {
         velocity.y -= 0.001;
     }
 }

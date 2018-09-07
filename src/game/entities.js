@@ -17,6 +17,11 @@ export class Entity {
         this.id = id;
 
         /**
+         * @type {boolean}
+         */
+        this.gravity = false;
+
+        /**
          * @type {MeshComponent}
          */
         this.mesh = undefined;
@@ -46,6 +51,7 @@ export class Player extends Entity {
      */
     constructor(id) {
         super(id);
+        this.gravity = true;
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
