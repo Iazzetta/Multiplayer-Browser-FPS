@@ -5,6 +5,12 @@ export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
     new THREE.MeshNormalMaterial()
 ];
 
+export class DecayComponent {
+    constructor(ttl = 0) {
+        this.ttl = ttl;
+    }
+}
+
 export class ControllerComponent {
     constructor() {
         this.speed = 0.01;

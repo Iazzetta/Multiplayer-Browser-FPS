@@ -10,6 +10,7 @@ export function update(state, dispatch) {
     updateTime(state);
 
     state.entities.forEach(entity => {
+        decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         jetpackFuelSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
@@ -25,6 +26,21 @@ export function updateTime(state) {
     const elapsed = Date.now() - time.start;
     time.delta = elapsed - time.elapsed;
     time.elapsed = elapsed;
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function decaySystem(entity, state, dispatch) {
+    const { decay } = entity;
+    if (decay) {
+        decay.ttl -= state.time.delta;
+        if (decay.ttl < 0) {
+            state.deleteEntity(entity.id);
+        }
+    }
 }
 
 /**
