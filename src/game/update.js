@@ -131,13 +131,15 @@ export function controllerSystem(entity, state, dispatch) {
 export function physicsSystem(entity, state, dispatch) {
     const { mesh, velocity } = entity;
     if (mesh && velocity) {
+        // Apply velocity
+        mesh.body.position.x += velocity.x * state.time.delta;
+        mesh.body.position.z += velocity.z * state.time.delta;
+        mesh.body.position.y += velocity.y * state.time.delta;
+
+        // Floor collision
         if (mesh.body.position.y <= 0 && velocity.y <= 0) {
             mesh.body.position.y = 0;
             velocity.y = 0;
         }
-
-        mesh.body.position.x += velocity.x * state.time.delta;
-        mesh.body.position.z += velocity.z * state.time.delta;
-        mesh.body.position.y += velocity.y * state.time.delta;
     }
 }
