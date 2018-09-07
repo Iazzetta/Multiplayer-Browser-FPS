@@ -132,10 +132,11 @@ export class Game extends BaseGame {
                     bullet.mesh.body.position.y = mesh.body.position.y;
                     bullet.mesh.body.position.z = mesh.body.position.z;
 
+                    const bulletSpeed = 0.05;
                     const direction = mesh.getFacingDirection();
-                    bullet.velocity.z = direction.z * 0.01;
-                    bullet.velocity.x = direction.x * 0.01;
-                    bullet.velocity.y = direction.y * 0.01;
+                    bullet.velocity.z = direction.z * bulletSpeed;
+                    bullet.velocity.x = direction.x * bulletSpeed;
+                    bullet.velocity.y = direction.y * bulletSpeed;
 
                     this.state.addEntity(bullet);
                 }
