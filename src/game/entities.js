@@ -58,3 +58,14 @@ export class Player extends Entity {
         this.mesh = new MeshComponent();
     }
 }
+
+export class Bullet extends Entity {
+    /**
+     * @param {string} id
+     */
+    constructor(id) {
+        super(id);
+        this.velocity = new VelocityComponent();
+        this.mesh = new MeshComponent();
+    }
+}

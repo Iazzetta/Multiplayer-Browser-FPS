@@ -8,6 +8,7 @@ import {
     Action
 } from "../game/actions.js";
 import clamp from "lodash/clamp";
+import { Bullet } from "../game/entities.js";
 
 export class Game extends BaseGame {
     constructor() {
@@ -110,12 +111,33 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const player = this.state.entities.get(playerId);
-                if (player !== undefined) {
-                    let ver = player.mesh.body.rotation.y - ev.movementX * 0.01;
-                    let hor = player.mesh.head.rotation.x - ev.movementY * 0.01;
+                const { mesh } = this.state.getEntity(playerId);
+                if (mesh) {
+                    let ver = mesh.body.rotation.y - ev.movementX * 0.01;
+                    let hor = mesh.head.rotation.x - ev.movementY * 0.01;
                     hor = clamp(hor, -1, 1);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
+                }
+            }
+        });
+
+        canvas.addEventListener("mousedown", ev => {
+            if (document.pointerLockElement === canvas) {
+                const playerId = this.playerId();
+                const { mesh } = this.state.getEntity(playerId);
+                if (mesh) {
+                    const bulletId = playerId + Date.now().toString(16);
+                    const bullet = new Bullet(bulletId);
+                    bullet.mesh.body.position.x = mesh.body.position.x;
+                    bullet.mesh.body.position.y = mesh.body.position.y;
+                    bullet.mesh.body.position.z = mesh.body.position.z;
+
+                    const direction = mesh.getFacingDirection();
+                    bullet.velocity.z = direction.z * 0.01;
+                    bullet.velocity.x = direction.x * 0.01;
+                    bullet.velocity.y = direction.y * 0.01;
+
+                    this.state.addEntity(bullet);
                 }
             }
         });

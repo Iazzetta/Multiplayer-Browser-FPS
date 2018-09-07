@@ -42,4 +42,11 @@ export class MeshComponent {
         this.head.position.z = -0.25;
         this.body.add(this.head);
     }
+
+    getFacingDirection() {
+        const direction = new THREE.Vector3(0, 0, -1);
+        const matrix = new THREE.Matrix4();
+        matrix.extractRotation(this.head.matrixWorld);
+        return matrix.multiplyVector3(direction);
+    }
 }
