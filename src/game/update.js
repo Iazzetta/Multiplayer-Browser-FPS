@@ -110,7 +110,6 @@ export function damageSystem(entity, state, dispatch) {
                 if (distance < 0.5) {
                     target.health.hp -= entity.damage.dmg;
                     state.deleteEntity(entity.id);
-                    console.log(target.id, target.health.hp);
                 }
             }
         });
