@@ -40,19 +40,27 @@ export class JetpackComponent {
     }
 }
 
-export class MeshComponent {
+export class BodyComponent extends THREE.Mesh {
     constructor() {
-        this.body = new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL);
-        this.head = new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL);
-        this.head.position.y = 1.2;
-        this.head.position.z = -0.25;
-        this.body.add(this.head);
+        super(DEFAULT_BOX, DEFAULT_MATERIAL);
+    }
+}
+
+export class HeadComponent extends THREE.Mesh {
+    /**
+     * @param {BodyComponent} body
+     */
+    constructor(body) {
+        super(DEFAULT_BOX, DEFAULT_MATERIAL);
+        this.position.y = 1.2;
+        this.position.z = -0.25;
+        body.add(this);
     }
 
     getFacingDirection() {
         const direction = new THREE.Vector3(0, 0, -1);
         const matrix = new THREE.Matrix4();
-        matrix.extractRotation(this.head.matrixWorld);
+        matrix.extractRotation(this.matrixWorld);
         return matrix.multiplyVector3(direction);
     }
 }

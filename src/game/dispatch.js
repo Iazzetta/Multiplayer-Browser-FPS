@@ -19,7 +19,7 @@ export function dispatch(state, action) {
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
-                player.mesh.body.position.y = 0.5;
+                player.body.position.y = 0.5;
                 state.addEntity(player);
             });
 
@@ -43,10 +43,10 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_AIM": {
             const { playerId, ver, hor } = action.data;
-            const { mesh } = state.getEntity(playerId);
-            if (mesh !== undefined) {
-                mesh.body.rotation.y = ver;
-                mesh.head.rotation.x = hor;
+            const { body, head } = state.getEntity(playerId);
+            if (body && head) {
+                body.rotation.y = ver;
+                head.rotation.x = hor;
             }
             return state;
         }

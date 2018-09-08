@@ -90,9 +90,9 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function controllerSystem(entity, state, dispatch) {
-    const { controller, velocity, mesh } = entity;
+    const { controller, velocity, body } = entity;
 
-    if (controller && velocity && mesh) {
+    if (controller && velocity && body) {
         const input = controller.input;
 
         // vetical movement - jumping
@@ -100,7 +100,7 @@ export function controllerSystem(entity, state, dispatch) {
             const { jetpack } = entity;
             if (jetpack && jetpack.fuel > 0) {
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else if (mesh.body.position.y <= 0) {
+            } else if (body.position.y <= 0) {
                 velocity.y = 0.01;
             }
         }
@@ -112,7 +112,7 @@ export function controllerSystem(entity, state, dispatch) {
         if (velocity.z !== 0 || velocity.x !== 0) {
             let angle = Math.atan2(velocity.x, velocity.z);
             angle = angle > 0 ? angle : angle + 2 * Math.PI;
-            angle += mesh.body.rotation.y;
+            angle += body.rotation.y;
 
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
@@ -129,16 +129,16 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function physicsSystem(entity, state, dispatch) {
-    const { mesh, velocity } = entity;
-    if (mesh && velocity) {
+    const { body, velocity } = entity;
+    if (body && velocity) {
         // Apply velocity
-        mesh.body.position.x += velocity.x * state.time.delta;
-        mesh.body.position.z += velocity.z * state.time.delta;
-        mesh.body.position.y += velocity.y * state.time.delta;
+        body.position.x += velocity.x * state.time.delta;
+        body.position.z += velocity.z * state.time.delta;
+        body.position.y += velocity.y * state.time.delta;
 
         // Floor collision
-        if (mesh.body.position.y <= 0 && velocity.y <= 0) {
-            mesh.body.position.y = 0;
+        if (body.position.y <= 0 && velocity.y <= 0) {
+            body.position.y = 0;
             velocity.y = 0;
         }
     }

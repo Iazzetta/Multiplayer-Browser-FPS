@@ -40,8 +40,8 @@ export class Game extends BaseGame {
                     const playerId = this.playerId();
                     const player = this.state.entities.get(playerId);
                     if (player !== undefined) {
-                        player.mesh.head.add(this.state.camera);
-                        player.mesh.body.visible = false;
+                        player.head.add(this.state.camera);
+                        player.body.visible = false;
                     }
                     this.resize();
                     break;
@@ -111,10 +111,10 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const { mesh } = this.state.getEntity(playerId);
-                if (mesh) {
-                    let ver = mesh.body.rotation.y - ev.movementX * 0.01;
-                    let hor = mesh.head.rotation.x - ev.movementY * 0.01;
+                const { body, head } = this.state.getEntity(playerId);
+                if (body && head) {
+                    let ver = body.rotation.y - ev.movementX * 0.01;
+                    let hor = head.rotation.x - ev.movementY * 0.01;
                     hor = clamp(hor, -1.6, 1.6);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
                 }
@@ -124,16 +124,16 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const { mesh } = this.state.getEntity(playerId);
-                if (mesh) {
+                const { body, head } = this.state.getEntity(playerId);
+                if (body && head) {
                     const bulletId = playerId + Date.now().toString(16);
                     const bullet = new Bullet(bulletId);
-                    bullet.mesh.body.position.x = mesh.body.position.x;
-                    bullet.mesh.body.position.y = mesh.body.position.y;
-                    bullet.mesh.body.position.z = mesh.body.position.z;
+                    bullet.body.position.x = body.position.x;
+                    bullet.body.position.y = body.position.y;
+                    bullet.body.position.z = body.position.z;
 
                     const bulletSpeed = 0.05;
-                    const direction = mesh.getFacingDirection();
+                    const direction = head.getFacingDirection();
                     bullet.velocity.z = direction.z * bulletSpeed;
                     bullet.velocity.x = direction.x * bulletSpeed;
                     bullet.velocity.y = direction.y * bulletSpeed;
