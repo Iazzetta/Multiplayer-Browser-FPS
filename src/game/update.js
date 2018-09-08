@@ -13,6 +13,7 @@ export function update(state, dispatch) {
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         jetpackFuelSystem(entity, state, dispatch);
+        damageSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
@@ -81,6 +82,32 @@ export function jetpackFuelSystem(entity, state, dispatch) {
                 jetpack.minFuel
             );
         }
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function damageSystem(entity, state, dispatch) {
+    const { body } = entity;
+    if (body) {
+        state.entities.forEach(target => {
+            if (target !== entity && target.body) {
+                // Check collision
+                const deltaX = body.position.x - target.body.position.x;
+                const deltaY = body.position.y - target.body.position.y;
+                const deltaZ = body.position.z - target.body.position.z;
+                const distance = Math.sqrt(
+                    deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
+                );
+
+                if (distance < 1) {
+                    console.log("HIT");
+                }
+            }
+        });
     }
 }
 
