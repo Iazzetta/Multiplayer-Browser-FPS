@@ -4,7 +4,9 @@ import {
     JetpackComponent,
     DecayComponent,
     BodyComponent,
-    HeadComponent
+    HeadComponent,
+    DamageComponent,
+    HealthComponent
 } from "./components";
 
 export class Entity {
@@ -52,6 +54,16 @@ export class Entity {
          * @type {VelocityComponent}
          */
         this.velocity = undefined;
+
+        /**
+         * @type {DamageComponent}
+         */
+        this.damage = undefined;
+
+        /**
+         * @type {HealthComponent}
+         */
+        this.health = undefined;
     }
 }
 
@@ -64,6 +76,7 @@ export class Player extends Entity {
     constructor(id) {
         super(id);
         this.gravity = true;
+        this.health = new HealthComponent();
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
@@ -79,6 +92,7 @@ export class Bullet extends Entity {
     constructor(id) {
         super(id);
         this.decay = new DecayComponent(1000);
+        this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.body = new BodyComponent();
     }

@@ -124,16 +124,18 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const { body, head } = this.state.getEntity(playerId);
-                if (body && head) {
+                const player = this.state.getEntity(playerId);
+                if (player.body && player.head) {
                     const bulletId = playerId + Date.now().toString(16);
                     const bullet = new Bullet(bulletId);
-                    bullet.body.position.x = body.position.x;
-                    bullet.body.position.y = body.position.y;
-                    bullet.body.position.z = body.position.z;
+                    bullet.damage.creatorId = player.id;
+
+                    bullet.body.position.x = player.body.position.x;
+                    bullet.body.position.y = player.body.position.y;
+                    bullet.body.position.z = player.body.position.z;
 
                     const bulletSpeed = 0.05;
-                    const direction = head.getFacingDirection();
+                    const direction = player.head.getFacingDirection();
                     bullet.velocity.z = direction.z * bulletSpeed;
                     bullet.velocity.x = direction.x * bulletSpeed;
                     bullet.velocity.y = direction.y * bulletSpeed;

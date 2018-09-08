@@ -40,6 +40,19 @@ export class JetpackComponent {
     }
 }
 
+export class HealthComponent {
+    constructor() {
+        this.hp = this.max = 100;
+    }
+}
+
+export class DamageComponent {
+    constructor() {
+        this.creatorId = "";
+        this.dmg = 5;
+    }
+}
+
 export class BodyComponent extends THREE.Mesh {
     constructor() {
         super(DEFAULT_BOX, DEFAULT_MATERIAL);

@@ -91,10 +91,14 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function damageSystem(entity, state, dispatch) {
-    const { body } = entity;
-    if (body) {
+    const { body, damage } = entity;
+    if (body && damage) {
         state.entities.forEach(target => {
-            if (target !== entity && target.body) {
+            if (target.body && target.health) {
+                if (target === entity) return;
+                if (target.health.hp <= 0) return;
+                if (target.id === entity.damage.creatorId) return;
+
                 // Check collision
                 const deltaX = body.position.x - target.body.position.x;
                 const deltaY = body.position.y - target.body.position.y;
@@ -103,8 +107,10 @@ export function damageSystem(entity, state, dispatch) {
                     deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
                 );
 
-                if (distance < 1) {
-                    console.log("HIT");
+                if (distance < 0.5) {
+                    target.health.hp -= entity.damage.dmg;
+                    state.deleteEntity(entity.id);
+                    console.log(target.id, target.health.hp);
                 }
             }
         });
