@@ -67,6 +67,11 @@ export class Entity {
          */
         this.health = undefined;
     }
+
+    /**
+     * @param {Assets} assets
+     */
+    setAssets(assets) {}
 }
 
 Entity.empty = Object.freeze(new Entity(undefined));
@@ -84,6 +89,14 @@ export class Player extends Entity {
         this.jetpack = new JetpackComponent();
         this.mesh = new MeshComponent();
         this.head = new HeadComponent(this.mesh);
+    }
+
+    /**
+     * @param {Assets} assets
+     */
+    setAssets(assets) {
+        this.head.add(assets.mesh("player_head"));
+        this.mesh.add(assets.mesh("player_body"));
     }
 }
 

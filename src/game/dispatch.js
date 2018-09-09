@@ -30,10 +30,7 @@ export function dispatch(state, action) {
 
             // Add players
             playerIds.forEach(playerId => {
-                const player = new Player(playerId);
-                player.head.add(state.assets.mesh("player_head"));
-                player.mesh.add(state.assets.mesh("player_body"));
-                state.addEntity(player);
+                state.addEntity(new Player(playerId));
             });
 
             // Create lights
