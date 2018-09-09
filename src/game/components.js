@@ -55,14 +55,14 @@ export class MeshComponent extends THREE.Object3D {
     }
 }
 
-export class HeadComponent extends THREE.Mesh {
+export class HeadComponent extends THREE.Object3D {
     /**
      * @param {MeshComponent} mesh
      */
     constructor(mesh) {
-        super(DEFAULT_BOX, DEFAULT_MATERIAL);
-        this.position.y = 1.2;
-        this.position.z = -0.25;
+        super();
+        this.position.y = 2;
+        this.position.z = 0;
         mesh.add(this);
     }
 
