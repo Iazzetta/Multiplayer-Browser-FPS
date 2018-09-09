@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import { Player, Entity } from "./entities.js";
+import { Player, Entity, Platform } from "./entities.js";
 import { Assets } from "./assets.js";
+import memoize from "lodash/memoize";
 
 export class State {
     /**
@@ -34,6 +35,15 @@ export class State {
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
+
+        /**
+         * @returns {Platform[]}
+         */
+        this.platforms = memoize(() => {
+            return Array.from(this.entities)
+                .map(pair => pair[1])
+                .filter(entity => entity.platform);
+        });
     }
 
     /**

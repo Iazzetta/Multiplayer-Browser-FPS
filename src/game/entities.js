@@ -28,6 +28,11 @@ export class Entity {
         this.gravity = false;
 
         /**
+         * @type {boolean}
+         */
+        this.platform = false;
+
+        /**
          * @type {MeshComponent}
          */
         this.mesh = undefined;
@@ -120,6 +125,7 @@ export class Platform extends Entity {
      */
     constructor(id) {
         super(id);
+        this.platform = true;
         this.mesh = new MeshComponent();
     }
 }
