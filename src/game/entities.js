@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 import {
     ControllerComponent,
     VelocityComponent,
@@ -8,6 +10,7 @@ import {
     DamageComponent,
     HealthComponent
 } from "./components";
+import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
 
 export class Entity {
     /**
@@ -81,6 +84,7 @@ export class Player extends Entity {
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
         this.body = new BodyComponent();
+        this.body.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
         this.head = new HeadComponent(this.body);
     }
 }
@@ -95,6 +99,7 @@ export class Bullet extends Entity {
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.body = new BodyComponent();
+        this.body.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
     }
 }
 

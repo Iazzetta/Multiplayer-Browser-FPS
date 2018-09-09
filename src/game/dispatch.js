@@ -16,7 +16,7 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerIds = playerIds;
 
-            // Add map
+            // Add platforms
             state.assets.map1.children.concat().map((block, index) => {
                 const platformId = ["plathform", index].toString();
                 const platform = new Platform(platformId);

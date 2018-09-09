@@ -1,9 +1,5 @@
 import * as THREE from "three";
-
-export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshNormalMaterial()
-];
+import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
 
 export class DecayComponent {
     constructor(ttl = 0) {
@@ -53,9 +49,9 @@ export class DamageComponent {
     }
 }
 
-export class BodyComponent extends THREE.Mesh {
+export class BodyComponent extends THREE.Object3D {
     constructor() {
-        super(DEFAULT_BOX, DEFAULT_MATERIAL);
+        super();
     }
 }
 
