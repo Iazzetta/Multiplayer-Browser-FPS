@@ -44,4 +44,26 @@ export class Assets {
             return this;
         });
     }
+
+    /**
+     * @param {string} name
+     * @returns {THREE.Group}
+     */
+    group(name) {
+        return this[name];
+    }
+
+    /**
+     * @param {string} name
+     * @returns {THREE.Mesh}
+     */
+    mesh(name) {
+        const group = this.group(name);
+        if (group && group.children[0]) {
+            const mesh = group.children[0];
+            if (mesh instanceof THREE.Mesh) {
+                return new THREE.Mesh(mesh.geometry, mesh.material);
+            }
+        }
+    }
 }
