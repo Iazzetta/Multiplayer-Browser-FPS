@@ -1,4 +1,5 @@
 import { Action } from "./actions.js";
+import { Assets } from "./assets.js";
 import { State } from "./state.js";
 import { dispatch } from "./dispatch.js";
 import { update } from "./update.js";
@@ -7,11 +8,14 @@ import { update } from "./update.js";
  * @typedef {(action:Action,state:State) => any} Subscription
  */
 export class Game {
-    constructor() {
+    /**
+     * @param {Assets} assets
+     */
+    constructor(assets) {
         /**
          * @type {State}
          */
-        this.state = new State();
+        this.state = new State(assets);
 
         /**
          * @type {Subscription[]}

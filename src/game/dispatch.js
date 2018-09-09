@@ -3,11 +3,6 @@ import { Action } from "./actions.js";
 import { State } from "./state.js";
 import { Player } from "./entities";
 
-// @ts-ignore
-import objPath from "../assets/map1.obj";
-import OBJLoader from "three-obj-loader";
-OBJLoader(THREE);
-
 /**
  * @param {State} state
  * @param {Action} action
@@ -17,9 +12,12 @@ export function dispatch(state, action) {
         case "INIT_GAME": {
             const { playerIds } = action.data;
 
-            const state = new State();
+            state = new State(state.assets);
             state.time.start = Date.now();
             state.playerIds = playerIds;
+
+            // Add map
+            state.scene.add(state.assets.map1);
 
             // Add players
             playerIds.forEach(playerId => {
@@ -50,11 +48,6 @@ export function dispatch(state, action) {
             state.scene.add(keyLight);
             state.scene.add(fillLight);
             state.scene.add(backLight);
-
-            const loader = new THREE.OBJLoader();
-            loader.load(objPath, obj => {
-                state.scene.add(obj);
-            });
 
             return state;
         }

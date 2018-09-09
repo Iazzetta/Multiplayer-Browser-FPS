@@ -1,10 +1,19 @@
 import * as THREE from "three";
 import { Player, Entity } from "./entities.js";
-import random from "lodash/random";
+import { Assets } from "./assets.js";
 
 export class State {
-    constructor() {
+    /**
+     *
+     * @param {Assets} assets
+     */
+    constructor(assets) {
         this.time = { start: 0, elapsed: 0, delta: 0 };
+
+        /**
+         * @type {Assets}
+         */
+        this.assets = assets;
 
         /**
          * @type {THREE.Scene}

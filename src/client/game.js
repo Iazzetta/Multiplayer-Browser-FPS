@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
 import { Game as BaseGame } from "../game/game.js";
+import { Assets } from "../game/assets.js";
 import {
     setScreenSize,
     setPlayerInput,
@@ -11,8 +12,11 @@ import clamp from "lodash/clamp";
 import { Bullet } from "../game/entities.js";
 
 export class Game extends BaseGame {
-    constructor() {
-        super();
+    /**
+     * @param {Assets} assets
+     */
+    constructor(assets) {
+        super(assets);
 
         /**
          * @type {SocketIOClient.Socket}
