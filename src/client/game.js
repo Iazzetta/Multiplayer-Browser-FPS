@@ -41,13 +41,7 @@ export class Game extends BaseGame {
         this.subscriptions.push(action => {
             switch (action.type) {
                 case "INIT_GAME": {
-                    const playerId = this.playerId();
-                    const player = this.state.entities.get(playerId);
-                    if (player !== undefined) {
-                        player.head.add(this.state.camera);
-                        player.mesh.visible = false;
-                    }
-                    this.resize();
+                    this.mountPlayerCamera();
                     break;
                 }
             }
@@ -61,6 +55,16 @@ export class Game extends BaseGame {
 
     playerId() {
         return this.socket ? this.socket.id : "single-player";
+    }
+
+    mountPlayerCamera() {
+        const playerId = this.playerId();
+        const player = this.state.entities.get(playerId);
+        if (player !== undefined) {
+            player.head.add(this.state.camera);
+            player.mesh.visible = false;
+        }
+        this.resize();
     }
 
     /**
