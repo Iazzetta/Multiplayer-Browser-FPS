@@ -15,16 +15,15 @@ export const ASSET_PATHS = {
  * @returns {Promise<Assets>}
  */
 export function loadAssets() {
-    const assets = new Assets();
     const loader = new THREE.OBJLoader();
-    const loadAssets = map(ASSET_PATHS, (path, asset) => {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path, "utf8", (err, contents) => {
-                assets[asset] = loader.parse(contents);
-                resolve(asset);
+    const loadAssets = map(ASSET_PATHS, (assetPath, assetName) => {
+        return new Promise(resolve => {
+            fs.readFile(assetPath, "utf8", (err, contents) => {
+                const asset = loader.parse(contents);
+                resolve([assetName, asset]);
             });
         });
     });
 
-    return Promise.all(loadAssets).then(() => assets);
+    return new Assets().load(loadAssets);
 }
