@@ -17,11 +17,15 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add platforms
-            state.assets.map1.children.concat().map((block, index) => {
+            state.assets.map1.children.forEach((block, index) => {
                 const platformId = ["plathform", index].toString();
                 const platform = new Platform(platformId);
-                platform.mesh.add(block);
-                state.addEntity(platform);
+
+                if (block instanceof THREE.Mesh) {
+                    const mesh = new THREE.Mesh(block.geometry, block.material);
+                    platform.mesh.add(mesh);
+                    state.addEntity(platform);
+                }
             });
 
             // Add players
