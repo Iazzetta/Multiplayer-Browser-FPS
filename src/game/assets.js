@@ -8,19 +8,9 @@ export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
 export class Assets {
     constructor() {
         /**
-         * @type {THREE.Group}
+         * @type {Map<string,THREE.Group>}
          */
-        this.map1 = null;
-
-        /**
-         * @type {THREE.Group}
-         */
-        this.player_head = null;
-
-        /**
-         * @type {THREE.Group}
-         */
-        this.player_body = null;
+        this.list = new Map();
     }
 
     /**
@@ -29,18 +19,7 @@ export class Assets {
      */
     load(loadAssets) {
         return Promise.all(loadAssets).then(data => {
-            Object.keys(this).forEach(key => {
-                const [asset] = data
-                    .filter(row => row[0] === key)
-                    .map(row => row[1]);
-
-                this[key] = asset;
-
-                if (this[key] instanceof THREE.Group === false) {
-                    throw new Error(`Asset ${key} not loaded.`);
-                }
-            });
-
+            this.list = new Map(data);
             return this;
         });
     }
@@ -50,7 +29,7 @@ export class Assets {
      * @returns {THREE.Group}
      */
     group(name) {
-        return this[name];
+        return this.list.get(name);
     }
 
     /**

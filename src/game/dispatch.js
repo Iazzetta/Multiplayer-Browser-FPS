@@ -17,7 +17,7 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add platforms
-            state.assets.map1.children.forEach((block, index) => {
+            state.assets.group("map1").children.forEach((block, index) => {
                 const platformId = ["plathform", index].toString();
                 const platform = new Platform(platformId);
 
