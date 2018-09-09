@@ -8,22 +8,23 @@ OBJLoader(THREE);
 import map1 from "../assets/map1.obj";
 // @ts-ignore
 import player_head from "../assets/player_head.obj";
+// @ts-ignore
+import player_body from "../assets/player_body.obj";
 
-export const ASSET_PATHS = { map1, player_head };
+export const ASSET_PATHS = { map1, player_head, player_body };
 
 /**
  * @returns {Promise<Assets>}
  */
 export function loadAssets() {
-    const assets = new Assets();
     const loader = new THREE.OBJLoader();
-    const loadAssets = map(ASSET_PATHS, (path, asset) => {
-        return new Promise((resolve, reject) => {
-            loader.load(path, group => {
-                assets[asset] = group;
-                resolve(assets);
+    const loadAssets = map(ASSET_PATHS, (assetPath, assetName) => {
+        return new Promise(resolve => {
+            loader.load(assetPath, asset => {
+                resolve([assetName, asset]);
             });
         });
     });
-    return Promise.all(loadAssets).then(() => assets);
+
+    return new Assets().load(loadAssets);
 }

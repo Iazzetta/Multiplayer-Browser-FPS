@@ -16,5 +16,32 @@ export class Assets {
          * @type {THREE.Group}
          */
         this.player_head = null;
+
+        /**
+         * @type {THREE.Group}
+         */
+        this.player_body = null;
+    }
+
+    /**
+     * @param {Promise<[string,THREE.Group]>[]} loadAssets
+     * @returns {Promise<Assets>}
+     */
+    load(loadAssets) {
+        return Promise.all(loadAssets).then(data => {
+            Object.keys(this).forEach(key => {
+                const [asset] = data
+                    .filter(row => row[0] === key)
+                    .map(row => row[1]);
+
+                this[key] = asset;
+
+                if (this[key] instanceof THREE.Group === false) {
+                    throw new Error(`Asset ${key} not loaded.`);
+                }
+            });
+
+            return this;
+        });
     }
 }
