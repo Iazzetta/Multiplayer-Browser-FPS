@@ -83,7 +83,6 @@ export class Player extends Entity {
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
         this.mesh = new MeshComponent();
-        this.mesh.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
         this.head = new HeadComponent(this.mesh);
     }
 }
