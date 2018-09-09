@@ -91,18 +91,18 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function damageSystem(entity, state, dispatch) {
-    const { body, damage } = entity;
-    if (body && damage) {
+    const { mesh, damage } = entity;
+    if (mesh && damage) {
         state.entities.forEach(target => {
-            if (target.body && target.health) {
+            if (target.mesh && target.health) {
                 if (target === entity) return;
                 if (target.health.hp <= 0) return;
                 if (target.id === entity.damage.creatorId) return;
 
                 // Check collision
-                const deltaX = body.position.x - target.body.position.x;
-                const deltaY = body.position.y - target.body.position.y;
-                const deltaZ = body.position.z - target.body.position.z;
+                const deltaX = mesh.position.x - target.mesh.position.x;
+                const deltaY = mesh.position.y - target.mesh.position.y;
+                const deltaZ = mesh.position.z - target.mesh.position.z;
                 const distance = Math.sqrt(
                     deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
                 );
@@ -122,9 +122,9 @@ export function damageSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function controllerSystem(entity, state, dispatch) {
-    const { controller, velocity, body } = entity;
+    const { controller, velocity, mesh } = entity;
 
-    if (controller && velocity && body) {
+    if (controller && velocity && mesh) {
         const input = controller.input;
 
         // vetical movement - jumping
@@ -132,7 +132,7 @@ export function controllerSystem(entity, state, dispatch) {
             const { jetpack } = entity;
             if (jetpack && jetpack.fuel > 0) {
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else if (body.position.y <= 0) {
+            } else if (mesh.position.y <= 0) {
                 velocity.y = 0.01;
             }
         }
@@ -144,7 +144,7 @@ export function controllerSystem(entity, state, dispatch) {
         if (velocity.z !== 0 || velocity.x !== 0) {
             let angle = Math.atan2(velocity.x, velocity.z);
             angle = angle > 0 ? angle : angle + 2 * Math.PI;
-            angle += body.rotation.y;
+            angle += mesh.rotation.y;
 
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
@@ -161,16 +161,16 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function physicsSystem(entity, state, dispatch) {
-    const { body, velocity } = entity;
-    if (body && velocity) {
+    const { mesh, velocity } = entity;
+    if (mesh && velocity) {
         // Apply velocity
-        body.position.x += velocity.x * state.time.delta;
-        body.position.z += velocity.z * state.time.delta;
-        body.position.y += velocity.y * state.time.delta;
+        mesh.position.x += velocity.x * state.time.delta;
+        mesh.position.z += velocity.z * state.time.delta;
+        mesh.position.y += velocity.y * state.time.delta;
 
         // Floor collision
-        if (body.position.y <= 0 && velocity.y <= 0) {
-            body.position.y = 0;
+        if (mesh.position.y <= 0 && velocity.y <= 0) {
+            mesh.position.y = 0;
             velocity.y = 0;
         }
     }

@@ -20,14 +20,14 @@ export function dispatch(state, action) {
             state.assets.map1.children.concat().map((block, index) => {
                 const platformId = ["plathform", index].toString();
                 const platform = new Platform(platformId);
-                platform.body.add(block);
+                platform.mesh.add(block);
                 state.addEntity(platform);
             });
 
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
-                player.body.position.y = 0.5;
+                player.mesh.position.y = 0.5;
                 state.addEntity(player);
             });
 
@@ -74,9 +74,9 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_AIM": {
             const { playerId, ver, hor } = action.data;
-            const { body, head } = state.getEntity(playerId);
-            if (body && head) {
-                body.rotation.y = ver;
+            const { mesh, head } = state.getEntity(playerId);
+            if (mesh && head) {
+                mesh.rotation.y = ver;
                 head.rotation.x = hor;
             }
             return state;

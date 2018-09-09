@@ -5,7 +5,7 @@ import {
     VelocityComponent,
     JetpackComponent,
     DecayComponent,
-    BodyComponent,
+    MeshComponent,
     HeadComponent,
     DamageComponent,
     HealthComponent
@@ -29,9 +29,9 @@ export class Entity {
         this.gravity = false;
 
         /**
-         * @type {BodyComponent}
+         * @type {MeshComponent}
          */
-        this.body = undefined;
+        this.mesh = undefined;
 
         /**
          * @type {HeadComponent}
@@ -83,9 +83,9 @@ export class Player extends Entity {
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
-        this.body = new BodyComponent();
-        this.body.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
-        this.head = new HeadComponent(this.body);
+        this.mesh = new MeshComponent();
+        this.mesh.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
+        this.head = new HeadComponent(this.mesh);
     }
 }
 
@@ -98,8 +98,8 @@ export class Bullet extends Entity {
         this.decay = new DecayComponent(1000);
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
-        this.body = new BodyComponent();
-        this.body.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
+        this.mesh = new MeshComponent();
+        this.mesh.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
     }
 }
 
@@ -109,6 +109,6 @@ export class Platform extends Entity {
      */
     constructor(id) {
         super(id);
-        this.body = new BodyComponent();
+        this.mesh = new MeshComponent();
     }
 }
