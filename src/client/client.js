@@ -1,10 +1,8 @@
 import { Game } from "./game.js";
-import { Assets } from "../game/assets.js";
 import { initGame, setScreenSize } from "../game/actions.js";
-// @ts-ignore
-import map1 from "../assets/map1.obj";
+import { loadAssets } from "./assets.js";
 
-Assets.load({ map1 }).then(assets => {
+loadAssets().then(assets => {
     const game = new Game(assets);
 
     game.dispatch(initGame([game.playerId(), "dummy-player"]));
