@@ -6,7 +6,10 @@ OBJLoader(THREE);
 
 // @ts-ignore
 import map1 from "../assets/map1.obj";
-export const ASSET_PATHS = { map1 };
+// @ts-ignore
+import player_head from "../assets/player_head.obj";
+
+export const ASSET_PATHS = { map1, player_head };
 
 /**
  * @returns {Promise<Assets>}

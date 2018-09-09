@@ -29,9 +29,16 @@ export function dispatch(state, action) {
             });
 
             // Add players
+            const [player_head] = state.assets.player_head.children;
             playerIds.forEach(playerId => {
                 const player = new Player(playerId);
-                player.mesh.position.y = 0.5;
+                if (player_head instanceof THREE.Mesh) {
+                    const mesh = new THREE.Mesh(
+                        player_head.geometry,
+                        player_head.material
+                    );
+                    player.head.add(mesh);
+                }
                 state.addEntity(player);
             });
 

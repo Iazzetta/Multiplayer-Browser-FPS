@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+import { Assets, DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
 import {
     ControllerComponent,
     VelocityComponent,
@@ -10,7 +10,6 @@ import {
     DamageComponent,
     HealthComponent
 } from "./components";
-import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
 
 export class Entity {
     /**

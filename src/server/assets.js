@@ -7,7 +7,8 @@ import OBJLoader from "three-obj-loader";
 OBJLoader(THREE);
 
 export const ASSET_PATHS = {
-    map1: path.resolve(__dirname, "../assets/map1.obj")
+    map1: path.resolve(__dirname, "../assets/map1.obj"),
+    player_head: path.resolve(__dirname, "../assets/player_head.obj")
 };
 
 /**

@@ -11,5 +11,10 @@ export class Assets {
          * @type {THREE.Group}
          */
         this.map1 = null;
+
+        /**
+         * @type {THREE.Group}
+         */
+        this.player_head = null;
     }
 }
