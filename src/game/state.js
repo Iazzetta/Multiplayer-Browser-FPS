@@ -26,22 +26,29 @@ export class State {
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
 
-        // Add a floor
-        const geometry = new THREE.BoxGeometry(10, 1, 10);
-        const material = new THREE.MeshNormalMaterial();
-        const floor = new THREE.Mesh(geometry, material);
-        floor.position.y = -0.5;
-        this.scene.add(floor);
+        // Create lights
+        const keyLight = new THREE.DirectionalLight(
+            new THREE.Color("#FFE4C4"),
+            1.0
+        );
+        keyLight.position.set(-100, 50, 100);
 
-        // Create random cubes, for orientation
-        const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-        for (let i = 0; i < 500; i++) {
-            const box = new THREE.Mesh(boxGeometry, material);
-            box.position.y = random(-50, 50);
-            box.position.x = random(-50, 50);
-            box.position.z = random(-50, 50);
-            this.scene.add(box);
-        }
+        const fillLight = new THREE.DirectionalLight(
+            new THREE.Color("#A6D8ED"),
+            1.0
+        );
+        fillLight.position.set(100, 50, 100);
+
+        const backLight = new THREE.DirectionalLight(
+            new THREE.Color("#FFFFFF"),
+            1.0
+        );
+        backLight.position.set(100, 0, -100).normalize();
+        this.scene.add(backLight);
+
+        this.scene.add(keyLight);
+        this.scene.add(fillLight);
+        this.scene.add(backLight)
     }
 
     /**
