@@ -97,3 +97,13 @@ export class Bullet extends Entity {
         this.body = new BodyComponent();
     }
 }
+
+export class Platform extends Entity {
+    /**
+     * @param {string} id
+     */
+    constructor(id) {
+        super(id);
+        this.body = new BodyComponent();
+    }
+}

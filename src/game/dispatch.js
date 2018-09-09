@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player } from "./entities";
+import { Player, Platform } from "./entities";
 
 /**
  * @param {State} state
@@ -17,7 +17,12 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add map
-            state.scene.add(state.assets.map1);
+            state.assets.map1.children.concat().map((block, index) => {
+                const platformId = ["plathform", index].toString();
+                const platform = new Platform(platformId);
+                platform.body.add(block);
+                state.addEntity(platform);
+            });
 
             // Add players
             playerIds.forEach(playerId => {
