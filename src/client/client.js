@@ -6,7 +6,6 @@ loadAssets().then(assets => {
     const game = new Game(assets);
 
     game.dispatch(initGame([game.playerId(), "dummy-player"]));
-    game.dispatch(setScreenSize(window.innerWidth, window.innerHeight));
 
     requestAnimationFrame(function next() {
         game.update();
