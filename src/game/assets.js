@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+export const REQUIRED_ASSETS = ["map1", "player_head", "player_body"];
+
 export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshNormalMaterial()
@@ -20,6 +22,11 @@ export class Assets {
     load(loadAssets) {
         return Promise.all(loadAssets).then(data => {
             this.list = new Map(data);
+            REQUIRED_ASSETS.forEach(asset => {
+                if (!this.list.has(asset)) {
+                    throw new Error(`Asset ${asset} not loaded`);
+                }
+            });
             return this;
         });
     }
