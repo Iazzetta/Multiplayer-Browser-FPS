@@ -54,7 +54,6 @@ export class State {
             this.deleteEntity(entity.id);
         }
         if (entity.object3D) {
-            entity.setAssets(this.assets);
             this.scene.add(entity.object3D);
         }
         this.entities.set(entity.id, entity);

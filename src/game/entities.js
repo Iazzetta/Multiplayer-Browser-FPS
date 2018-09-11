@@ -72,11 +72,6 @@ export class Entity {
          */
         this.health = undefined;
     }
-
-    /**
-     * @param {Assets} assets
-     */
-    setAssets(assets) {}
 }
 
 Entity.empty = Object.freeze(new Entity(undefined));
