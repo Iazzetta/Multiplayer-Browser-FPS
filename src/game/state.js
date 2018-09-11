@@ -53,9 +53,9 @@ export class State {
         if (this.entities.has(entity.id)) {
             this.deleteEntity(entity.id);
         }
-        if (entity.mesh) {
+        if (entity.object3D) {
             entity.setAssets(this.assets);
-            this.scene.add(entity.mesh);
+            this.scene.add(entity.object3D);
         }
         this.entities.set(entity.id, entity);
     }
@@ -73,8 +73,8 @@ export class State {
      */
     deleteEntity(id) {
         const entity = this.getEntity(id);
-        if (entity.mesh) {
-            this.scene.remove(entity.mesh);
+        if (entity.object3D) {
+            this.scene.remove(entity.object3D);
         }
         this.entities.delete(id);
     }

@@ -23,7 +23,7 @@ export function dispatch(state, action) {
 
                 if (block instanceof THREE.Mesh) {
                     const mesh = new THREE.Mesh(block.geometry, block.material);
-                    platform.mesh.add(mesh);
+                    platform.object3D.add(mesh);
                     state.addEntity(platform);
                 }
             });
@@ -76,9 +76,9 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_AIM": {
             const { playerId, ver, hor } = action.data;
-            const { mesh, head } = state.getEntity(playerId);
-            if (mesh && head) {
-                mesh.rotation.y = ver;
+            const { object3D, head } = state.getEntity(playerId);
+            if (object3D && head) {
+                object3D.rotation.y = ver;
                 head.rotation.x = hor;
             }
             return state;

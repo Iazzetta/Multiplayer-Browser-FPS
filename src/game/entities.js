@@ -5,7 +5,7 @@ import {
     VelocityComponent,
     JetpackComponent,
     DecayComponent,
-    MeshComponent,
+    Object3DComponent,
     HeadComponent,
     DamageComponent,
     HealthComponent
@@ -33,9 +33,9 @@ export class Entity {
         this.platform = false;
 
         /**
-         * @type {MeshComponent}
+         * @type {Object3DComponent}
          */
-        this.mesh = undefined;
+        this.object3D = undefined;
 
         /**
          * @type {HeadComponent}
@@ -92,8 +92,8 @@ export class Player extends Entity {
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
         this.jetpack = new JetpackComponent();
-        this.mesh = new MeshComponent();
-        this.head = new HeadComponent(this.mesh);
+        this.object3D = new Object3DComponent();
+        this.head = new HeadComponent(this.object3D);
     }
 
     /**
@@ -101,7 +101,7 @@ export class Player extends Entity {
      */
     setAssets(assets) {
         this.head.add(assets.mesh("player_head"));
-        this.mesh.add(assets.mesh("player_body"));
+        this.object3D.add(assets.mesh("player_body"));
     }
 }
 
@@ -114,8 +114,8 @@ export class Bullet extends Entity {
         this.decay = new DecayComponent(1000);
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
-        this.mesh = new MeshComponent();
-        this.mesh.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
+        this.object3D = new Object3DComponent();
+        this.object3D.add(new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL));
     }
 }
 
@@ -126,6 +126,6 @@ export class Platform extends Entity {
     constructor(id) {
         super(id);
         this.platform = true;
-        this.mesh = new MeshComponent();
+        this.object3D = new Object3DComponent();
     }
 }

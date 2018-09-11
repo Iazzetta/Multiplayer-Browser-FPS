@@ -91,18 +91,18 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function damageSystem(entity, state, dispatch) {
-    const { mesh, damage } = entity;
-    if (mesh && damage) {
+    const { object3D, damage } = entity;
+    if (object3D && damage) {
         state.entities.forEach(target => {
-            if (target.mesh && target.health) {
+            if (target.object3D && target.health) {
                 if (target === entity) return;
                 if (target.health.hp <= 0) return;
                 if (target.id === entity.damage.creatorId) return;
 
                 // Check collision
-                const deltaX = mesh.position.x - target.mesh.position.x;
-                const deltaY = mesh.position.y - target.mesh.position.y;
-                const deltaZ = mesh.position.z - target.mesh.position.z;
+                const deltaX = object3D.position.x - target.object3D.position.x;
+                const deltaY = object3D.position.y - target.object3D.position.y;
+                const deltaZ = object3D.position.z - target.object3D.position.z;
                 const distance = Math.sqrt(
                     deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
                 );
@@ -122,9 +122,9 @@ export function damageSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function controllerSystem(entity, state, dispatch) {
-    const { controller, velocity, mesh } = entity;
+    const { controller, velocity, object3D } = entity;
 
-    if (controller && velocity && mesh) {
+    if (controller && velocity && object3D) {
         const input = controller.input;
 
         // vetical movement - jumping
@@ -132,7 +132,7 @@ export function controllerSystem(entity, state, dispatch) {
             const { jetpack } = entity;
             if (jetpack && jetpack.fuel > 0) {
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else if (mesh.position.y <= 0) {
+            } else if (object3D.position.y <= 0) {
                 velocity.y = 0.01;
             }
         }
@@ -144,7 +144,7 @@ export function controllerSystem(entity, state, dispatch) {
         if (velocity.z !== 0 || velocity.x !== 0) {
             let angle = Math.atan2(velocity.x, velocity.z);
             angle = angle > 0 ? angle : angle + 2 * Math.PI;
-            angle += mesh.rotation.y;
+            angle += object3D.rotation.y;
 
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
@@ -161,16 +161,16 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function physicsSystem(entity, state, dispatch) {
-    const { mesh, velocity } = entity;
-    if (mesh && velocity) {
+    const { object3D, velocity } = entity;
+    if (object3D && velocity) {
         // Apply velocity
-        mesh.position.x += velocity.x * state.time.delta;
-        mesh.position.z += velocity.z * state.time.delta;
-        mesh.position.y += velocity.y * state.time.delta;
+        object3D.position.x += velocity.x * state.time.delta;
+        object3D.position.z += velocity.z * state.time.delta;
+        object3D.position.y += velocity.y * state.time.delta;
 
         // Floor collision
-        if (mesh.position.y <= 0 && velocity.y <= 0) {
-            mesh.position.y = 0;
+        if (object3D.position.y <= 0 && velocity.y <= 0) {
+            object3D.position.y = 0;
             velocity.y = 0;
         }
     }

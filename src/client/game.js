@@ -62,7 +62,7 @@ export class Game extends BaseGame {
         const player = this.state.entities.get(playerId);
         if (player !== undefined) {
             player.head.add(this.state.camera);
-            player.mesh.visible = false;
+            player.object3D.visible = false;
         }
         this.resize();
     }
@@ -119,9 +119,9 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                const { mesh, head } = this.state.getEntity(playerId);
-                if (mesh && head) {
-                    let ver = mesh.rotation.y - ev.movementX * 0.01;
+                const { object3D, head } = this.state.getEntity(playerId);
+                if (object3D && head) {
+                    let ver = object3D.rotation.y - ev.movementX * 0.01;
                     let hor = head.rotation.x - ev.movementY * 0.01;
                     hor = clamp(hor, -1.6, 1.6);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
@@ -133,14 +133,14 @@ export class Game extends BaseGame {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
                 const player = this.state.getEntity(playerId);
-                if (player.mesh && player.head) {
+                if (player.object3D && player.head) {
                     const bulletId = playerId + Date.now().toString(16);
                     const bullet = new Bullet(bulletId);
                     bullet.damage.creatorId = player.id;
 
-                    bullet.mesh.position.x = player.mesh.position.x;
-                    bullet.mesh.position.y = player.mesh.position.y;
-                    bullet.mesh.position.z = player.mesh.position.z;
+                    bullet.object3D.position.x = player.object3D.position.x;
+                    bullet.object3D.position.y = player.object3D.position.y;
+                    bullet.object3D.position.z = player.object3D.position.z;
 
                     const bulletSpeed = 0.05;
                     const direction = player.head.getFacingDirection();
