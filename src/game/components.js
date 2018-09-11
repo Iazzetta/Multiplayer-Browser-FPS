@@ -50,20 +50,26 @@ export class DamageComponent {
 }
 
 export class Object3DComponent extends THREE.Object3D {
-    constructor() {
+    /**
+     * @param {THREE.Mesh} mesh
+     */
+    constructor(mesh) {
         super();
+        this.mesh = mesh;
+        this.add(this.mesh);
     }
 }
 
 export class HeadComponent extends THREE.Object3D {
     /**
-     * @param {Object3DComponent} object3D
+     * @param {THREE.Mesh} mesh
      */
-    constructor(object3D) {
+    constructor(mesh) {
         super();
         this.position.y = 2;
         this.position.z = 0;
-        object3D.add(this);
+        this.mesh = mesh;
+        this.add(mesh);
     }
 
     getFacingDirection() {

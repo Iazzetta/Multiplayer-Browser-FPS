@@ -18,10 +18,9 @@ export function dispatch(state, action) {
 
             // Add platforms
             state.assets.group("map1").children.forEach((block, index) => {
-                const platformId = ["plathform", index].toString();
-                const platform = new Platform(platformId);
-
                 if (block instanceof THREE.Mesh) {
+                    const platformId = ["plathform", index].toString();
+                    const platform = new Platform(platformId, block);
                     const mesh = new THREE.Mesh(block.geometry, block.material);
                     platform.object3D.add(mesh);
                     state.addEntity(platform);
@@ -30,7 +29,7 @@ export function dispatch(state, action) {
 
             // Add players
             playerIds.forEach(playerId => {
-                state.addEntity(new Player(playerId));
+                state.addEntity(new Player(playerId, state.assets));
             });
 
             // Create lights

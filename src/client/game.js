@@ -135,7 +135,7 @@ export class Game extends BaseGame {
                 const player = this.state.getEntity(playerId);
                 if (player.object3D && player.head) {
                     const bulletId = playerId + Date.now().toString(16);
-                    const bullet = new Bullet(bulletId);
+                    const bullet = new Bullet(bulletId, this.state.assets);
                     bullet.damage.creatorId = player.id;
 
                     bullet.object3D.position.x = player.object3D.position.x;
