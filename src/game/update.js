@@ -78,7 +78,7 @@ export function jetpackFuelSystem(entity, state, dispatch) {
         // Recharge
         if (jump && jetpack.fuel > jetpack.minFuel) {
             jetpack.fuel = Math.max(
-                jetpack.fuel - state.time.delta,
+                jetpack.fuel - state.time.delta * 2,
                 jetpack.minFuel
             );
         }
