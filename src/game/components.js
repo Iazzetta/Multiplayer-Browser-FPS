@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
+import { AABB } from "./utils";
 
 export class DecayComponent {
     constructor(ttl = 0) {
@@ -60,18 +61,18 @@ export class Object3DComponent extends THREE.Object3D {
     }
 
     getAABB() {
-        return {
-            min: {
-                x: this.position.x - this.scale.x * 0.5,
-                y: this.position.y - this.scale.y * 0.5,
-                z: this.position.z - this.scale.z * 0.5
-            },
-            max: {
-                x: this.position.x + this.scale.x * 0.5,
-                y: this.position.y + this.scale.y * 0.5,
-                z: this.position.z + this.scale.z * 0.5
-            }
-        };
+        return new AABB(
+            new THREE.Vector3(
+                this.position.x - this.scale.x * 0.5,
+                this.position.y - this.scale.y * 0.5,
+                this.position.z - this.scale.z * 0.5
+            ),
+            new THREE.Vector3(
+                this.position.x + this.scale.x * 0.5,
+                this.position.y + this.scale.y * 0.5,
+                this.position.z + this.scale.z * 0.5
+            )
+        );
     }
 }
 
