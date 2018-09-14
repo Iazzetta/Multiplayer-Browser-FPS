@@ -98,4 +98,22 @@ export class State {
         }
         this.entities.delete(id);
     }
+
+    /**
+     * @param {(tile:Platform)=>any} f
+     */
+    forEachPlatformEntity(f) {
+        const tiles = this.level.tiles;
+        for (let r = 0; r < tiles.length; r++) {
+            const row = tiles[r];
+            for (let c = 0; c < row.length; c++) {
+                const tileId = row[c];
+                if (tileId > 0) {
+                    const platformId = ["tile", r, c].join("-");
+                    const platform = this.getEntity(platformId);
+                    f(platform);
+                }
+            }
+        }
+    }
 }
