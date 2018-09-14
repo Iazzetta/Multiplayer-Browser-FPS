@@ -17,7 +17,7 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add platforms
-            const TILE_SIZE = 4;
+            const TILE_SIZE = 8;
             for (let r = 0; r < state.level.tiles.length; r++) {
                 const row = state.level.tiles[r];
                 for (let c = 0; c < row.length; c++) {
@@ -31,6 +31,7 @@ export function dispatch(state, action) {
                         platform.object3D.scale.y = TILE_SIZE;
                         platform.object3D.position.z = r * TILE_SIZE;
                         platform.object3D.position.x = c * TILE_SIZE;
+                        platform.object3D.position.y = TILE_SIZE / 2;
 
                         state.addEntity(platform);
                     }
