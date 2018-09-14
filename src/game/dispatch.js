@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
 import { Player, Platform } from "./entities";
-import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./actions";
 
 /**
  * @param {State} state
@@ -23,10 +22,13 @@ export function dispatch(state, action) {
                 for (let c = 0; c < row.length; c++) {
                     const tileId = row[c];
                     if (tileId > 0) {
-                        const tile = state.assets.mesh("player_head");
-                        tile.position.z = r;
-                        tile.position.x = c;
-                        state.scene.add(tile);
+                        const mesh = state.assets.mesh("player_head");
+                        mesh.position.z = r;
+                        mesh.position.x = c;
+
+                        const platformId = ["tile", r, c].join("-");
+                        const platform = new Platform(platformId, mesh);
+                        state.addEntity(platform);
                     }
                 }
             }
