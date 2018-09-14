@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Assets, DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
+import { Assets } from "./assets";
 import {
     ControllerComponent,
     VelocityComponent,

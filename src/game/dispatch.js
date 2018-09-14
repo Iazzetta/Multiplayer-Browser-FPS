@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
 import { Player, Platform } from "./entities";
+import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./actions";
 
 /**
  * @param {State} state
@@ -17,15 +18,18 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add platforms
-            state.assets.group("map1").children.forEach((block, index) => {
-                if (block instanceof THREE.Mesh) {
-                    const platformId = ["plathform", index].toString();
-                    const platform = new Platform(platformId, block);
-                    const mesh = new THREE.Mesh(block.geometry, block.material);
-                    platform.object3D.add(mesh);
-                    state.addEntity(platform);
+            for (let r = 0; r < state.level.tiles.length; r++) {
+                const row = state.level.tiles[r];
+                for (let c = 0; c < row.length; c++) {
+                    const tileId = row[c];
+                    if (tileId > 0) {
+                        const tile = state.assets.mesh("player_head");
+                        tile.position.z = r;
+                        tile.position.x = c;
+                        state.scene.add(tile);
+                    }
                 }
-            });
+            }
 
             // Add players
             playerIds.forEach(playerId => {
