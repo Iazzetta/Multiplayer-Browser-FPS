@@ -166,18 +166,21 @@ export function physicsSystem(entity, state, dispatch) {
     const { object3D, velocity } = entity;
 
     if (object3D && velocity) {
-        const aabbE = object3D.getAABB();
-        state.forEachPlatformEntity(platform => {
-            const aabbP = platform.object3D.getAABB();
-            if (AABB.collision(aabbE, aabbP)) {
-                console.log("collision");
-            }
-        });
-
         // Apply velocity
         object3D.position.x += velocity.x * state.time.delta;
         object3D.position.z += velocity.z * state.time.delta;
         object3D.position.y += velocity.y * state.time.delta;
+
+        // Wall collision
+        state.forEachPlatformEntity(platform => {
+            const aabb1 = object3D.getAABB();
+            const aabb2 = platform.object3D.getAABB();
+            if (AABB.collision(aabb1, aabb2)) {
+                object3D.position.x -= velocity.x * state.time.delta;
+                object3D.position.z -= velocity.z * state.time.delta;
+                // velocity.y -= velocity.y * state.time.delta;
+            }
+        });
 
         // Floor collision
         if (object3D.position.y <= 0 && velocity.y <= 0) {
