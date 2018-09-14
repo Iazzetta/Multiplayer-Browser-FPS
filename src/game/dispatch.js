@@ -17,20 +17,20 @@ export function dispatch(state, action) {
             state.playerIds = playerIds;
 
             // Add platforms
+            const TILE_SIZE = 4;
             for (let r = 0; r < state.level.tiles.length; r++) {
                 const row = state.level.tiles[r];
                 for (let c = 0; c < row.length; c++) {
                     const tileId = row[c];
                     if (tileId > 0) {
-                        const SCALE = 4;
                         const mesh = state.assets.mesh("tile");
                         const platformId = ["tile", r, c].join("-");
                         const platform = new Platform(platformId, mesh);
-                        platform.object3D.scale.z = SCALE;
-                        platform.object3D.scale.x = SCALE;
-                        platform.object3D.scale.y = SCALE;
-                        platform.object3D.position.z = r * SCALE;
-                        platform.object3D.position.x = c * SCALE;
+                        platform.object3D.scale.z = TILE_SIZE;
+                        platform.object3D.scale.x = TILE_SIZE;
+                        platform.object3D.scale.y = TILE_SIZE;
+                        platform.object3D.position.z = r * TILE_SIZE;
+                        platform.object3D.position.x = c * TILE_SIZE;
 
                         state.addEntity(platform);
                     }
@@ -39,7 +39,9 @@ export function dispatch(state, action) {
 
             // Add players
             playerIds.forEach(playerId => {
-                state.addEntity(new Player(playerId, state.assets));
+                const player = new Player(playerId, state.assets);
+                player.object3D.position.set(2 * TILE_SIZE, 0, 2 * TILE_SIZE);
+                state.addEntity(player);
             });
 
             // Create lights
