@@ -58,6 +58,21 @@ export class Object3DComponent extends THREE.Object3D {
         this.mesh = mesh;
         this.add(this.mesh);
     }
+
+    getAABB() {
+        return {
+            min: {
+                x: this.position.x - this.scale.x * 0.5,
+                y: this.position.y - this.scale.y * 0.5,
+                z: this.position.z - this.scale.z * 0.5
+            },
+            max: {
+                x: this.position.x + this.scale.x * 0.5,
+                y: this.position.y + this.scale.y * 0.5,
+                z: this.position.z + this.scale.z * 0.5
+            }
+        };
+    }
 }
 
 export class HeadComponent extends THREE.Object3D {
