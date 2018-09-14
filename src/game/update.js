@@ -2,6 +2,7 @@ import { State } from "./state";
 import { Action } from "./actions";
 import { Entity } from "./entities";
 import { platform } from "os";
+import { AABB } from "./utils";
 
 /**
  * @param {State} state
@@ -168,16 +169,9 @@ export function physicsSystem(entity, state, dispatch) {
         const aabbE = object3D.getAABB();
         state.forEachPlatformEntity(platform => {
             const aabbP = platform.object3D.getAABB();
-
-            if (aabbE.min.x > aabbP.max.x) return false;
-            if (aabbE.min.y > aabbP.max.y) return false;
-            if (aabbE.min.z > aabbP.max.z) return false;
-
-            if (aabbE.max.x < aabbP.min.x) return false;
-            if (aabbE.max.y < aabbP.min.y) return false;
-            if (aabbE.max.z < aabbP.min.z) return false;
-
-            console.log("collision");
+            if (AABB.collision(aabbE, aabbP)) {
+                console.log("collision");
+            }
         });
 
         // Apply velocity
