@@ -22,6 +22,12 @@ export class Assets {
     load(loadAssets) {
         return Promise.all(loadAssets).then(data => {
             this.list = new Map(data);
+            this.list.set(
+                "tile",
+                new THREE.Group().add(
+                    new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL)
+                )
+            );
             REQUIRED_ASSETS.forEach(asset => {
                 if (!this.list.has(asset)) {
                     throw new Error(`Asset ${asset} not loaded`);

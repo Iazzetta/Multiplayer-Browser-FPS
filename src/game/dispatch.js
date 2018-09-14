@@ -23,7 +23,7 @@ export function dispatch(state, action) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const SCALE = 4;
-                        const mesh = state.assets.mesh("player_head");
+                        const mesh = state.assets.mesh("tile");
                         const platformId = ["tile", r, c].join("-");
                         const platform = new Platform(platformId, mesh);
                         platform.object3D.scale.z = SCALE;
