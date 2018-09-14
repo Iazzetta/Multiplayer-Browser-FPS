@@ -22,8 +22,8 @@ export function dispatch(state, action) {
                 for (let c = 0; c < row.length; c++) {
                     const tileId = row[c];
                     if (tileId > 0) {
-                        const mesh = state.assets.mesh("player_head");
                         const SCALE = 4;
+                        const mesh = state.assets.mesh("player_head");
                         const platformId = ["tile", r, c].join("-");
                         const platform = new Platform(platformId, mesh);
                         platform.object3D.scale.z = SCALE;
