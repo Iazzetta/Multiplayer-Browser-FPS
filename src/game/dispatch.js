@@ -24,14 +24,14 @@ export function dispatch(state, action) {
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("player_head");
                         const SCALE = 4;
-                        mesh.scale.z = SCALE;
-                        mesh.scale.x = SCALE;
-                        mesh.scale.y = SCALE;
-                        mesh.position.z = r * SCALE;
-                        mesh.position.x = c * SCALE;
-
                         const platformId = ["tile", r, c].join("-");
                         const platform = new Platform(platformId, mesh);
+                        platform.object3D.scale.z = SCALE;
+                        platform.object3D.scale.x = SCALE;
+                        platform.object3D.scale.y = SCALE;
+                        platform.object3D.position.z = r * SCALE;
+                        platform.object3D.position.x = c * SCALE;
+
                         state.addEntity(platform);
                     }
                 }
