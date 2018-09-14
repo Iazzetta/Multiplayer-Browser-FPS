@@ -178,7 +178,7 @@ export function physicsSystem(entity, state, dispatch) {
             if (AABB.collision(aabb1, aabb2)) {
                 object3D.position.x -= velocity.x * state.time.delta;
                 object3D.position.z -= velocity.z * state.time.delta;
-                // velocity.y -= velocity.y * state.time.delta;
+                object3D.position.y -= velocity.y * state.time.delta;
             }
         });
 
