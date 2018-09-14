@@ -23,8 +23,12 @@ export function dispatch(state, action) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("player_head");
-                        mesh.position.z = r;
-                        mesh.position.x = c;
+                        const SCALE = 4;
+                        mesh.scale.z = SCALE;
+                        mesh.scale.x = SCALE;
+                        mesh.scale.y = SCALE;
+                        mesh.position.z = r * SCALE;
+                        mesh.position.x = c * SCALE;
 
                         const platformId = ["tile", r, c].join("-");
                         const platform = new Platform(platformId, mesh);
