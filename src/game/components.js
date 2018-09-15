@@ -1,5 +1,7 @@
 import * as THREE from "three";
-import { AABB } from "./utils";
+import { AABB, createDebugMesh } from "./utils";
+
+export const DEBUG = true;
 
 export class DecayComponent {
     constructor(ttl = 0) {
@@ -68,22 +70,8 @@ export class Object3DComponent extends THREE.Object3D {
     constructor() {
         super();
         this.radius = new THREE.Vector3(1, 1, 1);
-
-        // Debug
-        const debug = true;
-        if (debug) {
-            const geometry = new THREE.BoxGeometry(
-                this.radius.x * 2,
-                this.radius.y * 2,
-                this.radius.z * 2
-            );
-            const geo = new THREE.WireframeGeometry(geometry); // or WireframeGeometry( geometry )
-            const mat = new THREE.LineBasicMaterial({
-                color: 0xffffff,
-                linewidth: 2
-            });
-            const wireframe = new THREE.LineSegments(geo, mat);
-            this.add(wireframe);
+        if (DEBUG) {
+            this.add(createDebugMesh(this.radius));
         }
     }
 
@@ -108,6 +96,10 @@ export class HeadComponent extends THREE.Object3D {
         super();
         this.position.y = 2;
         this.position.z = 0;
+
+        if (DEBUG) {
+            this.add(createDebugMesh());
+        }
     }
 
     getFacingDirection() {

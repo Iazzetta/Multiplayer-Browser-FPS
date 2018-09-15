@@ -22,3 +22,20 @@ AABB.collision = function(aabb1, aabb2) {
 
     return true;
 };
+
+/**
+ * @param {THREE.Vector3=} radius
+ */
+export function createDebugMesh(radius = new THREE.Vector3(1, 1, 1)) {
+    const geometry = new THREE.BoxGeometry(
+        radius.x * 2,
+        radius.y * 2,
+        radius.z * 2
+    );
+    const geo = new THREE.WireframeGeometry(geometry);
+    const mat = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        linewidth: 2
+    });
+    return new THREE.LineSegments(geo, mat);
+}
