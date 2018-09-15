@@ -25,6 +25,17 @@ export class VelocityComponent extends THREE.Vector3 {
     constructor() {
         super(0, 0, 0);
     }
+
+    /**
+     * @param {number} delta
+     */
+    getForceVector(delta) {
+        return new THREE.Vector3(
+            this.x * delta,
+            this.y * delta,
+            this.z * delta
+        );
+    }
 }
 
 export class JetpackComponent {

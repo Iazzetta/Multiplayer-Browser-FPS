@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { State } from "./state";
 import { Action } from "./actions";
 import { Entity } from "./entities";
@@ -162,28 +163,39 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function physicsSystem(entity, state, dispatch) {
-    const { object3D, velocity } = entity;
+    if (entity.object3D && entity.velocity) {
+        const velocity = entity.velocity.getForceVector(state.time.delta);
 
-    if (object3D && velocity) {
-        // Apply velocity
-        object3D.position.x += velocity.x * state.time.delta;
-        object3D.position.z += velocity.z * state.time.delta;
-        object3D.position.y += velocity.y * state.time.delta;
+        {
+            // Resolve X-axis
+            entity.object3D.position.x += velocity.x;
+            const aabb1 = entity.object3D.getAABB();
+            state.forEachWallEntity(wall => {
+                const aabb2 = wall.object3D.getAABB();
+                if (AABB.collision(aabb1, aabb2)) {
+                    entity.object3D.position.x -= velocity.x;
+                    entity.velocity.x = 0;
+                }
+            });
+        }
 
-        // Wall collision
-        state.forEachWallEntity(wall => {
-            const aabb1 = object3D.getAABB();
-            const aabb2 = wall.object3D.getAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                object3D.position.x -= velocity.x * state.time.delta;
-                object3D.position.z -= velocity.z * state.time.delta;
-                object3D.position.y -= velocity.y * state.time.delta;
-            }
-        });
+        {
+            // Resolve Z-axis
+            entity.object3D.position.z += velocity.z;
+            const aabb1 = entity.object3D.getAABB();
+            state.forEachWallEntity(wall => {
+                const aabb2 = wall.object3D.getAABB();
+                if (AABB.collision(aabb1, aabb2)) {
+                    entity.object3D.position.z -= velocity.z;
+                    entity.velocity.z = 0;
+                }
+            });
+        }
 
         // Floor collision
-        if (object3D.position.y <= 0 && velocity.y <= 0) {
-            object3D.position.y = 0;
+        entity.object3D.position.y += velocity.y;
+        if (entity.object3D.position.y < 0 && velocity.y <= 0) {
+            entity.object3D.position.y = 0;
             velocity.y = 0;
         }
     }
