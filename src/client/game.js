@@ -138,15 +138,26 @@ export class Game extends BaseGame {
                     const bullet = new Bullet(bulletId, this.state.assets);
                     bullet.damage.creatorId = player.id;
 
-                    bullet.object3D.position.x = player.object3D.position.x;
-                    bullet.object3D.position.y = player.object3D.position.y;
-                    bullet.object3D.position.z = player.object3D.position.z;
-
+                    // Set velocity
                     const bulletSpeed = 0.05;
                     const direction = player.head.getFacingDirection();
                     bullet.velocity.z = direction.z * bulletSpeed;
                     bullet.velocity.x = direction.x * bulletSpeed;
                     bullet.velocity.y = direction.y * bulletSpeed;
+
+                    // Set position
+                    const playerAABB = player.object3D.getAABB();
+                    bullet.object3D.position.x = player.object3D.position.x;
+                    bullet.object3D.position.y = playerAABB.max.y - 0.5;
+                    bullet.object3D.position.z = player.object3D.position.z;
+
+                    // Offset infrotn of camera
+                    const DIST = 1.25;
+                    const offset = new THREE.Vector3();
+                    offset.copy(bullet.velocity);
+                    offset.normalize();
+                    offset.multiply(new THREE.Vector3(DIST, DIST, DIST));
+                    bullet.object3D.position.add(offset);
 
                     this.state.addEntity(bullet);
                 }
