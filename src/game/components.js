@@ -21,11 +21,9 @@ export class ControllerComponent {
     }
 }
 
-export class VelocityComponent {
+export class VelocityComponent extends THREE.Vector3 {
     constructor() {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
+        super(0, 0, 0);
     }
 }
 
