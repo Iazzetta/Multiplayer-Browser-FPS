@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
 import { Player, Wall } from "./entities";
+import { toRadians } from "./utils.js";
 
 /**
  * @param {State} state
@@ -19,6 +20,28 @@ export function dispatch(state, action) {
             // Tile size radius
             const RADIUS = new THREE.Vector3(4, 4, 4);
 
+            {
+                // Add floor
+
+                const rows = state.level.tiles.length;
+                const cols = state.level.tiles[0].length;
+
+                const geometry = new THREE.PlaneGeometry(1, 1);
+                const material = new THREE.MeshLambertMaterial({
+                    color: 0xffff00,
+                    side: THREE.DoubleSide
+                });
+                const plane = new THREE.Mesh(geometry, material);
+                plane.rotation.x = toRadians(90);
+                plane.position.set(cols * RADIUS.x, 0, rows * RADIUS.z);
+                plane.scale.set(
+                    rows * RADIUS.x * 2,
+                    rows * RADIUS.y * 2,
+                    rows * RADIUS.z * 2
+                );
+                state.scene.add(plane);
+            }
+
             // Add walls
             for (let r = 0; r < state.level.tiles.length; r++) {
                 const row = state.level.tiles[r];
@@ -26,7 +49,7 @@ export function dispatch(state, action) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("wall_tile");
-                        mesh.visible = false;
+                        // mesh.visible = false;
                         mesh.scale.set(
                             RADIUS.x * 2,
                             RADIUS.y * 2,
