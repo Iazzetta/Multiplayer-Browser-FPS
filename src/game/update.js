@@ -188,8 +188,10 @@ export function physicsSystem(entity, state, dispatch) {
         // Resolve Y-axis
         entity.object3D.position.y += velocity.y;
         if (entity.collider) {
-            if (entity.object3D.position.y < 0 && velocity.y <= 0) {
-                entity.object3D.position.y = 0;
+            // Floor collision
+            const floor = 0 + entity.object3D.radius.y;
+            if (entity.object3D.position.y < floor && velocity.y <= 0) {
+                entity.object3D.position.y = floor;
                 entity.velocity.y = 0;
                 entity.collider.floor = true;
             }
