@@ -28,11 +28,6 @@ export class Entity {
         this.gravity = false;
 
         /**
-         * @type {boolean}
-         */
-        this.platform = false;
-
-        /**
          * @type {Object3DComponent}
          */
         this.object3D = undefined;
@@ -108,14 +103,13 @@ export class Bullet extends Entity {
     }
 }
 
-export class Platform extends Entity {
+export class Wall extends Entity {
     /**
      * @param {string} id
      * @param {THREE.Mesh} mesh
      */
     constructor(id, mesh) {
         super(id);
-        this.platform = true;
         this.object3D = new Object3DComponent(mesh);
     }
 }

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Player, Entity, Platform } from "./entities.js";
+import { Player, Entity, Wall } from "./entities.js";
 import { Assets } from "./assets.js";
 import memoize from "lodash/memoize";
 
@@ -35,15 +35,6 @@ export class State {
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
-
-        /**
-         * @returns {Platform[]}
-         */
-        this.platforms = memoize(() => {
-            return Array.from(this.entities)
-                .map(pair => pair[1])
-                .filter(entity => entity.platform);
-        });
 
         this.level = {
             tiles: [
@@ -100,18 +91,18 @@ export class State {
     }
 
     /**
-     * @param {(tile:Platform)=>any} f
+     * @param {(tile:Wall)=>any} f
      */
-    forEachPlatformEntity(f) {
+    forEachWallEntity(f) {
         const tiles = this.level.tiles;
         for (let r = 0; r < tiles.length; r++) {
             const row = tiles[r];
             for (let c = 0; c < row.length; c++) {
                 const tileId = row[c];
                 if (tileId > 0) {
-                    const platformId = ["tile", r, c].join("-");
-                    const platform = this.getEntity(platformId);
-                    f(platform);
+                    const wallId = ["wall", r, c].join("-");
+                    const wall = this.getEntity(wallId);
+                    f(wall);
                 }
             }
         }

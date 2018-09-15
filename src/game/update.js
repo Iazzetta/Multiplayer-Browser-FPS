@@ -1,7 +1,6 @@
 import { State } from "./state";
 import { Action } from "./actions";
 import { Entity } from "./entities";
-import { platform } from "os";
 import { AABB } from "./utils";
 
 /**
@@ -172,9 +171,9 @@ export function physicsSystem(entity, state, dispatch) {
         object3D.position.y += velocity.y * state.time.delta;
 
         // Wall collision
-        state.forEachPlatformEntity(platform => {
+        state.forEachWallEntity(wall => {
             const aabb1 = object3D.getAABB();
-            const aabb2 = platform.object3D.getAABB();
+            const aabb2 = wall.object3D.getAABB();
             if (AABB.collision(aabb1, aabb2)) {
                 object3D.position.x -= velocity.x * state.time.delta;
                 object3D.position.z -= velocity.z * state.time.delta;

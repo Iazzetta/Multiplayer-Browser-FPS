@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player, Platform } from "./entities";
+import { Player, Wall } from "./entities";
 
 /**
  * @param {State} state
@@ -16,7 +16,7 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerIds = playerIds;
 
-            // Add platforms
+            // Add walls
             const TILE_SIZE = 8;
             for (let r = 0; r < state.level.tiles.length; r++) {
                 const row = state.level.tiles[r];
@@ -24,16 +24,16 @@ export function dispatch(state, action) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("tile");
-                        const platformId = ["tile", r, c].join("-");
-                        const platform = new Platform(platformId, mesh);
-                        platform.object3D.scale.z = TILE_SIZE;
-                        platform.object3D.scale.x = TILE_SIZE;
-                        platform.object3D.scale.y = TILE_SIZE;
-                        platform.object3D.position.z = r * TILE_SIZE;
-                        platform.object3D.position.x = c * TILE_SIZE;
-                        platform.object3D.position.y = TILE_SIZE / 2;
+                        const wallId = ["wall", r, c].join("-");
+                        const wall = new Wall(wallId, mesh);
+                        wall.object3D.scale.z = TILE_SIZE;
+                        wall.object3D.scale.x = TILE_SIZE;
+                        wall.object3D.scale.y = TILE_SIZE;
+                        wall.object3D.position.z = r * TILE_SIZE;
+                        wall.object3D.position.x = c * TILE_SIZE;
+                        wall.object3D.position.y = TILE_SIZE / 2;
 
-                        state.addEntity(platform);
+                        state.addEntity(wall);
                     }
                 }
             }
