@@ -1,6 +1,11 @@
 import * as THREE from "three";
 
-export const REQUIRED_ASSETS = ["map1", "player_head", "player_body"];
+export const REQUIRED_ASSETS = [
+    "map1",
+    "player_head",
+    "player_body",
+    "wall_tile"
+];
 
 export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
     new THREE.BoxGeometry(1, 1, 1),

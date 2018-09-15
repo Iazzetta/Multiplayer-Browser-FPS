@@ -7,11 +7,13 @@ OBJLoader(THREE);
 // @ts-ignore
 import map1 from "../assets/map1.obj";
 // @ts-ignore
+import wall_tile from "../assets/wall_tile.obj";
+// @ts-ignore
 import player_head from "../assets/player_head.obj";
 // @ts-ignore
 import player_body from "../assets/player_body.obj";
 
-export const ASSET_PATHS = { map1, player_head, player_body };
+export const ASSET_PATHS = { map1, wall_tile, player_head, player_body };
 
 /**
  * @returns {Promise<Assets>}

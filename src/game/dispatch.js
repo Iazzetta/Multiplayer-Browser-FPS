@@ -23,7 +23,7 @@ export function dispatch(state, action) {
                 for (let c = 0; c < row.length; c++) {
                     const tileId = row[c];
                     if (tileId > 0) {
-                        const mesh = state.assets.mesh("tile");
+                        const mesh = state.assets.mesh("wall_tile");
                         const wallId = ["wall", r, c].join("-");
                         const wall = new Wall(wallId, mesh);
                         wall.object3D.scale.z = TILE_SIZE;
