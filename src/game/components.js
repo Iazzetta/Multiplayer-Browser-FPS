@@ -67,9 +67,12 @@ export class DamageComponent {
 }
 
 export class Object3DComponent extends THREE.Object3D {
-    constructor() {
+    /**
+     * @param {THREE.Vector3} radius
+     */
+    constructor(radius = new THREE.Vector3(1, 1, 1)) {
         super();
-        this.radius = new THREE.Vector3(1, 1, 1);
+        this.radius = radius;
         if (DEBUG) {
             this.add(createDebugMesh(this.radius));
         }

@@ -99,7 +99,7 @@ export class Player extends Entity {
         this.head.add(assets.mesh("player_head"));
 
         this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("player_body"))
+        this.object3D.add(assets.mesh("player_body"));
         this.object3D.add(this.head);
     }
 }
@@ -115,7 +115,8 @@ export class Bullet extends Entity {
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent(assets.mesh("player_head"));
+        this.object3D = new Object3DComponent();
+        this.object3D.add(assets.mesh("player_head"));
     }
 }
 
@@ -127,6 +128,7 @@ export class Wall extends Entity {
     constructor(id, mesh) {
         super(id);
         this.flags = ["wall"];
-        this.object3D = new Object3DComponent(mesh);
+        this.object3D = new Object3DComponent();
+        this.object3D.add(mesh);
     }
 }
