@@ -134,7 +134,7 @@ export function controllerSystem(entity, state, dispatch) {
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
             } else {
                 // Normal jump
-                if (entity.collider && entity.collider.floor) {
+                if (entity.collider && entity.collider.bottom()) {
                     velocity.y = 0.05;
                 }
             }
@@ -179,7 +179,7 @@ export function physicsSystem(entity, state, dispatch) {
 
         // Reset collider
         if (entity.collider) {
-            entity.collider.floor = false;
+            entity.collider.set(0, 0, 0);
         }
 
         // Resolve Y-axis
@@ -190,7 +190,7 @@ export function physicsSystem(entity, state, dispatch) {
             if (entity.object3D.position.y < floor && velocity.y <= 0) {
                 entity.object3D.position.y = floor;
                 entity.velocity.y = 0;
-                entity.collider.floor = true;
+                entity.collider.y = 1;
             }
 
             walls.forEach(wall => {
@@ -204,7 +204,10 @@ export function physicsSystem(entity, state, dispatch) {
                         aabb2.max.y
                     );
                     entity.velocity.y = 0;
-                    entity.collider.floor = true;
+                    entity.collider.y =
+                        entity.object3D.position.y < wall.object3D.position.y
+                            ? -1
+                            : 1;
                 }
             });
         }
@@ -223,6 +226,10 @@ export function physicsSystem(entity, state, dispatch) {
                         aabb2.max.x
                     );
                     entity.velocity.x = 0;
+                    entity.collider.x =
+                        entity.object3D.position.x < wall.object3D.position.x
+                            ? -1
+                            : 1;
                 }
             });
         }
@@ -241,6 +248,10 @@ export function physicsSystem(entity, state, dispatch) {
                         aabb2.max.z
                     );
                     entity.velocity.z = 0;
+                    entity.collider.z =
+                        entity.object3D.position.z < wall.object3D.position.z
+                            ? -1
+                            : 1;
                 }
             });
         }

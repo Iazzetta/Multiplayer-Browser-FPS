@@ -39,9 +39,27 @@ export class VelocityComponent extends THREE.Vector3 {
     }
 }
 
-export class ColliderComponent {
+export class ColliderComponent extends THREE.Vector3 {
     constructor() {
-        this.floor = true;
+        super();
+        /**
+         * @type {-1 | 0 | 1}
+         */
+        this.x = 0;
+
+        /**
+         * @type {-1 | 0 | 1}
+         */
+        this.y = 0;
+
+        /**
+         * @type {-1 | 0 | 1}
+         */
+        this.z = 0;
+    }
+
+    bottom() {
+        return this.y === 1;
     }
 }
 
