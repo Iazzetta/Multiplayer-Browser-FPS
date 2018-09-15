@@ -72,6 +72,19 @@ export class Object3DComponent extends THREE.Object3D {
         super();
         this.mesh = mesh;
         this.add(this.mesh);
+
+        // Debug
+        const debug = true;
+        if (debug) {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const geo = new THREE.WireframeGeometry(geometry); // or WireframeGeometry( geometry )
+            const mat = new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            });
+            const wireframe = new THREE.LineSegments(geo, mat);
+            this.add(wireframe);
+        }
     }
 
     getAABB() {
