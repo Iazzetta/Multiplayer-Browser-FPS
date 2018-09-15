@@ -117,8 +117,8 @@ export class Bullet extends Entity {
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("player_head"));
+        this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 0.5, 0.5));
+        this.object3D.add(assets.mesh("wall_tile"));
     }
 }
 
