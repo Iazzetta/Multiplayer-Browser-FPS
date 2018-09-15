@@ -16,8 +16,10 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerIds = playerIds;
 
+            // Tile size radius
+            const RADIUS = new THREE.Vector3(4, 4, 4);
+
             // Add walls
-            const TILE_SIZE = 8;
             for (let r = 0; r < state.level.tiles.length; r++) {
                 const row = state.level.tiles[r];
                 for (let c = 0; c < row.length; c++) {
@@ -25,13 +27,17 @@ export function dispatch(state, action) {
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("wall_tile");
                         mesh.visible = false;
-                        mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        mesh.scale.set(
+                            RADIUS.x * 2,
+                            RADIUS.y * 2,
+                            RADIUS.y * 2
+                        );
 
                         const wallId = ["wall", r, c].join("-");
-                        const wall = new Wall(wallId, mesh);
-                        wall.object3D.position.z = r * TILE_SIZE;
-                        wall.object3D.position.x = c * TILE_SIZE;
-                        wall.object3D.position.y = TILE_SIZE / 2;
+                        const wall = new Wall(wallId, RADIUS, mesh);
+                        wall.object3D.position.z = r * RADIUS.x * 2;
+                        wall.object3D.position.x = c * RADIUS.x * 2;
+                        wall.object3D.position.y = RADIUS.y;
 
                         state.addEntity(wall);
                     }
@@ -41,7 +47,7 @@ export function dispatch(state, action) {
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId, state.assets);
-                player.object3D.position.set(2 * TILE_SIZE, 0, 2 * TILE_SIZE);
+                player.object3D.position.set(2 * RADIUS.x, 0, 2 * RADIUS.x);
                 state.addEntity(player);
             });
 

@@ -123,12 +123,13 @@ export class Bullet extends Entity {
 export class Wall extends Entity {
     /**
      * @param {string} id
+     * @param {THREE.Vector3} radius
      * @param {THREE.Mesh} mesh
      */
-    constructor(id, mesh) {
+    constructor(id, radius, mesh) {
         super(id);
         this.flags = ["wall"];
-        this.object3D = new Object3DComponent();
+        this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
     }
 }
