@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player, Wall } from "./entities";
+import { Player, Bullet, Wall } from "./entities";
 import { toRadians } from "./utils.js";
 
 /**
@@ -121,6 +121,39 @@ export function dispatch(state, action) {
             if (object3D && head) {
                 object3D.rotation.y = ver;
                 head.rotation.x = hor;
+            }
+            return state;
+        }
+        case "SHOOT_BULLET": {
+            const { playerId } = action.data;
+            const player = state.getEntity(playerId);
+            if (player.object3D && player.head) {
+                const bulletId = playerId + Date.now().toString(16);
+                const bullet = new Bullet(bulletId, state.assets);
+                bullet.damage.creatorId = player.id;
+
+                // Set velocity
+                const bulletSpeed = 0.05;
+                const direction = player.head.getFacingDirection();
+                bullet.velocity.z = direction.z * bulletSpeed;
+                bullet.velocity.x = direction.x * bulletSpeed;
+                bullet.velocity.y = direction.y * bulletSpeed;
+
+                // Set position
+                const playerAABB = player.object3D.getAABB();
+                bullet.object3D.position.x = player.object3D.position.x;
+                bullet.object3D.position.y = playerAABB.max.y - 0.5;
+                bullet.object3D.position.z = player.object3D.position.z;
+
+                // Offset infrotn of camera
+                const DIST = 1.25;
+                const offset = new THREE.Vector3();
+                offset.copy(bullet.velocity);
+                offset.normalize();
+                offset.multiply(new THREE.Vector3(DIST, DIST, DIST));
+                bullet.object3D.position.add(offset);
+
+                state.addEntity(bullet);
             }
             return state;
         }

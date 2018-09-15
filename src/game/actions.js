@@ -41,3 +41,10 @@ export function setPlayerInput(playerId, input, value) {
 export function setPlayerAim(playerId, ver, hor) {
     return new Action("SET_PLAYER_AIM", { playerId, ver, hor });
 }
+
+/**
+ * @param {string} playerId
+ */
+export function shootBullet(playerId) {
+    return new Action("SHOOT_BULLET", { playerId });
+}
