@@ -93,8 +93,10 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function damageSystem(bullet, state, dispatch) {
-    if (bullet.object3D && bullet.damage) {
+    if (bullet.damage && bullet.collider && bullet.object3D) {
         const players = state.getEntityGroup("player");
+
+        // Hit player
         players.forEach(player => {
             if (player.object3D && player.health) {
                 if (player === bullet) return;
@@ -104,14 +106,19 @@ export function damageSystem(bullet, state, dispatch) {
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
+                    bullet.collider.x = 1;
                     player.health.hp -= bullet.damage.dmg;
-                    state.deleteEntity(bullet.id);
                     if (player.health.hp <= 0) {
                         state.deleteEntity(player.id);
                     }
                 }
             }
         });
+
+        // Die on wall collision
+        if (bullet.collider.any()) {
+            state.deleteEntity(bullet.id);
+        }
     }
 }
 

@@ -58,6 +58,10 @@ export class ColliderComponent extends THREE.Vector3 {
         this.z = 0;
     }
 
+    any() {
+        return this.x !== 0 || this.y !== 0 || this.z !== 0;
+    }
+
     bottom() {
         return this.y === 1;
     }
