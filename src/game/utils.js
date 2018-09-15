@@ -39,3 +39,17 @@ export function createDebugMesh(radius = new THREE.Vector3(1, 1, 1)) {
     });
     return new THREE.LineSegments(geo, mat);
 }
+
+/**
+ * @param {number} degrees
+ */
+export function toRadians(degrees) {
+    return (degrees * Math.PI) / 180;
+}
+
+/**
+ * @param {number} radians
+ */
+export function toDegrees(radians) {
+    return (radians * 180) / Math.PI;
+}
