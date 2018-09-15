@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { DEFAULT_BOX, DEFAULT_MATERIAL } from "./assets";
 import { AABB } from "./utils";
 
 export class DecayComponent {
