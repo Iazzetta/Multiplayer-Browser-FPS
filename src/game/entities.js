@@ -8,7 +8,8 @@ import {
     Object3DComponent,
     HeadComponent,
     DamageComponent,
-    HealthComponent
+    HealthComponent,
+    ColliderComponent
 } from "./components";
 
 export class Entity {
@@ -48,6 +49,11 @@ export class Entity {
         this.jetpack = undefined;
 
         /**
+         * @type {ColliderComponent}
+         */
+        this.collider = undefined;
+
+        /**
          * @type {ControllerComponent}
          */
         this.controller = undefined;
@@ -82,6 +88,7 @@ export class Player extends Entity {
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
         // this.jetpack = new JetpackComponent();
         this.object3D = new Object3DComponent(assets.mesh("player_body"));
         this.head = new HeadComponent(assets.mesh("player_head"));
@@ -99,6 +106,7 @@ export class Bullet extends Entity {
         this.decay = new DecayComponent(1000);
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
         this.object3D = new Object3DComponent(assets.mesh("player_head"));
     }
 }

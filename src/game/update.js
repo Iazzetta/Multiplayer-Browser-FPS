@@ -133,9 +133,13 @@ export function controllerSystem(entity, state, dispatch) {
         if (input.jump) {
             const { jetpack } = entity;
             if (jetpack && jetpack.fuel > 0) {
+                // Jetpacl
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else if (object3D.position.y <= 0) {
-                velocity.y = 0.05;
+            } else {
+                // Normal jump
+                if (entity.collider && entity.collider.floor) {
+                    velocity.y = 0.05;
+                }
             }
         }
 
@@ -175,59 +179,70 @@ export function physicsSystem(entity, state, dispatch) {
             }
         };
 
-        // Floor collision
-        entity.object3D.position.y += velocity.y;
-        if (entity.object3D.position.y < 0 && velocity.y <= 0) {
-            entity.object3D.position.y = 0;
-            velocity.y = 0;
+        // Reset collider
+        if (entity.collider) {
+            entity.collider.floor = false;
         }
 
         // Resolve Y-axis
         entity.object3D.position.y += velocity.y;
-        state.forEachWallEntity(wall => {
-            const aabb1 = entity.object3D.getAABB();
-            const aabb2 = wall.object3D.getAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                entity.object3D.position.y = resolveCollision(
-                    aabb1.min.y,
-                    aabb1.max.y,
-                    aabb2.min.y,
-                    aabb2.max.y
-                );
+        if (entity.collider) {
+            if (entity.object3D.position.y < 0 && velocity.y <= 0) {
+                entity.object3D.position.y = 0;
                 entity.velocity.y = 0;
+                entity.collider.floor = true;
             }
-        });
+
+            state.forEachWallEntity(wall => {
+                const aabb1 = entity.object3D.getAABB();
+                const aabb2 = wall.object3D.getAABB();
+                if (AABB.collision(aabb1, aabb2)) {
+                    entity.object3D.position.y = resolveCollision(
+                        aabb1.min.y,
+                        aabb1.max.y,
+                        aabb2.min.y,
+                        aabb2.max.y
+                    );
+                    entity.velocity.y = 0;
+                    entity.collider.floor = true;
+                }
+            });
+        }
 
         // Resolve X-axis
         entity.object3D.position.x += velocity.x;
-        state.forEachWallEntity(wall => {
-            const aabb1 = entity.object3D.getAABB();
-            const aabb2 = wall.object3D.getAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                entity.object3D.position.x = resolveCollision(
-                    aabb1.min.x,
-                    aabb1.max.x,
-                    aabb2.min.x,
-                    aabb2.max.x
-                );
-                entity.velocity.x = 0;
-            }
-        });
+        if (entity.collider) {
+            state.forEachWallEntity(wall => {
+                const aabb1 = entity.object3D.getAABB();
+                const aabb2 = wall.object3D.getAABB();
+                if (AABB.collision(aabb1, aabb2)) {
+                    entity.object3D.position.x = resolveCollision(
+                        aabb1.min.x,
+                        aabb1.max.x,
+                        aabb2.min.x,
+                        aabb2.max.x
+                    );
+                    entity.velocity.x = 0;
+                }
+            });
+        }
 
         // Resolve Z-axis
         entity.object3D.position.z += velocity.z;
-        state.forEachWallEntity(wall => {
-            const aabb1 = entity.object3D.getAABB();
-            const aabb2 = wall.object3D.getAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                entity.object3D.position.z = resolveCollision(
-                    aabb1.min.z,
-                    aabb1.max.z,
-                    aabb2.min.z,
-                    aabb2.max.z
-                );
-                entity.velocity.z = 0;
-            }
-        });
+        if (entity.collider) {
+            state.forEachWallEntity(wall => {
+                const aabb1 = entity.object3D.getAABB();
+                const aabb2 = wall.object3D.getAABB();
+                if (AABB.collision(aabb1, aabb2)) {
+                    entity.object3D.position.z = resolveCollision(
+                        aabb1.min.z,
+                        aabb1.max.z,
+                        aabb2.min.z,
+                        aabb2.max.z
+                    );
+                    entity.velocity.z = 0;
+                }
+            });
+        }
     }
 }

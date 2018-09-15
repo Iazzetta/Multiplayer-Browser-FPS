@@ -38,6 +38,12 @@ export class VelocityComponent extends THREE.Vector3 {
     }
 }
 
+export class ColliderComponent {
+    constructor() {
+        this.floor = true;
+    }
+}
+
 export class JetpackComponent {
     constructor() {
         this.maxFuel = 2000;
