@@ -106,6 +106,9 @@ export function damageSystem(bullet, state, dispatch) {
                 if (AABB.collision(bulletAABB, playerAABB)) {
                     player.health.hp -= bullet.damage.dmg;
                     state.deleteEntity(bullet.id);
+                    if (player.health.hp <= 0) {
+                        state.deleteEntity(player.id);
+                    }
                 }
             }
         });
