@@ -70,13 +70,18 @@ export class Object3DComponent extends THREE.Object3D {
      */
     constructor(mesh) {
         super();
+        this.radius = new THREE.Vector3(1, 1, 1);
         this.mesh = mesh;
         this.add(this.mesh);
 
         // Debug
         const debug = true;
         if (debug) {
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const geometry = new THREE.BoxGeometry(
+                this.radius.x * 2,
+                this.radius.y * 2,
+                this.radius.z * 2
+            );
             const geo = new THREE.WireframeGeometry(geometry); // or WireframeGeometry( geometry )
             const mat = new THREE.LineBasicMaterial({
                 color: 0xffffff,
@@ -90,14 +95,14 @@ export class Object3DComponent extends THREE.Object3D {
     getAABB() {
         return new AABB(
             new THREE.Vector3(
-                this.position.x - this.scale.x * 0.5,
-                this.position.y - this.scale.y * 0.5,
-                this.position.z - this.scale.z * 0.5
+                this.position.x - this.radius.x,
+                this.position.y - this.radius.y,
+                this.position.z - this.radius.z
             ),
             new THREE.Vector3(
-                this.position.x + this.scale.x * 0.5,
-                this.position.y + this.scale.y * 0.5,
-                this.position.z + this.scale.z * 0.5
+                this.position.x + this.radius.x,
+                this.position.y + this.radius.y,
+                this.position.z + this.radius.z
             )
         );
     }

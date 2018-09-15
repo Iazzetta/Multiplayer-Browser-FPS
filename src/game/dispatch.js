@@ -24,11 +24,11 @@ export function dispatch(state, action) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("wall_tile");
+                        mesh.visible = false;
+                        mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
                         const wallId = ["wall", r, c].join("-");
                         const wall = new Wall(wallId, mesh);
-                        wall.object3D.scale.z = TILE_SIZE;
-                        wall.object3D.scale.x = TILE_SIZE;
-                        wall.object3D.scale.y = TILE_SIZE;
                         wall.object3D.position.z = r * TILE_SIZE;
                         wall.object3D.position.x = c * TILE_SIZE;
                         wall.object3D.position.y = TILE_SIZE / 2;
