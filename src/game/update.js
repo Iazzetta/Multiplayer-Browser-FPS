@@ -135,7 +135,7 @@ export function controllerSystem(entity, state, dispatch) {
             if (jetpack && jetpack.fuel > 0) {
                 velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
             } else if (object3D.position.y <= 0) {
-                velocity.y = 0.01;
+                velocity.y = 0.05;
             }
         }
 
