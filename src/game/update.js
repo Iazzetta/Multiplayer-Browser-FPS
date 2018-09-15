@@ -88,7 +88,7 @@ export function jetpackFuelSystem(entity, state, dispatch) {
 }
 
 /**
- * @param {Entity} entity
+ * @param {Entity} bullet
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
