@@ -65,14 +65,9 @@ export class DamageComponent {
 }
 
 export class Object3DComponent extends THREE.Object3D {
-    /**
-     * @param {THREE.Mesh} mesh
-     */
-    constructor(mesh) {
+    constructor() {
         super();
         this.radius = new THREE.Vector3(1, 1, 1);
-        this.mesh = mesh;
-        this.add(this.mesh);
 
         // Debug
         const debug = true;
@@ -109,15 +104,10 @@ export class Object3DComponent extends THREE.Object3D {
 }
 
 export class HeadComponent extends THREE.Object3D {
-    /**
-     * @param {THREE.Mesh} mesh
-     */
-    constructor(mesh) {
+    constructor() {
         super();
         this.position.y = 2;
         this.position.z = 0;
-        this.mesh = mesh;
-        this.add(mesh);
     }
 
     getFacingDirection() {

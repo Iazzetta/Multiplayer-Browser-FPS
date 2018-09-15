@@ -94,8 +94,12 @@ export class Player extends Entity {
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent(assets.mesh("player_body"));
-        this.head = new HeadComponent(assets.mesh("player_head"));
+
+        this.head = new HeadComponent();
+        this.head.add(assets.mesh("player_head"));
+
+        this.object3D = new Object3DComponent();
+        this.object3D.add(assets.mesh("player_body"))
         this.object3D.add(this.head);
     }
 }
