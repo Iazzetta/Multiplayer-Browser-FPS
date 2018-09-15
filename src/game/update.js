@@ -92,26 +92,20 @@ export function jetpackFuelSystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function damageSystem(entity, state, dispatch) {
-    const { object3D, damage } = entity;
-    if (object3D && damage) {
-        state.entities.forEach(target => {
-            if (target.object3D && target.health) {
-                if (target === entity) return;
-                if (target.health.hp <= 0) return;
-                if (target.id === entity.damage.creatorId) return;
+export function damageSystem(bullet, state, dispatch) {
+    if (bullet.object3D && bullet.damage) {
+        const players = state.getEntityGroup("player");
+        players.forEach(player => {
+            if (player.object3D && player.health) {
+                if (player === bullet) return;
+                if (player.health.hp <= 0) return;
+                if (player.id === bullet.damage.creatorId) return;
 
-                // Check collision
-                const deltaX = object3D.position.x - target.object3D.position.x;
-                const deltaY = object3D.position.y - target.object3D.position.y;
-                const deltaZ = object3D.position.z - target.object3D.position.z;
-                const distance = Math.sqrt(
-                    deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
-                );
-
-                if (distance < 0.5) {
-                    target.health.hp -= entity.damage.dmg;
-                    state.deleteEntity(entity.id);
+                const playerAABB = player.object3D.getAABB();
+                const bulletAABB = bullet.object3D.getAABB();
+                if (AABB.collision(bulletAABB, playerAABB)) {
+                    player.health.hp -= bullet.damage.dmg;
+                    state.deleteEntity(bullet.id);
                 }
             }
         });

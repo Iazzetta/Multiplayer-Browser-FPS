@@ -89,6 +89,7 @@ export class Player extends Entity {
      */
     constructor(id, assets) {
         super(id);
+        this.flags = ["player"];
         this.gravity = true;
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
