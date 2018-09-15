@@ -8,6 +8,7 @@ OBJLoader(THREE);
 
 export const ASSET_PATHS = {
     map1: path.resolve(__dirname, "../assets/map1.obj"),
+    wall_tile: path.resolve(__dirname, "../assets/wall_tile.obj"),
     player_head: path.resolve(__dirname, "../assets/player_head.obj"),
     player_body: path.resolve(__dirname, "../assets/player_head.obj")
 };
