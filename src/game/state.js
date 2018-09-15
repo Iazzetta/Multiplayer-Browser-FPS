@@ -27,9 +27,14 @@ export class State {
         this.playerIds = [];
 
         /**
-         * @type {Map<string,Player>}
+         * @type {Map<string,Entity>}
          */
         this.entities = new Map();
+
+        /**
+         * @type {Map<string,Entity[]>}
+         */
+        this.entityGroups = new Map();
 
         /**
          * @type {THREE.PerspectiveCamera}
@@ -68,6 +73,11 @@ export class State {
         if (entity.object3D) {
             this.scene.add(entity.object3D);
         }
+        for (let i = 0; i < entity.flags.length; i++) {
+            const flag = entity.flags[i];
+            const flaggedEntities = this.getEntityGroup(flag);
+            flaggedEntities.push(entity);
+        }
         this.entities.set(entity.id, entity);
     }
 
@@ -80,6 +90,16 @@ export class State {
     }
 
     /**
+     * @param {string} flag
+     */
+    getEntityGroup(flag) {
+        if (!this.entityGroups.has(flag)) {
+            this.entityGroups.set(flag, []);
+        }
+        return this.entityGroups.get(flag);
+    }
+
+    /**
      * @param {string} id
      */
     deleteEntity(id) {
@@ -87,24 +107,12 @@ export class State {
         if (entity.object3D) {
             this.scene.remove(entity.object3D);
         }
-        this.entities.delete(id);
-    }
-
-    /**
-     * @param {(tile:Wall)=>any} f
-     */
-    forEachWallEntity(f) {
-        const tiles = this.level.tiles;
-        for (let r = 0; r < tiles.length; r++) {
-            const row = tiles[r];
-            for (let c = 0; c < row.length; c++) {
-                const tileId = row[c];
-                if (tileId > 0) {
-                    const wallId = ["wall", r, c].join("-");
-                    const wall = this.getEntity(wallId);
-                    f(wall);
-                }
-            }
+        for (let i = 0; i < entity.flags.length; i++) {
+            const flag = entity.flags[i];
+            const flaggedEntities = this.getEntityGroup(flag);
+            const index = flaggedEntities.indexOf(entity);
+            flaggedEntities.splice(index, 1);
         }
+        this.entities.delete(id);
     }
 }

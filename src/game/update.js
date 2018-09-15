@@ -168,6 +168,7 @@ export function controllerSystem(entity, state, dispatch) {
  */
 export function physicsSystem(entity, state, dispatch) {
     if (entity.object3D && entity.velocity) {
+        const walls = state.getEntityGroup("wall");
         const velocity = entity.velocity.getForceVector(state.time.delta);
 
         const resolveCollision = (entityMin, entityMax, wallMin, wallMax) => {
@@ -193,7 +194,7 @@ export function physicsSystem(entity, state, dispatch) {
                 entity.collider.floor = true;
             }
 
-            state.forEachWallEntity(wall => {
+            walls.forEach(wall => {
                 const aabb1 = entity.object3D.getAABB();
                 const aabb2 = wall.object3D.getAABB();
                 if (AABB.collision(aabb1, aabb2)) {
@@ -212,7 +213,7 @@ export function physicsSystem(entity, state, dispatch) {
         // Resolve X-axis
         entity.object3D.position.x += velocity.x;
         if (entity.collider) {
-            state.forEachWallEntity(wall => {
+            walls.forEach(wall => {
                 const aabb1 = entity.object3D.getAABB();
                 const aabb2 = wall.object3D.getAABB();
                 if (AABB.collision(aabb1, aabb2)) {
@@ -230,7 +231,7 @@ export function physicsSystem(entity, state, dispatch) {
         // Resolve Z-axis
         entity.object3D.position.z += velocity.z;
         if (entity.collider) {
-            state.forEachWallEntity(wall => {
+            walls.forEach(wall => {
                 const aabb1 = entity.object3D.getAABB();
                 const aabb2 = wall.object3D.getAABB();
                 if (AABB.collision(aabb1, aabb2)) {

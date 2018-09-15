@@ -24,6 +24,11 @@ export class Entity {
         this.id = id;
 
         /**
+         * @type {string[]}
+         */
+        this.flags = [];
+
+        /**
          * @type {boolean}
          */
         this.gravity = false;
@@ -118,6 +123,7 @@ export class Wall extends Entity {
      */
     constructor(id, mesh) {
         super(id);
+        this.flags = ["wall"];
         this.object3D = new Object3DComponent(mesh);
     }
 }
