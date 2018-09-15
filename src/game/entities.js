@@ -91,6 +91,7 @@ export class Player extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
+        this.jetpack = new JetpackComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();

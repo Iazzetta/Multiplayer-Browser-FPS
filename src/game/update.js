@@ -142,7 +142,7 @@ export function controllerSystem(entity, state, dispatch) {
             } else {
                 // Normal jump
                 if (entity.collider && entity.collider.bottom()) {
-                    velocity.y = 0.05;
+                    velocity.y = 0.02;
                 }
             }
         }
