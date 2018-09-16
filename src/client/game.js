@@ -6,11 +6,12 @@ import {
     setScreenSize,
     setPlayerInput,
     setPlayerAim,
-    Action,
-    shootBullet
+    Action
 } from "../game/actions.js";
 import clamp from "lodash/clamp";
-import { Bullet } from "../game/entities.js";
+
+// @ts-ignore
+import gunSpriteSrc from "../assets/player-fps-weapon.png";
 
 export class Game extends BaseGame {
     /**
@@ -38,6 +39,12 @@ export class Game extends BaseGame {
          * @type {CanvasRenderingContext2D}
          */
         this.ctx = null;
+
+        /**
+         * @type {HTMLImageElement}
+         */
+        this.gunSprite = new Image();
+        this.gunSprite.src = gunSpriteSrc;
 
         this.subscriptions.push(action => {
             switch (action.type) {
@@ -96,6 +103,7 @@ export class Game extends BaseGame {
         this.ctx = document.createElement("canvas").getContext("2d");
         this.hud.classList.add("hud");
 
+
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
         // Append to dom
@@ -111,6 +119,7 @@ export class Game extends BaseGame {
     initMouseInput() {
         const canvas = this.renderer.domElement;
 
+        // @ts-ignore
         canvas.addEventListener("click", ev => {
             if (document.pointerLockElement !== canvas) {
                 canvas.requestPointerLock();
@@ -130,6 +139,7 @@ export class Game extends BaseGame {
             }
         });
 
+        // @ts-ignore
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
@@ -138,6 +148,7 @@ export class Game extends BaseGame {
             }
         });
 
+        // @ts-ignore
         canvas.addEventListener("mouseup", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
@@ -178,6 +189,7 @@ export class Game extends BaseGame {
 
         Object.assign(this.hud, { width, height });
         Object.assign(this.ctx.canvas, { width, height });
+        this.ctx.imageSmoothingEnabled = false;
         this.renderer.setSize(width, height);
         this.dispatch(setScreenSize(width, height));
     }
@@ -190,6 +202,15 @@ export class Game extends BaseGame {
 
     renderHUD() {
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
+
+        // Gun
+        this.ctx.drawImage(
+            this.gunSprite,
+            this.hud.width - 384,
+            this.hud.height - 384,
+            384,
+            384
+        );
 
         // Fuel
         const { jetpack } = this.state.getEntity(this.playerId());
