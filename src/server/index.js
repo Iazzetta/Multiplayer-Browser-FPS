@@ -4,7 +4,6 @@ import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import debounce from "lodash/debounce";
 import { initGame } from "../game/actions";
-import { Assets } from "../game/assets";
 
 // HTTP Server
 //================================================================
