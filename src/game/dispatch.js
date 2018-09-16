@@ -128,6 +128,8 @@ export function dispatch(state, action) {
             const { playerId } = action.data;
             const player = state.getEntity(playerId);
             if (player.object3D && player.head) {
+
+                // Create bullet
                 const bulletId = playerId + Date.now().toString(16);
                 const bullet = new Bullet(bulletId, state.assets);
                 bullet.damage.creatorId = player.id;

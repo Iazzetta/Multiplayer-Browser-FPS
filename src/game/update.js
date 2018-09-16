@@ -178,7 +178,12 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.firerateTimer -= state.time.delta;
         }
 
-        if (controller.input.shoot && weapon.firerateTimer <= 0) {
+        if (
+            controller.input.shoot &&
+            weapon.firerateTimer <= 0 &&
+            weapon.ammoCount > 0
+        ) {
+            weapon.ammoCount = Math.max(weapon.ammoCount - 1, 0);
             weapon.firerateTimer = weapon.spec.firerate;
             dispatch(shootBullet(entity.id));
         }
