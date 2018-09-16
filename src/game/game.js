@@ -8,14 +8,11 @@ import { update } from "./update.js";
  * @typedef {(action:Action,state:State) => any} Subscription
  */
 export class Game {
-    /**
-     * @param {Assets} assets
-     */
-    constructor(assets) {
+    constructor() {
         /**
          * @type {State}
          */
-        this.state = new State(assets);
+        this.state = new State(new Assets());
 
         /**
          * @type {Subscription[]}

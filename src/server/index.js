@@ -3,7 +3,7 @@ import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import debounce from "lodash/debounce";
 import { initGame } from "../game/actions";
-import { loadAssets } from "./assets";
+import { Assets } from "../game/assets";
 
 // HTTP Server
 //================================================================
@@ -12,11 +12,11 @@ const app = express();
 const srv = app.listen(PORT);
 app.use("/", express.static(__dirname + "/../../dist"));
 
-// Game
-//================================================================
-loadAssets().then(assets => {
+{
+    // Game
+    //================================================================
     const io = SocketIO.listen(srv);
-    const game = new Game(assets);
+    const game = new Game();
 
     const dispatch = action => {
         game.dispatch(action);
@@ -45,4 +45,4 @@ loadAssets().then(assets => {
     setInterval(() => game.update(), 1000 / 60);
 
     console.log("Server running at http://localhost:" + PORT);
-});
+}

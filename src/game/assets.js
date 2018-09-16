@@ -1,11 +1,6 @@
 import * as THREE from "three";
-
-export const REQUIRED_ASSETS = [
-    "map1",
-    "player_head",
-    "player_body",
-    "wall_tile"
-];
+import OBJLoader from "three-obj-loader";
+OBJLoader(THREE);
 
 export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
     new THREE.BoxGeometry(1, 1, 1),
@@ -15,39 +10,68 @@ export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
 export class Assets {
     constructor() {
         /**
+         * @type {Map<string,HTMLImageElement>}
+         */
+        this.imgList = new Map();
+
+        /**
+         * @type {Promise<HTMLImageElement>[]}
+         */
+        this.imgPromiseList = [];
+
+        /**
          * @type {Map<string,THREE.Group>}
          */
-        this.list = new Map();
-    }
+        this.objList = new Map();
 
-    /**
-     * @param {Promise<[string,THREE.Group]>[]} loadAssets
-     * @returns {Promise<Assets>}
-     */
-    load(loadAssets) {
-        return Promise.all(loadAssets).then(data => {
-            this.list = new Map(data);
-            this.list.set(
-                "tile",
-                new THREE.Group().add(
-                    new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL)
-                )
-            );
-            REQUIRED_ASSETS.forEach(asset => {
-                if (!this.list.has(asset)) {
-                    throw new Error(`Asset ${asset} not loaded`);
-                }
-            });
-            return this;
-        });
+        /**
+         * @type {Promise<THREE.Group>[]}
+         */
+        this.objPromiseList = [];
+
+        /**
+         * @type {THREE.OBJLoader}
+         */
+        this.objLoader = new THREE.OBJLoader();
     }
 
     /**
      * @param {string} name
-     * @returns {THREE.Group}
+     * @param {string} src
      */
-    group(name) {
-        return this.list.get(name);
+    loadImg(name, src) {
+        this.imgPromiseList.push(
+            new Promise(resolve => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    this.imgList.set(name, img);
+                    resolve(img);
+                };
+            })
+        );
+    }
+
+    /**
+     * @param {string} name
+     * @param {string} src
+     */
+    loadObj(name, src) {
+        this.objPromiseList.push(
+            new Promise(resolve => {
+                this.objLoader.load(src, obj => {
+                    this.objList.set(name, obj);
+                    resolve(obj);
+                });
+            })
+        );
+    }
+
+    done() {
+        return Promise.all([
+            Promise.all(this.imgPromiseList),
+            Promise.all(this.objPromiseList)
+        ]);
     }
 
     /**
@@ -55,12 +79,13 @@ export class Assets {
      * @returns {THREE.Mesh}
      */
     mesh(name) {
-        const group = this.group(name);
+        const group = this.objList.get(name);
         if (group && group.children[0]) {
             const mesh = group.children[0];
             if (mesh instanceof THREE.Mesh) {
                 return new THREE.Mesh(mesh.geometry, mesh.material);
             }
         }
+        return new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL);
     }
 }
