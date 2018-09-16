@@ -9,9 +9,6 @@ import {
 } from "../game/actions.js";
 import clamp from "lodash/clamp";
 
-// @ts-ignore
-import gunSpriteSrc from "../assets/player-fps-weapon.png";
-
 export class Game extends BaseGame {
     constructor() {
         super();
@@ -35,12 +32,6 @@ export class Game extends BaseGame {
          * @type {CanvasRenderingContext2D}
          */
         this.ctx = null;
-
-        /**
-         * @type {HTMLImageElement}
-         */
-        this.gunSprite = new Image();
-        this.gunSprite.src = gunSpriteSrc;
 
         this.subscriptions.push(action => {
             switch (action.type) {
@@ -203,7 +194,7 @@ export class Game extends BaseGame {
         // Gun
         if (weapon) {
             this.ctx.drawImage(
-                this.gunSprite,
+                this.state.assets.sprite("gun_sprite"),
                 this.hud.width - 384,
                 this.hud.height - 384,
                 384,

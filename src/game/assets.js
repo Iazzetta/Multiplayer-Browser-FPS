@@ -2,11 +2,6 @@ import * as THREE from "three";
 import OBJLoader from "three-obj-loader";
 OBJLoader(THREE);
 
-export const [DEFAULT_BOX, DEFAULT_MATERIAL] = [
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshNormalMaterial()
-];
-
 export class Assets {
     constructor() {
         /**
@@ -33,6 +28,12 @@ export class Assets {
          * @type {THREE.OBJLoader}
          */
         this.objLoader = new THREE.OBJLoader();
+
+        this.fallback = {
+            image: new Image(),
+            geometry: new THREE.BoxGeometry(1, 1, 1),
+            material: new THREE.MeshNormalMaterial()
+        };
     }
 
     /**
@@ -75,6 +76,15 @@ export class Assets {
     }
 
     /**
+     *
+     * @param {string} name
+     * @returns {HTMLImageElement}
+     */
+    sprite(name) {
+        return this.imgList.get(name) || this.fallback.image;
+    }
+
+    /**
      * @param {string} name
      * @returns {THREE.Mesh}
      */
@@ -86,6 +96,6 @@ export class Assets {
                 return new THREE.Mesh(mesh.geometry, mesh.material);
             }
         }
-        return new THREE.Mesh(DEFAULT_BOX, DEFAULT_MATERIAL);
+        return new THREE.Mesh(this.fallback.geometry, this.fallback.material);
     }
 }
