@@ -17,7 +17,8 @@ export class ControllerComponent {
             left: false,
             back: false,
             right: false,
-            jump: false
+            jump: false,
+            shoot: false
         };
     }
 }
@@ -27,7 +28,7 @@ export class WeaponComponent {
         this.firerateTimer = 0;
         this.spec = {
             magazineSize: 30,
-            firerate: 500,
+            firerate: 100,
             realod: 5000
         };
     }

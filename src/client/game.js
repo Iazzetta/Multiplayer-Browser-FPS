@@ -133,7 +133,16 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId();
-                this.syncDispatch(shootBullet(playerId));
+                const action = setPlayerInput(playerId, "shoot", true);
+                this.syncDispatch(action);
+            }
+        });
+
+        canvas.addEventListener("mouseup", ev => {
+            if (document.pointerLockElement === canvas) {
+                const playerId = this.playerId();
+                const action = setPlayerInput(playerId, "shoot", false);
+                this.syncDispatch(action);
             }
         });
     }

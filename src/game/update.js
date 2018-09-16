@@ -172,13 +172,14 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    if (entity.weapon) {
-        if (entity.weapon.firerateTimer > 0) {
-            entity.weapon.firerateTimer -= state.time.delta;
+    const { weapon, controller } = entity;
+    if (weapon && controller) {
+        if (weapon.firerateTimer > 0) {
+            weapon.firerateTimer -= state.time.delta;
         }
 
-        if (entity.weapon.firerateTimer <= 0) {
-            entity.weapon.firerateTimer = entity.weapon.spec.firerate;
+        if (controller.input.shoot && weapon.firerateTimer <= 0) {
+            weapon.firerateTimer = weapon.spec.firerate;
             dispatch(shootBullet(entity.id));
         }
     }
