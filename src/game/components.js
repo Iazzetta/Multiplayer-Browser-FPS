@@ -143,6 +143,6 @@ export class HeadComponent extends THREE.Object3D {
         const direction = new THREE.Vector3(0, 0, -1);
         const matrix = new THREE.Matrix4();
         matrix.extractRotation(this.matrixWorld);
-        return matrix.multiplyVector3(direction);
+        return direction.applyMatrix4(matrix);
     }
 }
