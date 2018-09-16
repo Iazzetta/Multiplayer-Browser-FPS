@@ -98,7 +98,6 @@ export class Player extends Entity {
         this.flags = ["player"];
         this.gravity = true;
         this.weapon = new WeaponComponent();
-        this.jetpack = new JetpackComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
@@ -140,5 +139,18 @@ export class Wall extends Entity {
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
+    }
+}
+
+export class JetpackPickup extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     */
+    constructor(id, assets) {
+        super(id);
+        this.flags = ["pickup"];
+        this.jetpack = new JetpackComponent();
+        this.object3D = new Object3DComponent();
     }
 }

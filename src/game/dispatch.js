@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player, Bullet, Wall } from "./entities";
+import { Player, Bullet, Wall, JetpackPickup } from "./entities";
 import { toRadians } from "./utils.js";
 
 /**
@@ -74,6 +74,14 @@ export function dispatch(state, action) {
                 state.addEntity(player);
             });
 
+            {
+                // App pickup
+                const pickupId = "jetpack-pickup";
+                const pickup = new JetpackPickup(pickupId, state.assets);
+                pickup.object3D.position.set(8 * RADIUS.x, 1, 8 * RADIUS.x);
+                state.addEntity(pickup);
+            }
+
             // Create lights
             const keyLight = new THREE.DirectionalLight(
                 new THREE.Color("#FFE4C4"),
@@ -128,7 +136,6 @@ export function dispatch(state, action) {
             const { playerId } = action.data;
             const player = state.getEntity(playerId);
             if (player.object3D && player.head) {
-
                 // Create bullet
                 const bulletId = playerId + Date.now().toString(16);
                 const bullet = new Bullet(bulletId, state.assets);
