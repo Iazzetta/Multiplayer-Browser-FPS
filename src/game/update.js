@@ -14,6 +14,7 @@ export function update(state, dispatch) {
     state.entities.forEach(entity => {
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
+        jetpackPickupSystem(entity, state, dispatch);
         jetpackFuelSystem(entity, state, dispatch);
         damageSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
@@ -56,6 +57,29 @@ export function gravitySystem(entity, state, dispatch) {
     const { gravity, velocity } = entity;
     if (gravity && velocity) {
         velocity.y -= 0.001;
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function jetpackPickupSystem(entity, state, dispatch) {
+    if (entity.object3D && entity.controller) {
+        const pickups = state.getEntityGroup("pickup");
+        for (let i = 0; i < pickups.length; i++) {
+            const pickup = pickups[i];
+            const aabb1 = entity.object3D.getAABB();
+            const aabb2 = pickup.object3D.getAABB();
+            if (AABB.collision(aabb1, aabb2)) {
+                if (!entity.jetpack && pickup.jetpack) {
+                    entity.jetpack = pickup.jetpack;
+                    state.deleteEntity(pickup.id);
+                    return;
+                }
+            }
+        }
     }
 }
 
