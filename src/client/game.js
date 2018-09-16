@@ -103,7 +103,6 @@ export class Game extends BaseGame {
         this.ctx = document.createElement("canvas").getContext("2d");
         this.hud.classList.add("hud");
 
-
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
         // Append to dom
@@ -203,17 +202,29 @@ export class Game extends BaseGame {
     renderHUD() {
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
 
+        const { weapon, jetpack } = this.state.getEntity(this.playerId());
+
         // Gun
-        this.ctx.drawImage(
-            this.gunSprite,
-            this.hud.width - 384,
-            this.hud.height - 384,
-            384,
-            384
-        );
+        if (weapon) {
+            this.ctx.drawImage(
+                this.gunSprite,
+                this.hud.width - 384,
+                this.hud.height - 384,
+                384,
+                384
+            );
+
+            this.ctx.fillStyle =
+                weapon.ammoCount > 0 ? "cornflowerblue" : "red";
+            this.ctx.font = "30px Arial";
+            this.ctx.fillText(
+                [weapon.ammoCount, weapon.spec.magazineSize].join("/"),
+                this.hud.width - 120,
+                this.hud.height - 50
+            );
+        }
 
         // Fuel
-        const { jetpack } = this.state.getEntity(this.playerId());
         if (jetpack) {
             const pad = 16;
             const barHeight = 8;
