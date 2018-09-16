@@ -9,7 +9,8 @@ import {
     HeadComponent,
     DamageComponent,
     HealthComponent,
-    ColliderComponent
+    ColliderComponent,
+    WeaponComponent
 } from "./components";
 
 export class Entity {
@@ -77,6 +78,11 @@ export class Entity {
          * @type {HealthComponent}
          */
         this.health = undefined;
+
+        /**
+         * @type {WeaponComponent}
+         */
+        this.weapon = undefined;
     }
 }
 
@@ -91,6 +97,7 @@ export class Player extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
+        this.weapon = new WeaponComponent();
         this.jetpack = new JetpackComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();

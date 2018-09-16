@@ -22,6 +22,17 @@ export class ControllerComponent {
     }
 }
 
+export class WeaponComponent {
+    constructor() {
+        this.firerateTimer = 0;
+        this.spec = {
+            magazineSize: 30,
+            firerate: 500,
+            realod: 5000
+        };
+    }
+}
+
 export class VelocityComponent extends THREE.Vector3 {
     constructor() {
         super(0, 0, 0);

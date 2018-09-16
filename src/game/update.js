@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { State } from "./state";
-import { Action } from "./actions";
+import { Action, shootBullet } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
 
@@ -17,6 +17,7 @@ export function update(state, dispatch) {
         jetpackFuelSystem(entity, state, dispatch);
         damageSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
+        shootingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
 }
@@ -162,6 +163,24 @@ export function controllerSystem(entity, state, dispatch) {
 
         velocity.z *= controller.speed;
         velocity.x *= controller.speed;
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function shootingSystem(entity, state, dispatch) {
+    if (entity.weapon) {
+        if (entity.weapon.firerateTimer > 0) {
+            entity.weapon.firerateTimer -= state.time.delta;
+        }
+
+        if (entity.weapon.firerateTimer <= 0) {
+            entity.weapon.firerateTimer = entity.weapon.spec.firerate;
+            dispatch(shootBullet(entity.id));
+        }
     }
 }
 
