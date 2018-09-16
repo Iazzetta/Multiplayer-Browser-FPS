@@ -30,7 +30,7 @@ export class Assets {
         this.objLoader = new THREE.OBJLoader();
 
         this.fallback = {
-            image: new Image(),
+            image: createDefaultImage(),
             geometry: new THREE.BoxGeometry(1, 1, 1),
             material: new THREE.MeshNormalMaterial()
         };
@@ -97,5 +97,20 @@ export class Assets {
             }
         }
         return new THREE.Mesh(this.fallback.geometry, this.fallback.material);
+    }
+}
+
+export function createDefaultImage() {
+    try {
+        const img = document.createElement("canvas");
+        img.width = 64;
+        img.height = 64;
+
+        const ctx = img.getContext("2d");
+        ctx.fillStyle = "magenta";
+        ctx.fillRect(0, 0, 64, 64);
+        return img;
+    } catch (e) {
+        return null;
     }
 }

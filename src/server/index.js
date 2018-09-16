@@ -1,4 +1,3 @@
-import "./polyfill";
 import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
