@@ -17,15 +17,33 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerIds = playerIds;
 
-            // Tile size radius
-            const RADIUS = new THREE.Vector3(4, 4, 4);
+            // Tile size TILE
+            const TILE = new THREE.Vector3(4, 4, 4);
+
+            const tiles = [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ];
+
+            const rows = tiles.length;
+            const cols = tiles[0].length;
 
             {
                 // Add floor
-
-                const rows = state.level.tiles.length;
-                const cols = state.level.tiles[0].length;
-
                 const geometry = new THREE.PlaneGeometry(1, 1);
                 const material = new THREE.MeshLambertMaterial({
                     color: 0xffff00,
@@ -33,34 +51,34 @@ export function dispatch(state, action) {
                 });
                 const plane = new THREE.Mesh(geometry, material);
                 plane.rotation.x = toRadians(90);
-                plane.position.set(cols * RADIUS.x, 0, rows * RADIUS.z);
+                plane.position.set(cols * TILE.x, 0, rows * TILE.z);
                 plane.scale.set(
-                    rows * RADIUS.x * 2,
-                    rows * RADIUS.y * 2,
-                    rows * RADIUS.z * 2
+                    rows * TILE.x * 2,
+                    rows * TILE.y * 2,
+                    rows * TILE.z * 2
                 );
                 state.scene.add(plane);
             }
 
             // Add walls
-            for (let r = 0; r < state.level.tiles.length; r++) {
-                const row = state.level.tiles[r];
+            for (let r = 0; r < tiles.length; r++) {
+                const row = tiles[r];
                 for (let c = 0; c < row.length; c++) {
                     const tileId = row[c];
                     if (tileId > 0) {
                         const mesh = state.assets.mesh("wall_tile");
                         // mesh.visible = false;
                         mesh.scale.set(
-                            RADIUS.x * 2,
-                            RADIUS.y * 2,
-                            RADIUS.y * 2
+                            TILE.x * 2,
+                            TILE.y * 2,
+                            TILE.y * 2
                         );
 
                         const wallId = ["wall", r, c].join("-");
-                        const wall = new Wall(wallId, RADIUS, mesh);
-                        wall.object3D.position.z = r * RADIUS.x * 2;
-                        wall.object3D.position.x = c * RADIUS.x * 2;
-                        wall.object3D.position.y = RADIUS.y;
+                        const wall = new Wall(wallId, TILE, mesh);
+                        wall.object3D.position.z = r * TILE.x * 2;
+                        wall.object3D.position.x = c * TILE.x * 2;
+                        wall.object3D.position.y = TILE.y;
 
                         state.addEntity(wall);
                     }
@@ -70,7 +88,7 @@ export function dispatch(state, action) {
             // Add players
             playerIds.forEach(playerId => {
                 const player = new Player(playerId, state.assets);
-                player.object3D.position.set(2 * RADIUS.x, 0, 2 * RADIUS.x);
+                player.object3D.position.set(2 * TILE.x, 0, 2 * TILE.x);
                 state.addEntity(player);
             });
 
@@ -78,7 +96,7 @@ export function dispatch(state, action) {
                 // App pickup
                 const pickupId = "jetpack-pickup";
                 const pickup = new JetpackPickup(pickupId, state.assets);
-                pickup.object3D.position.set(8 * RADIUS.x, 1, 8 * RADIUS.x);
+                pickup.object3D.position.set(8 * TILE.x, 1, 8 * TILE.x);
                 state.addEntity(pickup);
             }
 
