@@ -10,7 +10,8 @@ import {
     DamageComponent,
     HealthComponent,
     ColliderComponent,
-    WeaponComponent
+    WeaponComponent,
+    AmmoComponent
 } from "./components";
 
 export class Entity {
@@ -83,6 +84,11 @@ export class Entity {
          * @type {WeaponComponent}
          */
         this.weapon = undefined;
+
+        /**
+         * @type {AmmoComponent}
+         */
+        this.ammo = undefined;
     }
 }
 
@@ -150,7 +156,21 @@ export class JetpackPickup extends Entity {
     constructor(id, assets) {
         super(id);
         this.flags = ["pickup"];
-        this.jetpack = new JetpackComponent();
         this.object3D = new Object3DComponent();
+        this.jetpack = new JetpackComponent();
+    }
+}
+
+export class BulletkPickup extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     */
+    constructor(id, assets) {
+        super(id);
+        this.flags = ["pickup"];
+        this.object3D = new Object3DComponent();
+        this.object3D.add(assets.mesh("bullet_pickup"));
+        this.ammo = new AmmoComponent();
     }
 }

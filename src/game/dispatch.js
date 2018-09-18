@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player, Bullet, Wall, JetpackPickup } from "./entities";
+import { Player, Bullet, Wall, JetpackPickup, BulletkPickup } from "./entities";
 import { toRadians } from "./utils.js";
 
 /**
@@ -27,6 +27,7 @@ export function dispatch(state, action) {
              * 1: wall-tile
              * 2: player
              * 3: jetpack
+             * 4: bullets
              */
             const tiles = [
                 [1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -34,7 +35,7 @@ export function dispatch(state, action) {
                 [1, 0, 2, 0, 2, 0, 2, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 3, 0, 1, 0, 3, 1, 1],
+                [1, 1, 3, 4, 1, 4, 3, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -73,9 +74,19 @@ export function dispatch(state, action) {
                         state.addEntity(player);
                     }
 
-                    // App pickup
+                    // App jetpack pickup
                     if (tileId === 3) {
                         const pickup = new JetpackPickup(
+                            entityId,
+                            state.assets
+                        );
+                        pickup.object3D.position.copy(position);
+                        state.addEntity(pickup);
+                    }
+
+                    // Add bullets
+                    if (tileId === 4) {
+                        const pickup = new BulletkPickup(
                             entityId,
                             state.assets
                         );
