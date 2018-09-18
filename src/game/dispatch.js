@@ -50,25 +50,7 @@ export function dispatch(state, action) {
             const rows = tiles.length;
             const cols = tiles[0].length;
 
-            {
-                // Add floor
-                const geometry = new THREE.PlaneGeometry(1, 1);
-                const material = new THREE.MeshLambertMaterial({
-                    color: 0xffff00,
-                    side: THREE.DoubleSide
-                });
-                const plane = new THREE.Mesh(geometry, material);
-                plane.rotation.x = toRadians(90);
-                plane.position.set(cols * TILE.x, 0, rows * TILE.z);
-                plane.scale.set(
-                    rows * TILE.x * 2,
-                    rows * TILE.y * 2,
-                    rows * TILE.z * 2
-                );
-                state.scene.add(plane);
-            }
-
-            // Add walls
+            // Add entities
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const tileId = tiles[r][c];
@@ -110,6 +92,22 @@ export function dispatch(state, action) {
                     }
                 }
             }
+
+            // Add floor
+            const geometry = new THREE.PlaneGeometry(1, 1);
+            const material = new THREE.MeshLambertMaterial({
+                color: 0xffff00,
+                side: THREE.DoubleSide
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            plane.rotation.x = toRadians(90);
+            plane.position.set(cols * TILE.x, 0, rows * TILE.z);
+            plane.scale.set(
+                rows * TILE.x * 2,
+                rows * TILE.y * 2,
+                rows * TILE.z * 2
+            );
+            state.scene.add(plane);
 
             // Create lights
             const keyLight = new THREE.DirectionalLight(
