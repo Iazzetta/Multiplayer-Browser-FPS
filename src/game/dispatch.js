@@ -20,11 +20,19 @@ export function dispatch(state, action) {
             // Tile size TILE
             const TILE = new THREE.Vector3(4, 4, 4);
 
+            /**
+             * Level layout
+             *
+             * 0: empty
+             * 1: wall-tile
+             * 2: player
+             * 3: jetpack
+             */
             const tiles = [
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1],
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
@@ -33,8 +41,8 @@ export function dispatch(state, action) {
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1],
+                [1, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 1],
                 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
             ];
@@ -61,21 +69,32 @@ export function dispatch(state, action) {
             }
 
             // Add walls
-            for (let r = 0; r < tiles.length; r++) {
-                const row = tiles[r];
-                for (let c = 0; c < row.length; c++) {
-                    const tileId = row[c];
-                    if (tileId > 0) {
-                        const mesh = state.assets.mesh("wall_tile");
-                        // mesh.visible = false;
-                        mesh.scale.set(
-                            TILE.x * 2,
-                            TILE.y * 2,
-                            TILE.y * 2
-                        );
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const tileId = tiles[r][c];
+                    const entityId = ["entity", r, c].join("-");
+                    const position = new THREE.Vector3(
+                        r * TILE.x * 2,
+                        TILE.y,
+                        c * TILE.x * 2
+                    );
 
-                        const wallId = ["wall", r, c].join("-");
-                        const wall = new Wall(wallId, TILE, mesh);
+                    if (tileId === 3) {
+                        // App pickup
+                        const pickup = new JetpackPickup(
+                            entityId,
+                            state.assets
+                        );
+                        pickup.object3D.position.copy(position);
+                        state.addEntity(pickup);
+                    }
+
+                    if (tileId === 1) {
+                        const mesh = state.assets.mesh("wall_tile");
+                        mesh.scale.set(TILE.x * 2, TILE.y * 2, TILE.y * 2);
+                        // mesh.visible = false;
+
+                        const wall = new Wall(entityId, TILE, mesh);
                         wall.object3D.position.z = r * TILE.x * 2;
                         wall.object3D.position.x = c * TILE.x * 2;
                         wall.object3D.position.y = TILE.y;
@@ -91,14 +110,6 @@ export function dispatch(state, action) {
                 player.object3D.position.set(2 * TILE.x, 0, 2 * TILE.x);
                 state.addEntity(player);
             });
-
-            {
-                // App pickup
-                const pickupId = "jetpack-pickup";
-                const pickup = new JetpackPickup(pickupId, state.assets);
-                pickup.object3D.position.set(8 * TILE.x, 1, 8 * TILE.x);
-                state.addEntity(pickup);
-            }
 
             // Create lights
             const keyLight = new THREE.DirectionalLight(
