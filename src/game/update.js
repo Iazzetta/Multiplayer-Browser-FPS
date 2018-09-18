@@ -231,8 +231,11 @@ export function reloadingSystem(entity, state, dispatch) {
     const { weapon, ammo } = entity;
     if (weapon && ammo) {
         if (weapon.ammoCount <= 0) {
-            weapon.ammoCount = weapon.spec.magazineSize;
-            ammo.bulletCount -= weapon.spec.magazineSize;
+            const delta = Math.min(ammo.bulletCount, weapon.spec.magazineSize);
+            if (delta > 0) {
+                weapon.ammoCount = delta;
+                ammo.bulletCount -= delta;
+            }
         }
     }
 }
