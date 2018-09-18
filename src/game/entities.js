@@ -104,6 +104,7 @@ export class Player extends Entity {
         this.flags = ["player"];
         this.gravity = true;
         this.ammo = new AmmoComponent();
+        this.ammo.bulletCount = 200;
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();

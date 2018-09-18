@@ -19,6 +19,7 @@ export function update(state, dispatch) {
         damageSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
+        reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
 }
@@ -217,6 +218,21 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.ammoCount = Math.max(weapon.ammoCount - 1, 0);
             weapon.firerateTimer = weapon.spec.firerate;
             dispatch(shootBullet(entity.id));
+        }
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function reloadingSystem(entity, state, dispatch) {
+    const { weapon, ammo } = entity;
+    if (weapon && ammo) {
+        if (weapon.ammoCount <= 0) {
+            weapon.ammoCount = weapon.spec.magazineSize;
+            ammo.bulletCount -= weapon.spec.magazineSize;
         }
     }
 }
