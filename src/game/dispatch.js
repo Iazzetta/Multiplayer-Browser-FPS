@@ -79,8 +79,28 @@ export function dispatch(state, action) {
                         c * TILE.x * 2
                     );
 
+                    // Add Wall
+                    if (tileId === 1) {
+                        const mesh = state.assets.mesh("wall_tile");
+                        mesh.scale.set(TILE.x * 2, TILE.y * 2, TILE.y * 2);
+                        const wall = new Wall(entityId, TILE, mesh);
+                        wall.object3D.position.z = r * TILE.x * 2;
+                        wall.object3D.position.x = c * TILE.x * 2;
+                        wall.object3D.position.y = TILE.y;
+                        state.addEntity(wall);
+                    }
+
+                    // Add players
+                    if (tileId === 2) {
+                        const index = state.getEntityGroup("player").length;
+                        const playerId = playerIds[index];
+                        const player = new Player(playerId, state.assets);
+                        player.object3D.position.set(2 * TILE.x, 0, 2 * TILE.x);
+                        state.addEntity(player);
+                    }
+
+                    // App pickup
                     if (tileId === 3) {
-                        // App pickup
                         const pickup = new JetpackPickup(
                             entityId,
                             state.assets
@@ -88,28 +108,8 @@ export function dispatch(state, action) {
                         pickup.object3D.position.copy(position);
                         state.addEntity(pickup);
                     }
-
-                    if (tileId === 1) {
-                        const mesh = state.assets.mesh("wall_tile");
-                        mesh.scale.set(TILE.x * 2, TILE.y * 2, TILE.y * 2);
-                        // mesh.visible = false;
-
-                        const wall = new Wall(entityId, TILE, mesh);
-                        wall.object3D.position.z = r * TILE.x * 2;
-                        wall.object3D.position.x = c * TILE.x * 2;
-                        wall.object3D.position.y = TILE.y;
-
-                        state.addEntity(wall);
-                    }
                 }
             }
-
-            // Add players
-            playerIds.forEach(playerId => {
-                const player = new Player(playerId, state.assets);
-                player.object3D.position.set(2 * TILE.x, 0, 2 * TILE.x);
-                state.addEntity(player);
-            });
 
             // Create lights
             const keyLight = new THREE.DirectionalLight(
