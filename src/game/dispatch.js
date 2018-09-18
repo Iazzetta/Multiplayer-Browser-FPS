@@ -29,22 +29,16 @@ export function dispatch(state, action) {
              * 3: jetpack
              */
             const tiles = [
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1],
-                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1],
-                [1, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 2, 0, 2, 0, 2, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 3, 0, 1, 0, 3, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1]
             ];
 
             const rows = tiles.length;
@@ -66,9 +60,7 @@ export function dispatch(state, action) {
                         const mesh = state.assets.mesh("wall_tile");
                         mesh.scale.set(TILE.x * 2, TILE.y * 2, TILE.y * 2);
                         const wall = new Wall(entityId, TILE, mesh);
-                        wall.object3D.position.z = r * TILE.x * 2;
-                        wall.object3D.position.x = c * TILE.x * 2;
-                        wall.object3D.position.y = TILE.y;
+                        wall.object3D.position.copy(position);
                         state.addEntity(wall);
                     }
 
@@ -77,7 +69,7 @@ export function dispatch(state, action) {
                         const index = state.getEntityGroup("player").length;
                         const playerId = playerIds[index];
                         const player = new Player(playerId, state.assets);
-                        player.object3D.position.set(2 * TILE.x, 0, 2 * TILE.x);
+                        player.object3D.position.copy(position);
                         state.addEntity(player);
                     }
 
