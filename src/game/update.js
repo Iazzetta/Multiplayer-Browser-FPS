@@ -80,8 +80,8 @@ export function pickupSystem(entity, state, dispatch) {
                     return;
                 }
                 // Bullets
-                if (entity.weapon && pickup.ammo) {
-                    entity.weapon.ammoCount += pickup.ammo.bulletCount;
+                if (entity.ammo && pickup.ammo) {
+                    entity.ammo.bulletCount += pickup.ammo.bulletCount;
                     state.deleteEntity(pickup.id);
                     return;
                 }

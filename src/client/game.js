@@ -216,10 +216,10 @@ class Game extends BaseGame {
     renderHUD() {
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
 
-        const { weapon, jetpack } = this.state.getEntity(this.playerId());
+        const { ammo, weapon, jetpack } = this.state.getEntity(this.playerId());
 
         // Gun
-        if (weapon) {
+        if (ammo && weapon) {
             this.ctx.drawImage(
                 this.state.assets.sprite("gun_sprite"),
                 this.hud.width * 0.5,
@@ -232,8 +232,8 @@ class Game extends BaseGame {
                 weapon.ammoCount > 0 ? "cornflowerblue" : "red";
             this.ctx.font = "30px Arial";
             this.ctx.fillText(
-                [weapon.ammoCount, weapon.spec.magazineSize].join("/"),
-                this.hud.width * 0.5 +150,
+                [weapon.ammoCount, ammo.bulletCount].join("/"),
+                this.hud.width * 0.5 + 150,
                 this.hud.height - 50
             );
         }

@@ -150,7 +150,7 @@ export class HeadComponent extends THREE.Object3D {
 
 export class AmmoComponent {
     constructor() {
-        this.bulletCount = 200;
+        this.bulletCount = 10;
         this.max = 200;
     }
 }
