@@ -222,8 +222,8 @@ class Game extends BaseGame {
         if (weapon) {
             this.ctx.drawImage(
                 this.state.assets.sprite("gun_sprite"),
-                this.hud.width - 384,
-                this.hud.height - 384,
+                this.hud.width * 0.5,
+                this.hud.height * 0.5,
                 384,
                 384
             );
@@ -233,7 +233,7 @@ class Game extends BaseGame {
             this.ctx.font = "30px Arial";
             this.ctx.fillText(
                 [weapon.ammoCount, weapon.spec.magazineSize].join("/"),
-                this.hud.width - 120,
+                this.hud.width * 0.5 +150,
                 this.hud.height - 50
             );
         }
