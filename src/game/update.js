@@ -11,6 +11,7 @@ import { AABB } from "./utils";
 export function update(state, dispatch) {
     updateTime(state);
 
+    // Systems
     state.entities.forEach(entity => {
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
@@ -21,6 +22,11 @@ export function update(state, dispatch) {
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
+    });
+
+    // Animate pickups
+    state.getEntityGroup("pickup").forEach(pickup => {
+        pickup.object3D.rotation.y += 0.01;
     });
 }
 
