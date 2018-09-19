@@ -76,7 +76,7 @@ class Game extends BaseGame {
     }
 
     playerId() {
-        return this.socket ? this.socket.id : "single-player";
+        return this.socket.id || "single-player";
     }
 
     mountPlayerCamera() {
