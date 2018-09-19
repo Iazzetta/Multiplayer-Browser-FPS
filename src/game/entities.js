@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
+import { TILE_SIZE } from "./consts.js";
 import {
     ControllerComponent,
     VelocityComponent,
@@ -142,11 +143,17 @@ export class Wall extends Entity {
      * @param {Assets} assets
      */
     constructor(id, assets) {
+        const radius = new THREE.Vector3(
+            TILE_SIZE * 0.5,
+            TILE_SIZE * 0.5,
+            TILE_SIZE * 0.5
+        );
+        const mesh = assets.mesh("wall_tile");
+        mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
         super(id);
         this.flags = ["wall"];
-        this.object3D = new Object3DComponent(new THREE.Vector3(4, 4, 4));
-        const mesh = assets.mesh("wall_tile");
-        mesh.scale.set(8, 8, 8);
+        this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
     }
 }
