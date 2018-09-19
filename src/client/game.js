@@ -98,7 +98,10 @@ class Game extends BaseGame {
     }
 
     initSocket() {
-        this.socket = SocketIO("http://localhost:8080");
+        this.socket = SocketIO("http://localhost:8080", {
+            reconnection: false
+        });
+
         this.socket.on("connect", () => {
             console.log("Connected");
 
