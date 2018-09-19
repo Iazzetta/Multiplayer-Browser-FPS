@@ -1,5 +1,7 @@
 import * as THREE from "three";
+import MTLLoader from "three-mtl-loader";
 import OBJLoader from "three-obj-loader";
+MTLLoader(THREE);
 OBJLoader(THREE);
 
 export class Assets {
@@ -28,6 +30,11 @@ export class Assets {
          * @type {THREE.OBJLoader}
          */
         this.objLoader = new THREE.OBJLoader();
+
+        /**
+         * @type {MTLLoader}
+         */
+        this.mtlLoader = new MTLLoader();
 
         this.fallback = {
             image: createDefaultImage(),
@@ -60,9 +67,15 @@ export class Assets {
     loadObj(name, src) {
         this.objPromiseList.push(
             new Promise(resolve => {
-                this.objLoader.load(src, obj => {
-                    this.objList.set(name, obj);
-                    resolve(obj);
+                this.mtlLoader = new MTLLoader();
+                this.mtlLoader.load(src.replace(".obj", ".mtl"), materials => {
+                    materials.preload();
+                    this.objLoader = new THREE.OBJLoader();
+                    this.objLoader.setMaterials(materials);
+                    this.objLoader.load(src, obj => {
+                        this.objList.set(name, obj);
+                        resolve(obj);
+                    });
                 });
             })
         );
