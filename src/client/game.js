@@ -18,6 +18,10 @@ import wall_tile_obj from "../assets/wall_tile.obj";
 import player_head_obj from "../assets/player_head.obj";
 // @ts-ignore
 import player_body_obj from "../assets/player_body.obj";
+// @ts-ignore
+import bullet_pickup_obj from "../assets/bullet_pickup.obj";
+// @ts-ignore
+import jetpack_pickup_obj from "../assets/jetpack_pickup.obj";
 
 class Game extends BaseGame {
     constructor() {
@@ -64,6 +68,8 @@ class Game extends BaseGame {
         game.state.assets.loadObj("wall_tile", wall_tile_obj);
         game.state.assets.loadObj("player_head", player_head_obj);
         game.state.assets.loadObj("player_body", player_body_obj);
+        game.state.assets.loadObj("bullet_pickup", bullet_pickup_obj);
+        game.state.assets.loadObj("jetpack_pickup", jetpack_pickup_obj);
 
         game.state.assets.done().then(() => {
             game.dispatch(initGame([game.playerId(), "dummy-player"]));
