@@ -166,6 +166,9 @@ export class JetpackPickup extends Entity {
     constructor(id, assets) {
         super(id);
         this.flags = ["pickup"];
+        this.gravity = true;
+        this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
         this.jetpack = new JetpackComponent();
         this.object3D = new Object3DComponent();
         this.object3D.add(assets.mesh("jetpack_pickup"));
@@ -180,6 +183,9 @@ export class BulletkPickup extends Entity {
     constructor(id, assets) {
         super(id);
         this.flags = ["pickup"];
+        this.gravity = true;
+        this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
         this.ammo = new AmmoComponent();
         this.object3D = new Object3DComponent();
         this.object3D.add(assets.mesh("bullet_pickup"));
