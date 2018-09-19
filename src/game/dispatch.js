@@ -58,9 +58,7 @@ export function dispatch(state, action) {
 
                     // Add Wall
                     if (tileId === 1) {
-                        const mesh = state.assets.mesh("wall_tile");
-                        mesh.scale.set(TILE.x * 2, TILE.y * 2, TILE.y * 2);
-                        const wall = new Wall(entityId, TILE, mesh);
+                        const wall = new Wall(entityId, state.assets);
                         wall.object3D.position.copy(position);
                         state.addEntity(wall);
                     }
