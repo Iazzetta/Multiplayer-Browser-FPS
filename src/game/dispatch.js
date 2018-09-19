@@ -93,13 +93,13 @@ export function dispatch(state, action) {
 
             const fillLight = new THREE.DirectionalLight(
                 new THREE.Color("#A6D8ED"),
-                1.0
+                0.1
             );
             fillLight.position.set(100, 50, 100);
 
             const backLight = new THREE.DirectionalLight(
                 new THREE.Color("#FFFFFF"),
-                1.0
+                0.5
             );
             backLight.position.set(100, 0, -100).normalize();
 
