@@ -1,7 +1,15 @@
 import * as THREE from "three";
+import { TILE_SIZE } from "./consts.js";
 import { Action } from "./actions.js";
 import { State } from "./state.js";
-import { Player, Bullet, Wall, JetpackPickup, BulletkPickup } from "./entities";
+import {
+    Entity,
+    Player,
+    Bullet,
+    Wall,
+    JetpackPickup,
+    BulletkPickup
+} from "./entities";
 import { toRadians } from "./utils.js";
 
 /**
@@ -16,9 +24,6 @@ export function dispatch(state, action) {
             state = new State(state.assets);
             state.time.start = Date.now();
             state.playerIds = playerIds;
-
-            // Tile size TILE
-            const TILE = new THREE.Vector3(4, 4, 4);
 
             /**
              * Level layout
@@ -49,47 +54,16 @@ export function dispatch(state, action) {
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const tileId = tiles[r][c];
-                    const entityId = ["entity", r, c].join("-");
-                    const position = new THREE.Vector3(
-                        r * TILE.x * 2,
-                        TILE.y,
-                        c * TILE.x * 2
-                    );
-
-                    // Add Wall
-                    if (tileId === 1) {
-                        const wall = new Wall(entityId, state.assets);
-                        wall.object3D.position.copy(position);
-                        state.addEntity(wall);
-                    }
-
-                    // Add players
-                    if (tileId === 2) {
-                        const index = state.getEntityGroup("player").length;
-                        const playerId = playerIds[index];
-                        const player = new Player(playerId, state.assets);
-                        player.object3D.position.copy(position);
-                        state.addEntity(player);
-                    }
-
-                    // App jetpack pickup
-                    if (tileId === 3) {
-                        const pickup = new JetpackPickup(
-                            entityId,
-                            state.assets
-                        );
-                        pickup.object3D.position.copy(position);
-                        state.addEntity(pickup);
-                    }
-
-                    // Add bullets
-                    if (tileId === 4) {
-                        const pickup = new BulletkPickup(
-                            entityId,
-                            state.assets
-                        );
-                        pickup.object3D.position.copy(position);
-                        state.addEntity(pickup);
+                    const entity = createEntity(tileId, state);
+                    if (entity !== undefined) {
+                        if (entity.object3D) {
+                            entity.object3D.position.set(
+                                TILE_SIZE * r,
+                                TILE_SIZE * 0.5,
+                                TILE_SIZE * c
+                            );
+                        }
+                        state.addEntity(entity);
                     }
                 }
             }
@@ -102,11 +76,11 @@ export function dispatch(state, action) {
             });
             const plane = new THREE.Mesh(geometry, material);
             plane.rotation.x = toRadians(90);
-            plane.position.set(cols * TILE.x, 0, rows * TILE.z);
+            plane.position.set(cols * TILE_SIZE, 0, rows * TILE_SIZE);
             plane.scale.set(
-                rows * TILE.x * 2,
-                rows * TILE.y * 2,
-                rows * TILE.z * 2
+                rows * TILE_SIZE * 2,
+                rows * TILE_SIZE * 2,
+                rows * TILE_SIZE * 2
             );
             state.scene.add(plane);
 
@@ -196,4 +170,32 @@ export function dispatch(state, action) {
         }
     }
     return state;
+}
+
+/**
+ * @param {number} tileId
+ * @param {State} state
+ * @return {Entity}
+ */
+export function createEntity(tileId, state) {
+    const entityId = (128 + state.entities.size).toString(16);
+    const assets = state.assets;
+    switch (tileId) {
+        case 2: {
+            const index = state.getEntityGroup("player").length;
+            const playerId = state.playerIds[index];
+            if (playerId !== undefined) {
+                return new Player(playerId, assets);
+            }
+        }
+        case 1: {
+            return new Wall(entityId, assets);
+        }
+        case 3: {
+            return new JetpackPickup(entityId, assets);
+        }
+        case 4: {
+            return new BulletkPickup(entityId, assets);
+        }
+    }
 }
