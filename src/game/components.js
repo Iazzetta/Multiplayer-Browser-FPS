@@ -1,7 +1,6 @@
 import * as THREE from "three";
+import { DEBUG } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
-
-export const DEBUG = true;
 
 export class DecayComponent {
     constructor(ttl = 0) {
