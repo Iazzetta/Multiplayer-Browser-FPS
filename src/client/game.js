@@ -50,7 +50,7 @@ class Game extends BaseGame {
     }
 
     run() {
-        const game = new Game();
+        const game = this;
         game.state.assets.loadImg("gun_sprite", "/assets/gun_sprite.png");
         game.state.assets.loadObj("wall_tile", "/assets/wall_tile.obj");
         game.state.assets.loadObj("player_head", "/assets/player_head.obj");
