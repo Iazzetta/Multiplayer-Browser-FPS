@@ -26,6 +26,7 @@ export class WeaponComponent {
     constructor() {
         this.ammoCount = 30;
         this.firerateTimer = 0;
+        this.reloadTimer = 0;
         this.spec = {
             magazineSize: 30,
             firerate: 100,

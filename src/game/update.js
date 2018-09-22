@@ -236,11 +236,27 @@ export function shootingSystem(entity, state, dispatch) {
 export function reloadingSystem(entity, state, dispatch) {
     const { weapon, ammo } = entity;
     if (weapon && ammo) {
-        if (weapon.ammoCount <= 0) {
-            const delta = Math.min(ammo.bulletCount, weapon.spec.magazineSize);
-            if (delta > 0) {
-                weapon.ammoCount = delta;
-                ammo.bulletCount -= delta;
+        const startReload =
+            weapon.reloadTimer === 0 &&
+            weapon.ammoCount === 0 &&
+            ammo.bulletCount > 0;
+        if (startReload) {
+            weapon.reloadTimer = weapon.spec.realod;
+        }
+
+        const isRelaoding = weapon.reloadTimer > 0;
+        if (isRelaoding) {
+            weapon.reloadTimer -= state.time.delta;
+            if (weapon.reloadTimer <= 0) {
+                weapon.reloadTimer = 0;
+                const delta = Math.min(
+                    ammo.bulletCount,
+                    weapon.spec.magazineSize
+                );
+                if (delta > 0) {
+                    weapon.ammoCount = delta;
+                    ammo.bulletCount -= delta;
+                }
             }
         }
     }
