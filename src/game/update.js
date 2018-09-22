@@ -250,13 +250,12 @@ export function reloadingSystem(entity, state, dispatch) {
             weapon.reloadTimer -= state.time.delta;
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;
-                const delta = Math.min(
-                    ammo.bulletCount,
-                    weapon.spec.magazineSize
-                );
-                if (delta > 0) {
-                    weapon.ammoCount = delta;
-                    ammo.bulletCount -= delta;
+
+                const delta = weapon.spec.magazineSize - weapon.ammoCount;
+                const ammoCount = Math.min(ammo.bulletCount, delta);
+                if (ammoCount > 0) {
+                    weapon.ammoCount += ammoCount;
+                    ammo.bulletCount -= ammoCount;
                 }
             }
         }
