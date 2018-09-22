@@ -226,11 +226,11 @@ class Game extends BaseGame {
     renderHUD() {
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
 
-        const { ammo, weapon, jetpack } = this.state.getEntity(this.playerId());
+        const { weapon, jetpack } = this.state.getEntity(this.playerId());
 
         // Gun
-        if (ammo && weapon) {
-            let ammoText = weapon.loadedAmmo + "/" + ammo.bulletCount;
+        if (weapon) {
+            let ammoText = weapon.loadedAmmo + "/" + weapon.reservedAmmo;
             if (weapon.reloadTimer > 0) {
                 ammoText += " Reloading ...";
             }

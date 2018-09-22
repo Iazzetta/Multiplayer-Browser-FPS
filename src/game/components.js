@@ -145,10 +145,3 @@ export class HeadComponent extends THREE.Object3D {
         return direction.applyMatrix4(matrix);
     }
 }
-
-export class AmmoComponent {
-    constructor() {
-        this.bulletCount = 10;
-        this.max = 200;
-    }
-}

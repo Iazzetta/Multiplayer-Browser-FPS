@@ -86,11 +86,16 @@ export function pickupSystem(entity, state, dispatch) {
                     state.deleteEntity(pickup.id);
                     return;
                 }
-                // Bullets
-                if (entity.ammo && pickup.ammo) {
-                    entity.ammo.bulletCount += pickup.ammo.bulletCount;
-                    state.deleteEntity(pickup.id);
-                    return;
+                // Ammo
+                if (entity.weapon && pickup.pickupAmmo !== undefined) {
+                    if (
+                        entity.weapon.reservedAmmo <
+                        entity.weapon.type.maxReservedAmmo
+                    ) {
+                        entity.weapon.reservedAmmo += pickup.pickupAmmo;
+                        state.deleteEntity(pickup.id);
+                        return;
+                    }
                 }
             }
         }
@@ -235,11 +240,11 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, ammo, controller } = entity;
-    if (weapon && ammo && controller) {
+    const { weapon, controller } = entity;
+    if (weapon && controller) {
         const canReload =
             weapon.reloadTimer === 0 &&
-            ammo.bulletCount > 0 &&
+            weapon.reservedAmmo > 0 &&
             weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
 
         if (canReload && (controller.input.reload || weapon.loadedAmmo === 0)) {
@@ -253,10 +258,10 @@ export function reloadingSystem(entity, state, dispatch) {
                 weapon.reloadTimer = 0;
 
                 const delta = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
-                const loadedAmmo = Math.min(ammo.bulletCount, delta);
+                const loadedAmmo = Math.min(weapon.reservedAmmo, delta);
                 if (loadedAmmo > 0) {
                     weapon.loadedAmmo += loadedAmmo;
-                    ammo.bulletCount -= loadedAmmo;
+                    weapon.reservedAmmo -= loadedAmmo;
                 }
             }
         }

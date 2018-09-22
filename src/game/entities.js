@@ -11,8 +11,7 @@ import {
     DamageComponent,
     HealthComponent,
     ColliderComponent,
-    WeaponComponent,
-    AmmoComponent
+    WeaponComponent
 } from "./components";
 
 export class Entity {
@@ -35,6 +34,11 @@ export class Entity {
          * @type {boolean}
          */
         this.gravity = false;
+
+        /**
+         * @type {number}
+         */
+        this.pickupAmmo = 0;
 
         /**
          * @type {Object3DComponent}
@@ -85,11 +89,6 @@ export class Entity {
          * @type {WeaponComponent}
          */
         this.weapon = undefined;
-
-        /**
-         * @type {AmmoComponent}
-         */
-        this.ammo = undefined;
     }
 }
 
@@ -104,8 +103,6 @@ export class Player extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
-        this.ammo = new AmmoComponent();
-        this.ammo.bulletCount = 90;
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
@@ -175,7 +172,7 @@ export class JetpackPickup extends Entity {
     }
 }
 
-export class BulletkPickup extends Entity {
+export class AmmoPickup extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -183,10 +180,10 @@ export class BulletkPickup extends Entity {
     constructor(id, assets) {
         super(id);
         this.flags = ["pickup"];
+        this.pickupAmmo = 30;
         this.gravity = true;
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
-        this.ammo = new AmmoComponent();
         this.object3D = new Object3DComponent();
         this.object3D.add(assets.mesh("bullet_pickup"));
     }

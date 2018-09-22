@@ -7,8 +7,8 @@ import {
     Player,
     Bullet,
     Wall,
-    JetpackPickup,
-    BulletkPickup
+    AmmoPickup,
+    JetpackPickup
 } from "./entities";
 import { toRadians } from "./utils.js";
 
@@ -195,7 +195,7 @@ export function createEntity(tileId, state) {
             return new JetpackPickup(entityId, assets);
         }
         case 4: {
-            return new BulletkPickup(entityId, assets);
+            return new AmmoPickup(entityId, assets);
         }
     }
 }
