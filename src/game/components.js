@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { DEBUG } from "./consts.js";
+import { DEBUG, WEAPON_TYPE } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
 export class DecayComponent {
@@ -25,14 +25,11 @@ export class ControllerComponent {
 
 export class WeaponComponent {
     constructor() {
-        this.ammoCount = 30;
+        this.type = WEAPON_TYPE.MACHINEGUN;
+        this.loadedAmmo = this.type.maxLoadedAmmo;
+        this.reservedAmmo = this.type.maxReservedAmmo;
         this.firerateTimer = 0;
         this.reloadTimer = 0;
-        this.spec = {
-            magazineSize: 30,
-            firerate: 100,
-            realod: 5000
-        };
     }
 }
 

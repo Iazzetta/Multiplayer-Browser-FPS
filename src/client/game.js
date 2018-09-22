@@ -86,7 +86,7 @@ class Game extends BaseGame {
             });
 
             const weapon = this.state.assets.mesh("player_weapon");
-            weapon.scale.multiplyScalar(0.5)
+            weapon.scale.multiplyScalar(0.5);
             weapon.position.x = 0.25;
             weapon.position.y = -0.25;
             weapon.position.z = -0.1;
@@ -230,13 +230,13 @@ class Game extends BaseGame {
 
         // Gun
         if (ammo && weapon) {
-            let ammoText = weapon.ammoCount + "/" + ammo.bulletCount;
+            let ammoText = weapon.loadedAmmo + "/" + ammo.bulletCount;
             if (weapon.reloadTimer > 0) {
                 ammoText += " Reloading ...";
             }
 
             this.ctx.fillStyle =
-                weapon.ammoCount > 0 ? "cornflowerblue" : "red";
+                weapon.loadedAmmo > 0 ? "cornflowerblue" : "red";
             this.ctx.font = "30px Arial";
             this.ctx.fillText(
                 ammoText,
