@@ -4,26 +4,23 @@
 
 ## Getting Started
 
+Install dependencies and [Parcel](https://parceljs.org/) as the bundler
 ```
-npm install -g parcel-bundler
-```
-
-### Installation
-
-The project uses parcel instead of webpack.
-
-```
-npm i -g parcel-bundler
-npm i -g @babel/node
 npm install
+npm i parcel -g
 ```
 
-Run single-player mode:
+For Multiplayer mode you will also need to install [Babel](https://babeljs.io/)
+```
+npm i babel-cli -g 
+```
+
+### Singleplayer mode
 ```
 npm run dev
 ```
 
-Run server for multiplayer:
+### Multiplayer mode:
 ```
 npm run server
 ```
