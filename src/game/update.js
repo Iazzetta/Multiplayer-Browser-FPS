@@ -92,7 +92,10 @@ export function pickupSystem(entity, state, dispatch) {
                         entity.weapon.reservedAmmo <
                         entity.weapon.type.maxReservedAmmo
                     ) {
-                        entity.weapon.reservedAmmo += pickup.pickupAmmo;
+                        entity.weapon.reservedAmmo = Math.min(
+                            entity.weapon.reservedAmmo + pickup.pickupAmmo,
+                            entity.weapon.type.maxReservedAmmo
+                        );
                         state.deleteEntity(pickup.id);
                         return;
                     }
