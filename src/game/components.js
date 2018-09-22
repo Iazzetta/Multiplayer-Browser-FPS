@@ -17,7 +17,8 @@ export class ControllerComponent {
             back: false,
             right: false,
             jump: false,
-            shoot: false
+            shoot: false,
+            reload: false
         };
     }
 }
@@ -26,6 +27,7 @@ export class WeaponComponent {
     constructor() {
         this.ammoCount = 30;
         this.firerateTimer = 0;
+        this.reloadTimer = 0;
         this.spec = {
             magazineSize: 30,
             firerate: 100,

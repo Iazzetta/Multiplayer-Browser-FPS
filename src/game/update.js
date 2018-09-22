@@ -219,6 +219,7 @@ export function shootingSystem(entity, state, dispatch) {
         if (
             controller.input.shoot &&
             weapon.firerateTimer <= 0 &&
+            weapon.reloadTimer === 0 &&
             weapon.ammoCount > 0
         ) {
             weapon.ammoCount = Math.max(weapon.ammoCount - 1, 0);
@@ -234,13 +235,29 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, ammo } = entity;
-    if (weapon && ammo) {
-        if (weapon.ammoCount <= 0) {
-            const delta = Math.min(ammo.bulletCount, weapon.spec.magazineSize);
-            if (delta > 0) {
-                weapon.ammoCount = delta;
-                ammo.bulletCount -= delta;
+    const { weapon, ammo, controller } = entity;
+    if (weapon && ammo && controller) {
+        const canReload =
+            weapon.reloadTimer === 0 &&
+            ammo.bulletCount > 0 &&
+            weapon.ammoCount < weapon.spec.magazineSize;
+
+        if (canReload && (controller.input.reload || weapon.ammoCount === 0)) {
+            weapon.reloadTimer = weapon.spec.realod;
+        }
+
+        const isRelaoding = weapon.reloadTimer > 0;
+        if (isRelaoding) {
+            weapon.reloadTimer -= state.time.delta;
+            if (weapon.reloadTimer <= 0) {
+                weapon.reloadTimer = 0;
+
+                const delta = weapon.spec.magazineSize - weapon.ammoCount;
+                const ammoCount = Math.min(ammo.bulletCount, delta);
+                if (ammoCount > 0) {
+                    weapon.ammoCount += ammoCount;
+                    ammo.bulletCount -= ammoCount;
+                }
             }
         }
     }

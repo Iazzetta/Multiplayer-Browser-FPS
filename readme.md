@@ -12,7 +12,7 @@ npm i parcel -g
 
 For Multiplayer mode you will also need to install [Babel](https://babeljs.io/)
 ```
-npm i babel-cli -g 
+npm i babel-cli -g
 ```
 
 ### Singleplayer mode
@@ -22,6 +22,7 @@ npm run dev
 
 ### Multiplayer mode:
 ```
+npm run build
 npm run server
 ```
 

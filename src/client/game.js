@@ -50,7 +50,7 @@ class Game extends BaseGame {
     }
 
     run() {
-        const game = new Game();
+        const game = this;
         game.state.assets.loadImg("gun_sprite", "/assets/gun_sprite.png");
         game.state.assets.loadObj("wall_tile", "/assets/wall_tile.obj");
         game.state.assets.loadObj("player_head", "/assets/player_head.obj");
@@ -171,12 +171,13 @@ class Game extends BaseGame {
     }
 
     initKeyboardInput() {
-        const [W, A, S, D, SPACE] = [87, 65, 83, 68, 32];
+        const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
         const keyBinds = {
             [W]: "forward",
             [A]: "left",
             [S]: "back",
             [D]: "right",
+            [R]: "reload",
             [SPACE]: "jump"
         };
 
@@ -227,11 +228,16 @@ class Game extends BaseGame {
                 384
             );
 
+            let ammoText = weapon.ammoCount + "/" + ammo.bulletCount;
+            if (weapon.reloadTimer > 0) {
+                ammoText += " Reloading ...";
+            }
+
             this.ctx.fillStyle =
                 weapon.ammoCount > 0 ? "cornflowerblue" : "red";
             this.ctx.font = "30px Arial";
             this.ctx.fillText(
-                [weapon.ammoCount, ammo.bulletCount].join("/"),
+                ammoText,
                 this.hud.width * 0.5 + 150,
                 this.hud.height - 50
             );
