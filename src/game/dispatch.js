@@ -10,7 +10,7 @@ import {
     AmmoPickup,
     JetpackPickup
 } from "./entities";
-import { toRadians } from "./utils.js";
+import { toRadians, forEachMapTile } from "./utils.js";
 
 /**
  * @param {State} state
@@ -25,64 +25,17 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerIds = playerIds;
 
-            /**
-             * Level layout
-             *
-             * 0: empty
-             * 1: wall-tile
-             * 2: player
-             * 3: jetpack
-             * 4: bullets
-             */
-            const tiles = [
-                [1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 2, 0, 2, 0, 2, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 3, 4, 1, 4, 3, 1, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1]
-            ];
-
-            const rows = tiles.length;
-            const cols = tiles[0].length;
-
-            // Add entities
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    const tileId = tiles[r][c];
-                    const entity = createEntity(tileId, state);
-                    if (entity !== undefined) {
-                        if (entity.object3D) {
-                            entity.object3D.position.set(
-                                TILE_SIZE * r,
-                                TILE_SIZE * 0.5,
-                                TILE_SIZE * c
-                            );
-                        }
-                        state.addEntity(entity);
-                    }
+            forEachMapTile((id, x, y, z) => {
+                const entity = createEntity(id, state);
+                if (entity.object3D) {
+                    entity.object3D.position.set(
+                        TILE_SIZE * x,
+                        TILE_SIZE * y,
+                        TILE_SIZE * z
+                    );
                 }
-            }
-
-            // Add floor
-            const geometry = new THREE.PlaneGeometry(1, 1);
-            const material = new THREE.MeshLambertMaterial({
-                color: 0xffff00,
-                side: THREE.DoubleSide
+                state.addEntity(entity);
             });
-            const plane = new THREE.Mesh(geometry, material);
-            plane.rotation.x = toRadians(90);
-            plane.position.set(cols * TILE_SIZE, 0, rows * TILE_SIZE);
-            plane.scale.set(
-                rows * TILE_SIZE * 2,
-                rows * TILE_SIZE * 2,
-                rows * TILE_SIZE * 2
-            );
-            state.scene.add(plane);
 
             // Create lights
             const keyLight = new THREE.DirectionalLight(
@@ -181,21 +134,21 @@ export function createEntity(tileId, state) {
     const entityId = (128 + state.entities.size).toString(16);
     const assets = state.assets;
     switch (tileId) {
-        case 2: {
+        case 1: {
             const index = state.getEntityGroup("player").length;
             const playerId = state.playerIds[index];
             if (playerId !== undefined) {
                 return new Player(playerId, assets);
             }
         }
-        case 1: {
+        case 2: {
             return new Wall(entityId, assets);
         }
         case 3: {
-            return new JetpackPickup(entityId, assets);
+            return new AmmoPickup(entityId, assets);
         }
         case 4: {
-            return new AmmoPickup(entityId, assets);
+            return new JetpackPickup(entityId, assets);
         }
     }
 }
