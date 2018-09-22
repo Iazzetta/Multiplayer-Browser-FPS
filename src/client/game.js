@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
+import Stats from "stats.js";
 import { Game as BaseGame } from "../game/game.js";
 import {
     initGame,
@@ -23,6 +24,11 @@ class Game extends BaseGame {
          * @type {THREE.WebGLRenderer}
          */
         this.renderer = null;
+
+        /**
+         * @type {Stats}
+         */
+        this.stats = new Stats();
 
         /**
          * @type {HTMLCanvasElement}
@@ -65,9 +71,11 @@ class Game extends BaseGame {
         game.state.assets.done().then(() => {
             game.dispatch(initGame([game.playerId(), "dummy-player"]));
             requestAnimationFrame(function next() {
+                game.stats.begin();
                 game.update();
                 game.render();
                 requestAnimationFrame(next);
+                game.stats.end();
             });
         });
     }
@@ -122,15 +130,18 @@ class Game extends BaseGame {
     }
 
     initRenderer() {
+        // Native canvas HUD overlay
         this.hud = document.createElement("canvas");
         this.ctx = document.createElement("canvas").getContext("2d");
         this.hud.classList.add("hud");
 
+        // Init THREE Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
         // Append to dom
         document.body.innerHTML = "";
         document.body.appendChild(this.hud);
+        document.body.appendChild(this.stats.dom);
         document.body.appendChild(this.renderer.domElement);
 
         // Resize - full screen
