@@ -219,6 +219,7 @@ export function shootingSystem(entity, state, dispatch) {
         if (
             controller.input.shoot &&
             weapon.firerateTimer <= 0 &&
+            weapon.reloadTimer === 0 &&
             weapon.ammoCount > 0
         ) {
             weapon.ammoCount = Math.max(weapon.ammoCount - 1, 0);
