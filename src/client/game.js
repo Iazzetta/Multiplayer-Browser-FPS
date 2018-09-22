@@ -227,11 +227,16 @@ class Game extends BaseGame {
                 384
             );
 
+            let ammoText = weapon.ammoCount + "/" + ammo.bulletCount;
+            if (weapon.reloadTimer > 0) {
+                ammoText += " Reloading ...";
+            }
+
             this.ctx.fillStyle =
                 weapon.ammoCount > 0 ? "cornflowerblue" : "red";
             this.ctx.font = "30px Arial";
             this.ctx.fillText(
-                [weapon.ammoCount, ammo.bulletCount].join("/"),
+                ammoText,
                 this.hud.width * 0.5 + 150,
                 this.hud.height - 50
             );
