@@ -171,12 +171,13 @@ class Game extends BaseGame {
     }
 
     initKeyboardInput() {
-        const [W, A, S, D, SPACE] = [87, 65, 83, 68, 32];
+        const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
         const keyBinds = {
             [W]: "forward",
             [A]: "left",
             [S]: "back",
             [D]: "right",
+            [R]: "reload",
             [SPACE]: "jump"
         };
 

@@ -234,13 +234,14 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, ammo } = entity;
-    if (weapon && ammo) {
-        const startReload =
+    const { weapon, ammo, controller } = entity;
+    if (weapon && ammo && controller) {
+        const canReload =
             weapon.reloadTimer === 0 &&
-            weapon.ammoCount === 0 &&
-            ammo.bulletCount > 0;
-        if (startReload) {
+            ammo.bulletCount > 0 &&
+            weapon.ammoCount < weapon.spec.magazineSize;
+
+        if (canReload && (controller.input.reload || weapon.ammoCount === 0)) {
             weapon.reloadTimer = weapon.spec.realod;
         }
 

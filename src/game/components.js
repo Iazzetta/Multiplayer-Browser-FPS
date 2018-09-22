@@ -17,7 +17,8 @@ export class ControllerComponent {
             back: false,
             right: false,
             jump: false,
-            shoot: false
+            shoot: false,
+            reload: false
         };
     }
 }
