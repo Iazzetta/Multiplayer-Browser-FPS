@@ -55,6 +55,7 @@ class Game extends BaseGame {
         game.state.assets.loadObj("wall_tile", "/assets/wall_tile.obj");
         game.state.assets.loadObj("player_head", "/assets/player_head.obj");
         game.state.assets.loadObj("player_body", "/assets/player_body.obj");
+        game.state.assets.loadObj("player_weapon", "/assets/player_weapon.obj");
         game.state.assets.loadObj("bullet_pickup", "/assets/bullet_pickup.obj");
         game.state.assets.loadObj(
             "jetpack_pickup",
@@ -80,7 +81,16 @@ class Game extends BaseGame {
         const player = this.state.entities.get(playerId);
         if (player !== undefined) {
             player.head.add(this.state.camera);
-            player.object3D.visible = false;
+            player.head.children.forEach(child => {
+                child.visible = false;
+            });
+
+            const weapon = this.state.assets.mesh("player_weapon");
+            weapon.scale.multiplyScalar(0.5)
+            weapon.position.x = 0.25;
+            weapon.position.y = -0.25;
+            weapon.position.z = -0.1;
+            player.head.add(weapon);
         }
         this.resize();
     }
@@ -220,14 +230,6 @@ class Game extends BaseGame {
 
         // Gun
         if (ammo && weapon) {
-            this.ctx.drawImage(
-                this.state.assets.sprite("gun_sprite"),
-                this.hud.width * 0.5,
-                this.hud.height * 0.5,
-                384,
-                384
-            );
-
             let ammoText = weapon.ammoCount + "/" + ammo.bulletCount;
             if (weapon.reloadTimer > 0) {
                 ammoText += " Reloading ...";
