@@ -2,13 +2,15 @@ export const DEBUG = false;
 
 export const TILE_SIZE = 12;
 
-export const JUMP_HEIGHT = TILE_SIZE ;
+export const JUMP_HEIGHT = TILE_SIZE;
 
 export const JUMP_TIME = 1000;
 
 export const GRAVITY = (2 * JUMP_HEIGHT) / Math.pow(JUMP_TIME * 0.5, 2);
 
 export const JUMP_SPEED = GRAVITY * JUMP_TIME * 0.5;
+
+export const ASSETS_PATH = "/assets/";
 
 export class WEAPON_TYPE {
     /**
