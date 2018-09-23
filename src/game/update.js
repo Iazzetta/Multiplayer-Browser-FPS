@@ -14,12 +14,12 @@ export function update(state, dispatch) {
     // Systems
     state.entities.forEach(entity => {
         if (entity.sleep) return;
+        controllerSystem(entity, state, dispatch);
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         pickupSystem(entity, state, dispatch);
         jetpackFuelSystem(entity, state, dispatch);
         damageSystem(entity, state, dispatch);
-        controllerSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
@@ -191,6 +191,9 @@ export function controllerSystem(entity, state, dispatch) {
     if (controller && velocity && object3D) {
         const input = controller.input;
 
+        // Reset state
+        controller.state = "idle";
+
         // vetical movement - jumping
         if (input.jump) {
             const { jetpack } = entity;
@@ -217,6 +220,8 @@ export function controllerSystem(entity, state, dispatch) {
 
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
+
+            controller.state = "running";
         }
 
         velocity.z *= controller.speed;
@@ -233,6 +238,7 @@ export function shootingSystem(entity, state, dispatch) {
     const { weapon, controller } = entity;
     if (weapon && controller) {
         if (weapon.firerateTimer > 0) {
+            controller.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
         }
 
@@ -268,6 +274,7 @@ export function reloadingSystem(entity, state, dispatch) {
 
         const isRelaoding = weapon.reloadTimer > 0;
         if (isRelaoding) {
+            controller.state = "reloading";
             weapon.reloadTimer -= state.time.delta;
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;

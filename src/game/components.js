@@ -10,6 +10,10 @@ export class DecayComponent {
 
 export class ControllerComponent {
     constructor() {
+        /**
+         * @type {"idle"|"running"|"shooting"|"reloading"}
+         */
+        this.state = "idle";
         this.speed = 0.02;
         this.input = {
             forward: false,
