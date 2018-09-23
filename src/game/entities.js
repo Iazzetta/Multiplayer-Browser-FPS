@@ -34,13 +34,13 @@ export class Entity {
          */
         this.sleep = false;
 
-        // Single-value components
-        //===========================
-
         /**
          * @type {string[]}
          */
         this.flags = [];
+
+        // Single-value components
+        //===========================
 
         /**
          * @type {boolean}
