@@ -19,6 +19,7 @@ export class WEAPON_TYPE {
         this.reloadSpeed = config.reloadSpeed;
         this.maxLoadedAmmo = config.maxLoadedAmmo;
         this.maxReservedAmmo = config.maxReservedAmmo;
+        Object.freeze(this);
     }
 }
 
