@@ -27,14 +27,16 @@ export function dispatch(state, action) {
 
             forEachMapTile((id, x, y, z) => {
                 const entity = createEntity(id, state);
-                if (entity.object3D) {
-                    entity.object3D.position.set(
-                        TILE_SIZE * x,
-                        TILE_SIZE * y,
-                        TILE_SIZE * z
-                    );
+                if (entity !== undefined) {
+                    if (entity.object3D) {
+                        entity.object3D.position.set(
+                            TILE_SIZE * x,
+                            TILE_SIZE * y,
+                            TILE_SIZE * z
+                        );
+                    }
+                    state.addEntity(entity);
                 }
-                state.addEntity(entity);
             });
 
             // Create lights
