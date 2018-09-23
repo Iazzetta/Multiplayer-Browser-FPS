@@ -2,6 +2,7 @@ import { State } from "./state";
 import { Action, shootBullet } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
+import { GRAVITY, JUMP_SPEED } from "./consts";
 
 /**
  * @param {State} state
@@ -63,7 +64,7 @@ export function decaySystem(entity, state, dispatch) {
 export function gravitySystem(entity, state, dispatch) {
     const { gravity, velocity } = entity;
     if (gravity && velocity) {
-        velocity.y -= 0.001;
+        velocity.y -= GRAVITY * state.time.delta;
     }
 }
 
@@ -197,7 +198,7 @@ export function controllerSystem(entity, state, dispatch) {
             } else {
                 // Normal jump
                 if (entity.collider && entity.collider.bottom()) {
-                    velocity.y = 0.02;
+                    velocity.y = JUMP_SPEED;
                     input.jump = false;
                 }
             }
