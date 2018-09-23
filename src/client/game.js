@@ -57,18 +57,7 @@ class Game extends BaseGame {
 
     run() {
         const game = this;
-        game.state.assets.loadImg("gun_sprite", "/assets/gun_sprite.png");
-        game.state.assets.loadObj("wall_tile", "/assets/wall_tile.obj");
-        game.state.assets.loadObj("player_head", "/assets/player_head.obj");
-        game.state.assets.loadObj("player_body", "/assets/player_body.obj");
-        game.state.assets.loadObj("player_weapon", "/assets/player_weapon.obj");
-        game.state.assets.loadObj("bullet_pickup", "/assets/bullet_pickup.obj");
-        game.state.assets.loadObj(
-            "jetpack_pickup",
-            "/assets/jetpack_pickup.obj"
-        );
-
-        game.state.assets.done().then(() => {
+        game.loadAssets().then(() => {
             game.dispatch(initGame([game.playerId(), "dummy-player"]));
             requestAnimationFrame(function next() {
                 game.stats.begin();
@@ -109,6 +98,20 @@ class Game extends BaseGame {
     syncDispatch(action) {
         this.dispatch(action);
         this.socket.emit("dispatch", action);
+    }
+
+    loadAssets() {
+        this.state.assets.loadImg("gun_sprite", "/assets/gun_sprite.png");
+        this.state.assets.loadObj("wall_tile", "/assets/wall_tile.obj");
+        this.state.assets.loadObj("player_head", "/assets/player_head.obj");
+        this.state.assets.loadObj("player_body", "/assets/player_body.obj");
+        this.state.assets.loadObj("player_weapon", "/assets/player_weapon.obj");
+        this.state.assets.loadObj("bullet_pickup", "/assets/bullet_pickup.obj");
+        this.state.assets.loadObj(
+            "jetpack_pickup",
+            "/assets/jetpack_pickup.obj"
+        );
+        return this.state.assets.done();
     }
 
     initSocket() {
