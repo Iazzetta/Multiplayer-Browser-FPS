@@ -19,6 +19,9 @@ export class Entity {
      * @param {string} id
      */
     constructor(id) {
+        // Non-component properties
+        //===========================
+
         /**
          * @readonly
          * @type {string}
@@ -30,6 +33,9 @@ export class Entity {
          * @type {boolean}
          */
         this.sleep = false;
+
+        // Single-value components
+        //===========================
 
         /**
          * @type {string[]}
@@ -50,6 +56,9 @@ export class Entity {
          * @type {number}
          */
         this.pickupHp = undefined;
+
+        // Components
+        //===========================
 
         /**
          * @type {Object3DComponent}
