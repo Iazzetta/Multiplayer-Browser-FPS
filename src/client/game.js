@@ -82,7 +82,7 @@ class Game extends BaseGame {
                 child.visible = false;
             });
 
-            const weapon = this.state.assets.objList.get("player_weapon");
+            const weapon = this.state.assets.mesh("player_weapon");
             weapon.scale.multiplyScalar(0.5);
             weapon.position.x = 0.25;
             weapon.position.y = -0.25;
