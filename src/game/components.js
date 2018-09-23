@@ -10,7 +10,7 @@ export class DecayComponent {
 
 export class ControllerComponent {
     constructor() {
-        this.speed = 0.01;
+        this.speed = 0.02;
         this.input = {
             forward: false,
             left: false,
