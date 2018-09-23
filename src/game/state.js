@@ -92,15 +92,17 @@ export class State {
      */
     deleteEntity(id) {
         const entity = this.getEntity(id);
-        if (entity.object3D) {
-            this.scene.remove(entity.object3D);
+        if (entity !== undefined) {
+            if (entity.object3D) {
+                this.scene.remove(entity.object3D);
+            }
+            for (let i = 0; i < entity.flags.length; i++) {
+                const flag = entity.flags[i];
+                const flaggedEntities = this.getEntityGroup(flag);
+                const index = flaggedEntities.indexOf(entity);
+                flaggedEntities.splice(index, 1);
+            }
+            this.entities.delete(id);
         }
-        for (let i = 0; i < entity.flags.length; i++) {
-            const flag = entity.flags[i];
-            const flaggedEntities = this.getEntityGroup(flag);
-            const index = flaggedEntities.indexOf(entity);
-            flaggedEntities.splice(index, 1);
-        }
-        this.entities.delete(id);
     }
 }
