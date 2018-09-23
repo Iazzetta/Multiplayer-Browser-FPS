@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { State } from "./state";
 import { Action, shootBullet } from "./actions";
 import { Entity } from "./entities";
@@ -13,6 +12,7 @@ export function update(state, dispatch) {
 
     // Systems
     state.entities.forEach(entity => {
+        if (entity.sleep) return;
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         pickupSystem(entity, state, dispatch);

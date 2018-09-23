@@ -26,6 +26,12 @@ export class Entity {
         this.id = id;
 
         /**
+         * Don't run system updates
+         * @type {boolean}
+         */
+        this.sleep = false;
+
+        /**
          * @type {string[]}
          */
         this.flags = [];
@@ -154,6 +160,7 @@ export class Wall extends Entity {
         mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
         super(id);
+        this.sleep = true;
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
