@@ -8,7 +8,8 @@ import {
     Bullet,
     Wall,
     AmmoPickup,
-    JetpackPickup
+    JetpackPickup,
+    HpPickup
 } from "./entities";
 import { toRadians, forEachMapTile } from "./utils.js";
 
@@ -151,6 +152,9 @@ export function createEntity(tileId, state) {
         }
         case 4: {
             return new JetpackPickup(entityId, assets);
+        }
+        case 5: {
+            return new HpPickup(entityId, assets);
         }
     }
 }

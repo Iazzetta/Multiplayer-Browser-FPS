@@ -38,7 +38,7 @@ export class Entity {
         /**
          * @type {number}
          */
-        this.pickupAmmo = 0;
+        this.pickupAmmo = undefined;
 
         /**
          * @type {Object3DComponent}
@@ -186,5 +186,21 @@ export class AmmoPickup extends Entity {
         this.collider = new ColliderComponent();
         this.object3D = new Object3DComponent();
         this.object3D.add(assets.mesh("bullet_pickup"));
+    }
+}
+
+export class HpPickup extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     */
+    constructor(id, assets) {
+        super(id);
+        this.flags = ["pickup"];
+        this.gravity = true;
+        this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
+        this.object3D = new Object3DComponent();
+        this.object3D.add(assets.mesh("hp_pickup"));
     }
 }
