@@ -11,7 +11,7 @@ import {
     JetpackPickup,
     HpPickup
 } from "./entities";
-import { toRadians, forEachMapTile } from "./utils.js";
+import { forEachMapTile } from "./utils.js";
 
 /**
  * @param {State} state
@@ -73,7 +73,7 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_INPUT": {
             const { playerId, input, value } = action.data;
-            const { controller } = state.getEntity(playerId);
+            const { controller } = state.getEntityComponents(playerId);
             if (controller !== undefined) {
                 if (controller.input[input] !== undefined) {
                     controller.input[input] = value;
@@ -83,7 +83,7 @@ export function dispatch(state, action) {
         }
         case "SET_PLAYER_AIM": {
             const { playerId, ver, hor } = action.data;
-            const { object3D, head } = state.getEntity(playerId);
+            const { object3D, head } = state.getEntityComponents(playerId);
             if (object3D && head) {
                 object3D.rotation.y = ver;
                 head.rotation.x = hor;
@@ -93,7 +93,7 @@ export function dispatch(state, action) {
         case "SHOOT_BULLET": {
             const { playerId } = action.data;
             const player = state.getEntity(playerId);
-            if (player.object3D && player.head) {
+            if (player && player.object3D && player.head) {
                 // Create bullet
                 const bulletId = playerId + Date.now().toString(16);
                 const bullet = new Bullet(bulletId, state.assets);

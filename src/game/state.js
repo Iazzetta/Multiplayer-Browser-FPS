@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { Player, Entity, Wall } from "./entities.js";
 import { Assets } from "./assets.js";
-import memoize from "lodash/memoize";
 
 export class State {
     /**
@@ -65,6 +64,16 @@ export class State {
      * @returns {Entity}
      */
     getEntity(id) {
+        return this.entities.get(id);
+    }
+
+    /**
+     * for more convenient destructing ...
+     *
+     * @param {string} id
+     * @returns {Entity}
+     */
+    getEntityComponents(id) {
         return this.entities.get(id) || Entity.empty;
     }
 
