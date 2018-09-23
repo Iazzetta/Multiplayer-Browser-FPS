@@ -229,58 +229,47 @@ class Game extends BaseGame {
     }
 
     render() {
-        // World
         this.renderer.render(this.state.scene, this.state.camera);
         this.renderHUD();
     }
 
     renderHUD() {
+        const { weapon, jetpack, health } = this.state.getEntityComponents(
+            this.playerId()
+        );
+
+        // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
 
-        const { weapon, jetpack } = this.state.getEntity(this.playerId());
-
-        // Gun
+        // Weapon
         if (weapon) {
-            let ammoText = weapon.loadedAmmo + "/" + weapon.reservedAmmo;
-            if (weapon.reloadTimer > 0) {
-                ammoText += " Reloading ...";
-            }
-
-            this.ctx.fillStyle =
-                weapon.loadedAmmo > 0 ? "cornflowerblue" : "red";
-            this.ctx.font = "30px Arial";
-            this.ctx.fillText(
-                ammoText,
-                this.hud.width * 0.5 + 150,
-                this.hud.height - 50
-            );
+            this.renderInfo({
+                text: "AMMO",
+                info: weapon.reloadTimer > 0 ? "Reloading..." : null,
+                color: "yellow",
+                value: weapon.loadedAmmo,
+                max: weapon.reservedAmmo,
+                x: this.hud.width * 0.75,
+                y: this.hud.height - 50
+            });
         }
 
-        // Fuel
-        if (jetpack) {
-            const pad = 16;
-            const barHeight = 8;
-            const barWidth = 800;
-
-            const empty = Math.abs(jetpack.minFuel);
-            const fuel = empty + jetpack.fuel;
-            const full = empty + jetpack.maxFuel;
-
-            this.ctx.fillStyle = "black";
-            this.ctx.fillRect(pad, pad, barWidth, barHeight);
-
-            const fuelWidth = barWidth * (fuel / full);
-            this.ctx.fillStyle = jetpack.fuel > 0 ? "cornflowerblue" : "red";
-            this.ctx.fillRect(pad, pad, fuelWidth, barHeight);
-
-            const emptyFuel = barWidth * (empty / full);
-            this.ctx.fillStyle = "white";
-            this.ctx.fillRect(pad + emptyFuel, pad - 2, 2, barHeight + 4);
+        // Health
+        if (health) {
+            this.renderInfo({
+                text: "HP",
+                info: null,
+                color: "limegreen",
+                value: health.hp,
+                max: health.max,
+                x: this.hud.width * 0.5,
+                y: this.hud.height - 50
+            });
         }
 
         // Cursor
         const cursor = { x: this.hud.width * 0.5, y: this.hud.height * 0.5 };
-        const radius = 32;
+        const radius = 16;
 
         this.ctx.lineWidth = 2;
 
@@ -297,6 +286,27 @@ class Game extends BaseGame {
         const ctx = this.hud.getContext("2d");
         ctx.clearRect(0, 0, this.hud.width, this.hud.height);
         ctx.drawImage(this.ctx.canvas, 0, 0);
+    }
+
+    /**
+     * @param {object} config
+     * @param {string} config.text
+     * @param {string} config.info
+     * @param {string} config.color
+     * @param {number} config.value
+     * @param {number} config.max
+     * @param {number} config.x
+     * @param {number} config.y
+     */
+    renderInfo(config) {
+        const text = `${config.text}: ${config.value}/${config.max}`;
+        this.ctx.font = "30px Impact";
+        this.ctx.fillStyle = config.color;
+        this.ctx.fillText(text, config.x, config.y);
+        if (config.info) {
+            this.ctx.font = "16px Impact";
+            this.ctx.fillText(config.info, config.x, config.y + 24);
+        }
     }
 }
 
