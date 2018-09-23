@@ -105,9 +105,11 @@ export function pickupSystem(entity, state, dispatch) {
 
                 // HP
                 if (entity.health && pickup.pickupHp !== undefined) {
-                    entity.health.max += pickup.pickupHp;
-                    state.deleteEntity(pickup.id);
-                    return;
+                    if (entity.health.hp < entity.health.max) {
+                        entity.health.max += pickup.pickupHp;
+                        state.deleteEntity(pickup.id);
+                        return;
+                    }
                 }
             }
         }
