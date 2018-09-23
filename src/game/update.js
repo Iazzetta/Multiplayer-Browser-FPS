@@ -86,6 +86,7 @@ export function pickupSystem(entity, state, dispatch) {
                     state.deleteEntity(pickup.id);
                     return;
                 }
+
                 // Ammo
                 if (entity.weapon && pickup.pickupAmmo !== undefined) {
                     if (
@@ -99,6 +100,13 @@ export function pickupSystem(entity, state, dispatch) {
                         state.deleteEntity(pickup.id);
                         return;
                     }
+                }
+
+                // HP
+                if (entity.health && pickup.pickupHp !== undefined) {
+                    entity.health.max += pickup.pickupHp;
+                    state.deleteEntity(pickup.id);
+                    return;
                 }
             }
         }
