@@ -160,7 +160,6 @@ export function damageSystem(bullet, state, dispatch) {
                 if (player === bullet) return;
                 if (player.health.hp <= 0) return;
                 if (player.id === bullet.damage.creatorId) return;
-
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {

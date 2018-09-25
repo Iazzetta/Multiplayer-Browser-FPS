@@ -2,7 +2,7 @@ export const DEBUG = false;
 
 export const TILE_SIZE = 16;
 
-export const JUMP_HEIGHT = TILE_SIZE;
+export const JUMP_HEIGHT = 8;
 
 export const JUMP_TIME = 1000;
 
