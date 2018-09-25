@@ -336,6 +336,15 @@ class Game extends BaseGame {
             });
         }
 
+        // Players
+        this.ctx.font = "26px Impact";
+        this.state.playerIds.forEach((playerId, index) => {
+            this.ctx.fillStyle = "black";
+            this.ctx.fillText(playerId, 16, 130 + 32 * index);
+            this.ctx.fillStyle = "white";
+            this.ctx.fillText(playerId, 16, 128 + 32 * index);
+        });
+
         // Cursor
         const cursor = { x: this.hud.width * 0.5, y: this.hud.height * 0.5 };
         const radius = 16;
