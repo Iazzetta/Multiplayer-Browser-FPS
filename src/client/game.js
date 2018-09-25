@@ -91,7 +91,12 @@ class Game extends BaseGame {
         const playerId = this.playerId();
         const player = this.state.entities.get(playerId);
         if (player !== undefined) {
+            player.object3D.children.forEach(child => {
+                child.visible = false;
+            });
+
             player.head.add(this.state.camera);
+            player.head.visible = true;
             player.head.children.forEach(child => {
                 child.visible = false;
             });
