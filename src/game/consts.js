@@ -1,6 +1,6 @@
 export const DEBUG = false;
 
-export const TILE_SIZE = 12;
+export const TILE_SIZE = 16;
 
 export const JUMP_HEIGHT = TILE_SIZE;
 
