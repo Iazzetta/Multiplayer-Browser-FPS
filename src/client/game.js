@@ -116,7 +116,7 @@ class Game extends BaseGame {
     }
 
     loadAssets() {
-        this.state.assets.loadImg("gun_sprite", "gun_sprite.png");
+        this.state.assets.loadObj("bullet", "bullet.obj");
         this.state.assets.loadObj("wall_tile", "wall_tile.obj");
         this.state.assets.loadObj("player_head", "player_head.obj");
         this.state.assets.loadObj("player_body", "player_body.obj");
