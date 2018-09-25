@@ -132,7 +132,7 @@ export class Player extends Entity {
         this.head = new HeadComponent();
         this.head.add(assets.mesh("player_head"));
 
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 1.5, 1));
+        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
         this.object3D.add(assets.mesh("player_body"));
         this.object3D.add(this.head);
     }
