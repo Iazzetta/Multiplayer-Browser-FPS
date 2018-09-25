@@ -257,7 +257,7 @@ class Game extends BaseGame {
             head !== undefined
         ) {
             const gunMesh = head.children[head.children.length - 1];
-            gunMesh.position.x = 0.25;
+            gunMesh.position.x = 0.05;
             gunMesh.position.y = -0.25;
             gunMesh.position.z = -0.1;
             gunMesh.rotation.set(0, 0, 0);
