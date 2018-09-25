@@ -1,3 +1,5 @@
+import { State } from "./state";
+
 export class Action {
     /**
      * @param {string} type
@@ -47,4 +49,29 @@ export function setPlayerAim(playerId, ver, hor) {
  */
 export function shootBullet(playerId) {
     return new Action("SHOOT_BULLET", { playerId });
+}
+
+/**
+ * @param {string} playerId
+ * @param {State} state
+ */
+export function syncPlayer(playerId, state) {
+    const { head, object3D, velocity } = state.getEntityComponents(playerId);
+    if (object3D == undefined) return;
+
+    const { x, y, z } = object3D.position;
+    const { x: vx, y: vy, z: vz } = velocity;
+    const rx = head.rotation.x;
+    const ry = object3D.rotation.y;
+    return new Action("SYNC_PLAYER", {
+        playerId,
+        x,
+        y,
+        z,
+        vx,
+        vy,
+        vz,
+        rx,
+        ry
+    });
 }

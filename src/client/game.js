@@ -7,10 +7,12 @@ import {
     setScreenSize,
     setPlayerInput,
     setPlayerAim,
-    Action
+    Action,
+    syncPlayer
 } from "../game/actions.js";
-import clamp from "lodash/clamp";
 import { toRadians } from "../game/utils.js";
+import debounce from "lodash/debounce";
+import clamp from "lodash/clamp";
 
 class Game extends BaseGame {
     constructor() {
@@ -49,6 +51,11 @@ class Game extends BaseGame {
                 }
             }
         });
+
+        this.syncPlayer = debounce(() => {
+            const playerId = this.playerId();
+            this.socket.emit("dispatch", syncPlayer(playerId, this.state));
+        }, 500);
 
         this.initSocket();
         this.initRenderer();
@@ -99,6 +106,7 @@ class Game extends BaseGame {
     syncDispatch(action) {
         this.dispatch(action);
         this.socket.emit("dispatch", action);
+        this.syncPlayer();
     }
 
     loadAssets() {

@@ -19,6 +19,25 @@ import { forEachMapTile } from "./utils.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
+        case "SYNC_PLAYER": {
+            const { playerId, x, y, z, vx, vy, vz, rx, ry } = action.data;
+            const player = state.getEntity(playerId);
+            if (player !== undefined) {
+                if (player.head !== undefined) {
+                    player.head.rotation.x = rx;
+                }
+
+                if (player.object3D !== undefined) {
+                    player.object3D.position.set(x, y, z);
+                    player.object3D.rotation.y = ry;
+                }
+
+                if (player.velocity !== undefined) {
+                    player.velocity.set(vx, vy, vz);
+                }
+            }
+            return state;
+        }
         case "INIT_GAME": {
             const { playerIds } = action.data;
 
