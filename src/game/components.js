@@ -134,7 +134,7 @@ export class Object3DComponent extends THREE.Object3D {
 export class HeadComponent extends THREE.Object3D {
     constructor() {
         super();
-        this.position.y = 2;
+        this.position.y = 1.5;
         this.position.z = 0;
 
         if (DEBUG) {
