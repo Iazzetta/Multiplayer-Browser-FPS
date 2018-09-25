@@ -38,7 +38,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
         newGame();
 
         socket.on("dispatch", action => {
-            socket.broadcast.emit("dispatch", action);
+            dispatch(action);
         });
 
         socket.on("disconnect", () => {
