@@ -2,7 +2,7 @@ import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import debounce from "lodash/debounce";
-import { initGame } from "../game/actions";
+import { initGame, kill } from "../game/actions";
 
 // HTTP Server
 //================================================================
@@ -42,6 +42,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
         });
 
         socket.on("disconnect", () => {
+            dispatch(kill(socket.id));
             console.log("Disconnect", socket.id);
         });
     });
