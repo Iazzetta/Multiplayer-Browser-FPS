@@ -164,10 +164,10 @@ export function damageSystem(bullet, state, dispatch) {
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
-                    const hp = (player.health.hp -= bullet.damage.dmg);
-                    dispatch(serverAction(setHP(player.id, hp)));
-
-                    if (player.health.hp <= 0) {
+                    const hp = player.health.hp - bullet.damage.dmg;
+                    if (hp > 0) {
+                        dispatch(serverAction(setHP(player.id, hp)));
+                    } else {
                         dispatch(serverAction(kill(player.id)));
                     }
 
