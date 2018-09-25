@@ -49,6 +49,12 @@ class Game extends BaseGame {
                     this.mountPlayerCamera();
                     break;
                 }
+                // case "SERVER_ACTION": {
+                //     if (!this.socket.connected) {
+                //         this.dispatch(action.data);
+                //     }
+                //     break;
+                // }
             }
         });
 

@@ -19,6 +19,19 @@ import { forEachMapTile } from "./utils.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
+        case "SET_HP": {
+            const { playerId, hp } = action.data;
+            const { health } = state.getEntityComponents(playerId);
+            if (health !== undefined) {
+                health.hp = hp;
+            }
+            return state;
+        }
+        case "KILL": {
+            const { id } = action.data;
+            state.deleteEntity(id);
+            return state;
+        }
         case "SYNC_PLAYER": {
             const { playerId, x, y, z, vx, vy, vz, rx, ry } = action.data;
             const player = state.getEntity(playerId);

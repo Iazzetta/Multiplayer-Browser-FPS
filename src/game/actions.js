@@ -12,6 +12,13 @@ export class Action {
 }
 
 /**
+ * @param {Action} action
+ */
+export function serverAction(action) {
+    return new Action("SERVER_ACTION", action);
+}
+
+/**
  * @param {string[]} playerIds
  */
 export function initGame(playerIds) {
@@ -49,6 +56,21 @@ export function setPlayerAim(playerId, ver, hor) {
  */
 export function shootBullet(playerId) {
     return new Action("SHOOT_BULLET", { playerId });
+}
+
+/**
+ * @param {string} playerId
+ * @param {number} hp
+ */
+export function setHP(playerId, hp) {
+    return new Action("SET_HP", { playerId, hp });
+}
+
+/**
+ * @param {string} id
+ */
+export function kill(id) {
+    return new Action("KILL", { id });
 }
 
 /**

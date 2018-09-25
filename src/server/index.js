@@ -16,6 +16,11 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
+    game.subscriptions.push(action => {
+        if (action.type === "SERVER_ACTION") {
+            dispatch(action.data);
+        }
+    });
 
     const dispatch = action => {
         game.dispatch(action);

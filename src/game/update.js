@@ -1,5 +1,5 @@
 import { State } from "./state";
-import { Action, shootBullet } from "./actions";
+import { Action, shootBullet, setHP, serverAction, kill } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
 import { GRAVITY, JUMP_SPEED } from "./consts";
@@ -164,11 +164,14 @@ export function damageSystem(bullet, state, dispatch) {
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
-                    bullet.collider.x = 1;
-                    player.health.hp -= bullet.damage.dmg;
+                    const hp = (player.health.hp -= bullet.damage.dmg);
+                    dispatch(serverAction(setHP(player.id, hp)));
+
                     if (player.health.hp <= 0) {
-                        state.deleteEntity(player.id);
+                        dispatch(serverAction(kill(player.id)));
                     }
+
+                    bullet.collider.x = 1;
                 }
             }
         });
