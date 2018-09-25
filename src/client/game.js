@@ -315,7 +315,10 @@ class Game extends BaseGame {
             this.renderInfo({
                 text: "AMMO",
                 info: weapon.reloadTimer > 0 ? "Reloading..." : null,
-                color: "yellow",
+                color:
+                    weapon.loadedAmmo + weapon.reservedAmmo > 0
+                        ? "yellow"
+                        : "red",
                 value: weapon.loadedAmmo,
                 max: weapon.reservedAmmo,
                 x: this.hud.width * 0.75,
