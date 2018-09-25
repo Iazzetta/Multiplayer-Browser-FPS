@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 // @ts-ignore
-import cube_land_map from "../../dist/assets/maps/cube-land.json";
+import cube_land_map from "../../dist/assets/maps/small-room.json";
 
 export class AABB {
     constructor(min = new THREE.Vector3(), max = new THREE.Vector3()) {
