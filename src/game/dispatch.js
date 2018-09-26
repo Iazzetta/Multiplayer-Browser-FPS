@@ -12,6 +12,7 @@ import {
     HpPickup
 } from "./entities";
 import { forEachMapTile } from "./utils.js";
+import map from "lodash/map";
 
 /**
  * @param {State} state
@@ -50,49 +51,6 @@ export function dispatch(state, action) {
                     player.velocity.set(vx, vy, vz);
                 }
             }
-            return state;
-        }
-        case "INIT_GAME": {
-            const { playerIds } = action.data;
-
-            state = new State(state.assets);
-            state.time.start = Date.now();
-            state.playerIds = playerIds;
-
-            forEachMapTile((id, x, y, z) => {
-                const entity = createEntity(id, state);
-                if (entity !== undefined) {
-                    if (entity.object3D) {
-                        entity.object3D.position.set(
-                            TILE_SIZE * x,
-                            TILE_SIZE * y,
-                            TILE_SIZE * z
-                        );
-                    }
-                    state.addEntity(entity);
-                }
-            });
-
-            // Create lights ...
-            const dirLight = (color, int) => {
-                return new THREE.DirectionalLight(new THREE.Color(color), int);
-            };
-
-            var light = new THREE.AmbientLight(0x404040);
-            state.scene.add(light);
-
-            const keyLight = dirLight("#FFE4C4", 0.74);
-            keyLight.position.set(-100, 50, 100);
-            state.scene.add(keyLight);
-
-            const fillLight = dirLight("#A6D8ED", 0.25);
-            fillLight.position.set(100, 50, 100);
-            state.scene.add(fillLight);
-
-            const backLight = dirLight("#FFFFFF", 0.5);
-            backLight.position.set(100, 0, -100).normalize();
-            state.scene.add(backLight);
-
             return state;
         }
         case "SET_SCREEN_SIZE": {
@@ -152,6 +110,82 @@ export function dispatch(state, action) {
 
                 state.addEntity(bullet);
             }
+            return state;
+        }
+        case "INIT_GAME": {
+            const { playerIds } = action.data;
+
+            state = new State(state.assets);
+            state.time.start = Date.now();
+            state.playerIds = playerIds;
+            state.playerSpawns = [];
+
+            forEachMapTile((id, x, y, z) => {
+                const entity = createEntity(id, state);
+                const vector = new THREE.Vector3(
+                    TILE_SIZE * x,
+                    TILE_SIZE * y,
+                    TILE_SIZE * z
+                );
+
+                if (entity !== undefined) {
+                    if (entity.object3D) {
+                        entity.object3D.position.copy(vector);
+                    }
+                    state.addEntity(entity);
+                }
+
+                // Save player spawn
+                if (id === 1) {
+                    state.playerSpawns.push(vector.clone());
+                }
+            });
+
+            // Create lights ...
+            const dirLight = (color, int) => {
+                return new THREE.DirectionalLight(new THREE.Color(color), int);
+            };
+
+            var light = new THREE.AmbientLight(0x404040);
+            state.scene.add(light);
+
+            const keyLight = dirLight("#FFE4C4", 0.74);
+            keyLight.position.set(-100, 50, 100);
+            state.scene.add(keyLight);
+
+            const fillLight = dirLight("#A6D8ED", 0.25);
+            fillLight.position.set(100, 50, 100);
+            state.scene.add(fillLight);
+
+            const backLight = dirLight("#FFFFFF", 0.5);
+            backLight.position.set(100, 0, -100).normalize();
+            state.scene.add(backLight);
+
+            return state;
+        }
+        case "SYNC_GAME_STATE": {
+            const { playerIds } = action.data;
+            const spawns = state.playerSpawns;
+            console.log({ playerIds });
+            // Add player
+            playerIds.forEach((id, index) => {
+                const player = state.getEntity(id);
+                if (player === undefined) {
+                    const player = new Player(id, state.assets);
+                    const spawn = spawns[index % spawns.length];
+
+                    player.object3D.position.copy(spawn);
+                    state.addEntity(player);
+                }
+            });
+
+            // Remove missing players
+            state.playerIds
+                .filter(id => playerIds.indexOf(id) === -1)
+                .forEach(id => state.deleteEntity(id));
+
+            state.playerIds = playerIds;
+
             return state;
         }
     }

@@ -19,6 +19,11 @@ class Game extends BaseGame {
         super();
 
         /**
+         * @type {string}
+         */
+        this.playerId = "player-1";
+
+        /**
          * @type {SocketIOClient.Socket}
          */
         this.socket = null;
@@ -45,8 +50,10 @@ class Game extends BaseGame {
 
         this.subscriptions.push(action => {
             switch (action.type) {
-                case "INIT_GAME": {
+                case "INIT_GAME":
+                case "SYNC_GAME_STATE": {
                     this.mountPlayerCamera();
+                    this.syncPlayer();
                     break;
                 }
                 case "SERVER_ACTION": {
@@ -59,20 +66,21 @@ class Game extends BaseGame {
         });
 
         this.syncPlayer = debounce(() => {
-            const playerId = this.playerId();
+            const playerId = this.playerId;
             this.socket.emit("dispatch", syncPlayer(playerId, this.state));
         }, 500);
-
-        this.initSocket();
-        this.initRenderer();
-        this.initMouseInput();
-        this.initKeyboardInput();
     }
 
     run() {
         const game = this;
         game.loadAssets().then(() => {
-            game.dispatch(initGame([game.playerId(), "dummy-player"]));
+            game.initRenderer();
+            game.initMouseInput();
+            game.initKeyboardInput();
+
+            game.dispatch(initGame([game.playerId]));
+            game.initSocket();
+
             requestAnimationFrame(function next() {
                 game.stats.begin();
                 game.update();
@@ -83,12 +91,8 @@ class Game extends BaseGame {
         });
     }
 
-    playerId() {
-        return this.socket.id || "single-player";
-    }
-
     mountPlayerCamera() {
-        const playerId = this.playerId();
+        const playerId = this.playerId;
         const player = this.state.entities.get(playerId);
         if (player !== undefined) {
             player.object3D.children.forEach(child => {
@@ -137,6 +141,7 @@ class Game extends BaseGame {
         });
 
         this.socket.on("connect", () => {
+            this.playerId = this.socket.id;
             console.log("Connected");
 
             this.socket.on("dispatch", action => {
@@ -181,7 +186,7 @@ class Game extends BaseGame {
 
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId();
+                const playerId = this.playerId;
                 const { object3D, head } = this.state.getEntity(playerId);
                 if (object3D && head) {
                     let ver = object3D.rotation.y - ev.movementX * 0.01;
@@ -195,7 +200,7 @@ class Game extends BaseGame {
         // @ts-ignore
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId();
+                const playerId = this.playerId;
                 const action = setPlayerInput(playerId, "shoot", true);
                 this.syncDispatch(action);
             }
@@ -204,7 +209,7 @@ class Game extends BaseGame {
         // @ts-ignore
         canvas.addEventListener("mouseup", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId();
+                const playerId = this.playerId;
                 const action = setPlayerInput(playerId, "shoot", false);
                 this.syncDispatch(action);
             }
@@ -227,7 +232,7 @@ class Game extends BaseGame {
             const input = keyBinds[keyCode];
             if (kesy.get(input) !== value && input !== undefined) {
                 kesy.set(input, value);
-                const playerId = this.playerId();
+                const playerId = this.playerId;
                 const action = setPlayerInput(playerId, input, value);
                 this.syncDispatch(action);
             }
@@ -253,7 +258,7 @@ class Game extends BaseGame {
 
         // POV - Animations
         const { controller, weapon, head } = this.state.getEntityComponents(
-            this.playerId()
+            this.playerId
         );
 
         if (
@@ -309,7 +314,7 @@ class Game extends BaseGame {
 
     renderHUD() {
         const { weapon, jetpack, health } = this.state.getEntityComponents(
-            this.playerId()
+            this.playerId
         );
 
         // Clear
