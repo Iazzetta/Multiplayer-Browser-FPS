@@ -29,7 +29,6 @@ export function dispatch(state, action) {
         }
         case "KILL": {
             const { id } = action.data;
-            state.playerIds = state.playerIds.filter(pid => pid !== id);
             state.deleteEntity(id);
             return state;
         }

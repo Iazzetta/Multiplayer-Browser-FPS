@@ -1,5 +1,7 @@
 export const DEBUG = false;
 
+export const RESPAWN_TIME = 1500;
+
 export const TILE_SIZE = 16;
 
 export const JUMP_HEIGHT = 8;

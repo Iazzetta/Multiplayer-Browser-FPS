@@ -1,8 +1,15 @@
 import { State } from "./state";
-import { Action, shootBullet, setHP, serverAction, kill } from "./actions";
+import {
+    Action,
+    shootBullet,
+    setHP,
+    serverAction,
+    kill,
+    syncGameState
+} from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED } from "./consts";
+import { GRAVITY, JUMP_SPEED, RESPAWN_TIME } from "./consts";
 
 /**
  * @param {State} state
@@ -168,6 +175,10 @@ export function damageSystem(bullet, state, dispatch) {
                         dispatch(serverAction(setHP(player.id, hp)));
                     } else {
                         dispatch(serverAction(kill(player.id)));
+                        setTimeout(function respawn() {
+                            const playerIds = state.playerIds;
+                            dispatch(serverAction(syncGameState(playerIds)));
+                        }, RESPAWN_TIME);
                     }
 
                     bullet.collider.x = 1;
