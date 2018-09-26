@@ -12,7 +12,6 @@ import {
     HpPickup
 } from "./entities";
 import { forEachMapTile } from "./utils.js";
-import map from "lodash/map";
 
 /**
  * @param {State} state
@@ -207,6 +206,7 @@ export function createEntity(tileId, state) {
             if (playerId !== undefined) {
                 return new Player(playerId, assets);
             }
+            return;
         }
         case 2: {
             return new Wall(entityId, assets);
