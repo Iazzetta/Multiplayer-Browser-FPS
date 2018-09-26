@@ -166,7 +166,7 @@ export function dispatch(state, action) {
         case "SYNC_GAME_STATE": {
             const { playerIds } = action.data;
             const spawns = state.playerSpawns;
-            console.log({ playerIds });
+
             // Add player
             playerIds.forEach((id, index) => {
                 const player = state.getEntity(id);
