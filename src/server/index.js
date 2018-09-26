@@ -47,7 +47,10 @@ app.use("/", express.static(__dirname + "/../../dist"));
         });
     });
 
-    setInterval(() => game.update(), 1000 / 60);
+    setInterval(() => {
+        game.update();
+        game.state.scene.updateMatrixWorld(true);
+    }, 1000 / 60);
 
     console.log("Server running at http://localhost:" + PORT);
 }
