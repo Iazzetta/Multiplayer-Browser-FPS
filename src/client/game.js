@@ -132,7 +132,7 @@ class Game extends BaseGame {
     }
 
     initSocket() {
-        this.socket = SocketIO("http://localhost:8080", {
+        this.socket = SocketIO("http://192.168.19.101:8080/", {
             reconnection: false
         });
 
@@ -184,8 +184,8 @@ class Game extends BaseGame {
                 const playerId = this.playerId();
                 const { object3D, head } = this.state.getEntity(playerId);
                 if (object3D && head) {
-                    let ver = object3D.rotation.y - ev.movementX * 0.01;
-                    let hor = head.rotation.x - ev.movementY * 0.01;
+                    let ver = object3D.rotation.y - ev.movementX * 0.005;
+                    let hor = head.rotation.x - ev.movementY * 0.005;
                     hor = clamp(hor, -1.6, 1.6);
                     this.syncDispatch(setPlayerAim(playerId, ver, hor));
                 }

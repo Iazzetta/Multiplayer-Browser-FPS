@@ -39,7 +39,7 @@ WEAPON_TYPE.MACHINEGUN = Object.freeze(
         damage: 1,
         firerate: 100,
         reloadSpeed: 2000,
-        maxLoadedAmmo: 24,
-        maxReservedAmmo: 100
+        maxLoadedAmmo: 15,
+        maxReservedAmmo: 1000
     })
 );
