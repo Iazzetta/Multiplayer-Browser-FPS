@@ -1,3 +1,4 @@
+import { State } from "./state";
 import times from "lodash/times";
 
 export const [
@@ -44,6 +45,10 @@ export class Action {
     }
 }
 
+export function initGame() {
+    return new Action(INIT_GAME, {});
+}
+
 /**
  * @param {string} id
  */
@@ -60,10 +65,60 @@ export function playerLeave(id) {
 
 /**
  * @param {string} id
- * @param {number} x
- * @param {number} y
- * @param {number} z
  */
-export function spawnPlayer(id, x, y, z) {
-    return new Action(SPAWN_PLAYER, { id, x, y, z });
+export function spawnPlayer(id) {
+    return new Action(SPAWN_PLAYER, { id });
+}
+
+/**
+ * @param {string} playerId
+ * @param {State} state
+ */
+export function syncPlayer(playerId, state) {
+    const { head, object3D, velocity } = state.getEntityComponents(playerId);
+    if (object3D === undefined) return;
+    if (velocity === undefined) return;
+    if (head === undefined) return;
+
+    const { x, y, z } = object3D.position;
+    const { x: vx, y: vy, z: vz } = velocity;
+    const rx = head.rotation.x;
+    const ry = object3D.rotation.y;
+    return new Action(SYNC_PLAYER, {
+        playerId,
+        x,
+        y,
+        z,
+        vx,
+        vy,
+        vz,
+        rx,
+        ry
+    });
+}
+
+/**
+ * @param {number} width
+ * @param {number} height
+ */
+export function setCameraView(width, height) {
+    return new Action(SET_CAMERA_VIEW, { width, height });
+}
+
+/**
+ * @param {string} id
+ * @param {string} input
+ * @param {boolean} value
+ */
+export function setPlayerInput(id, input, value) {
+    return new Action(SET_INPUT, { id, input, value });
+}
+
+/**
+ * @param {string} id
+ * @param {number} ver
+ * @param {number} hor
+ */
+export function setPlayerAim(id, ver, hor) {
+    return new Action(SET_AIM, { id, ver, hor });
 }

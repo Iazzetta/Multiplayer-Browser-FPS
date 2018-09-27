@@ -92,22 +92,24 @@ export function dispatch(state, action) {
 
             // Add missing players
             players.forEach(player => {
-                const { id, x, y, z, alive } = player;
+                const { id, alive } = player;
                 if (state.playerIds.indexOf(id) === -1) {
                     dispatch(state, playerJoin(id));
                 }
 
                 if (alive && state.getEntity(id) === undefined) {
-                    dispatch(state, spawnPlayer(id, x, y, z));
+                    dispatch(state, spawnPlayer(id));
                 }
             });
 
             return state;
         }
         case SPAWN_PLAYER: {
-            const { id, x, y, z } = action.data;
+            const { id } = action.data;
             const player = new Player(id, state.assets);
-            player.object3D.position.set(x, y, z);
+            const index = state.playerIds.indexOf(id);
+            const spawn = state.playerSpawns[index % state.playerSpawns.length];
+            player.object3D.position.copy(spawn);
             state.addEntity(player);
             return state;
         }
@@ -216,15 +218,13 @@ export function dispatch(state, action) {
             return state;
         }
         case INIT_GAME: {
-            const { playerIds } = action.data;
-
             state = new State(state.assets);
             state.time.start = Date.now();
-            state.playerIds = playerIds;
+            state.playerIds = [];
             state.playerSpawns = [];
 
             forEachMapTile((id, x, y, z) => {
-                const entity = createEntity(id, state);
+                const entity = createEntity(id);
                 const vector = new THREE.Vector3(
                     TILE_SIZE * x,
                     TILE_SIZE * y,
@@ -266,19 +266,14 @@ export function dispatch(state, action) {
 
             /**
              * @param {number} tileId
-             * @param {State} state
              * @return {Entity}
              */
-            function createEntity(tileId, state) {
+            function createEntity(tileId) {
                 const entityId = (128 + state.entities.size).toString(16);
                 const assets = state.assets;
                 switch (tileId) {
                     case 1: {
-                        const index = state.getEntityGroup("player").length;
-                        const playerId = state.playerIds[index];
-                        if (playerId !== undefined) {
-                            return new Player(playerId, assets);
-                        }
+                        // Player spawner
                         return;
                     }
                     case 2: {

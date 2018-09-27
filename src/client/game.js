@@ -1,15 +1,21 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
 import Stats from "stats.js";
-import { PORT } from "../game/consts.js"
+import { PORT } from "../game/consts.js";
 import { Game as BaseGame } from "../game/game.js";
 import {
     initGame,
-    setScreenSize,
+    setCameraView,
     setPlayerInput,
     setPlayerAim,
     Action,
-    syncPlayer
+    syncPlayer,
+    SYNC_ALL_PLAYERS,
+    SERVER_ACTION,
+    CLIENT_ACTION,
+    spawnPlayer,
+    playerJoin,
+    SPAWN_PLAYER
 } from "../game/actions.js";
 import { toRadians } from "../game/utils.js";
 import debounce from "lodash/debounce";
@@ -51,15 +57,27 @@ class Game extends BaseGame {
 
         this.subscriptions.push(action => {
             switch (action.type) {
-                case "INIT_GAME":
-                case "SYNC_GAME_STATE": {
-                    this.mountPlayerCamera();
+                case CLIENT_ACTION: {
+                    const { id } = action.data;
+                    if (id === this.playerId) {
+                        const clientAction = action.data.action;
+                        this.dispatch(clientAction);
+                        this.socket.emit("dispatch", clientAction);
+                    }
+                }
+                case SERVER_ACTION: {
+                    if (!this.socket.connected) {
+                        this.dispatch(action.data);
+                    }
+                    break;
+                }
+                case SYNC_ALL_PLAYERS: {
                     this.syncPlayer();
                     break;
                 }
-                case "SERVER_ACTION": {
-                    if (!this.socket.connected) {
-                        this.dispatch(action.data);
+                case SPAWN_PLAYER: {
+                    if (this.playerId === action.data.id) {
+                        this.mountPlayerCamera();
                     }
                     break;
                 }
@@ -79,7 +97,9 @@ class Game extends BaseGame {
             game.initMouseInput();
             game.initKeyboardInput();
 
-            game.dispatch(initGame([game.playerId]));
+            game.dispatch(initGame());
+            game.dispatch(playerJoin(this.playerId));
+            game.dispatch(spawnPlayer(this.playerId));
             game.initSocket();
 
             requestAnimationFrame(function next() {
@@ -137,8 +157,8 @@ class Game extends BaseGame {
     }
 
     initSocket() {
-        const url = location.href.replace(location.port, PORT);;
-        this.socket = SocketIO(url, { reconnection: false});
+        const url = location.href.replace(location.port, PORT);
+        this.socket = SocketIO(url, { reconnection: false });
 
         this.socket.on("connect", () => {
             this.playerId = this.socket.id;
@@ -187,7 +207,9 @@ class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId;
-                const { object3D, head } = this.state.getEntity(playerId);
+                const { object3D, head } = this.state.getEntityComponents(
+                    playerId
+                );
                 if (object3D && head) {
                     let ver = object3D.rotation.y - ev.movementX * 0.005;
                     let hor = head.rotation.x - ev.movementY * 0.005;
@@ -250,7 +272,7 @@ class Game extends BaseGame {
         Object.assign(this.ctx.canvas, { width, height });
         this.ctx.imageSmoothingEnabled = false;
         this.renderer.setSize(width, height);
-        this.dispatch(setScreenSize(width, height));
+        this.dispatch(setCameraView(width, height));
     }
 
     update() {
