@@ -26,6 +26,11 @@ export class State {
         this.playerIds = [];
 
         /**
+         * @type {THREE.Vector3[]}
+         */
+        this.playerSpawns = [];
+
+        /**
          * @type {Map<string,Entity>}
          */
         this.entities = new Map();

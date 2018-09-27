@@ -23,7 +23,7 @@ export class Game {
          * @param {Action} action
          */
         this.dispatch = action => {
-            if (action !== null) {
+            if (action) {
                 this.state = dispatch(this.state, action);
                 for (let i = 0; i < this.subscriptions.length; i++) {
                     this.subscriptions[i](action, this.state);

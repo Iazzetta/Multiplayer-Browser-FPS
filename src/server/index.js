@@ -2,7 +2,7 @@ import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import debounce from "lodash/debounce";
-import { initGame, kill } from "../game/actions";
+import { initGame, kill, syncGameState } from "../game/actions";
 
 // HTTP Server
 //================================================================
@@ -16,6 +16,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
+    game.dispatch(initGame([]));
     game.subscriptions.push(action => {
         if (action.type === "SERVER_ACTION") {
             dispatch(action.data);
@@ -27,15 +28,15 @@ app.use("/", express.static(__dirname + "/../../dist"));
         io.sockets.emit("dispatch", action);
     };
 
-    const newGame = debounce(() => {
-        console.log("Starting new game ...");
+    const syncGame = debounce(() => {
+        console.log("Syncing players ...");
         const playerIds = Object.keys(io.sockets.connected);
-        dispatch(initGame(playerIds));
+        dispatch(syncGameState(playerIds));
     }, 1000);
 
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
-        newGame();
+        syncGame();
 
         socket.on("dispatch", action => {
             dispatch(action);
@@ -43,6 +44,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
 
         socket.on("disconnect", () => {
             dispatch(kill(socket.id));
+            syncGame();
             console.log("Disconnect", socket.id);
         });
     });

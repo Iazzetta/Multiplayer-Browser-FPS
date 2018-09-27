@@ -74,6 +74,13 @@ export function kill(id) {
 }
 
 /**
+ * @param {string[]} playerIds
+ */
+export function syncGameState(playerIds) {
+    return new Action("SYNC_GAME_STATE", { playerIds });
+}
+
+/**
  * @param {string} playerId
  * @param {State} state
  */
