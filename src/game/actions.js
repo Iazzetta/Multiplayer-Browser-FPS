@@ -2,7 +2,7 @@ import times from "lodash/times";
 
 export const [
     // Special actions
-    EMPTY,
+    INIT_GAME,
 
     // Sync local actions
     SERVER_ACTION,

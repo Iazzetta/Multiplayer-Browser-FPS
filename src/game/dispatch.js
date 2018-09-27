@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import uniq from "lodash/uniq";
 import without from "lodash/without";
+import { TILE_SIZE } from "./consts.js";
 import { State } from "./state.js";
+import { forEachMapTile } from "./utils.js";
 import {
     Entity,
     Player,
@@ -13,6 +15,7 @@ import {
 } from "./entities";
 import {
     Action,
+    INIT_GAME,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SYNC_PLAYER,
@@ -189,6 +192,89 @@ export function dispatch(state, action) {
         case KILL_PLAYER: {
             const { id } = action.data;
             state.deleteEntity(id);
+            return state;
+        }
+        case INIT_GAME: {
+            const { playerIds } = action.data;
+
+            state = new State(state.assets);
+            state.time.start = Date.now();
+            state.playerIds = playerIds;
+            state.playerSpawns = [];
+
+            forEachMapTile((id, x, y, z) => {
+                const entity = createEntity(id, state);
+                const vector = new THREE.Vector3(
+                    TILE_SIZE * x,
+                    TILE_SIZE * y,
+                    TILE_SIZE * z
+                );
+
+                if (entity !== undefined) {
+                    if (entity.object3D) {
+                        entity.object3D.position.copy(vector);
+                    }
+                    state.addEntity(entity);
+                }
+
+                // Save player spawn
+                if (id === 1) {
+                    state.playerSpawns.push(vector.clone());
+                }
+            });
+
+            // Create lights ...
+            const dirLight = (color, int) => {
+                return new THREE.DirectionalLight(new THREE.Color(color), int);
+            };
+
+            var light = new THREE.AmbientLight(0x404040);
+            state.scene.add(light);
+
+            const keyLight = dirLight("#FFE4C4", 0.74);
+            keyLight.position.set(-100, 50, 100);
+            state.scene.add(keyLight);
+
+            const fillLight = dirLight("#A6D8ED", 0.25);
+            fillLight.position.set(100, 50, 100);
+            state.scene.add(fillLight);
+
+            const backLight = dirLight("#FFFFFF", 0.5);
+            backLight.position.set(100, 0, -100).normalize();
+            state.scene.add(backLight);
+
+            /**
+             * @param {number} tileId
+             * @param {State} state
+             * @return {Entity}
+             */
+            function createEntity(tileId, state) {
+                const entityId = (128 + state.entities.size).toString(16);
+                const assets = state.assets;
+                switch (tileId) {
+                    case 1: {
+                        const index = state.getEntityGroup("player").length;
+                        const playerId = state.playerIds[index];
+                        if (playerId !== undefined) {
+                            return new Player(playerId, assets);
+                        }
+                        return;
+                    }
+                    case 2: {
+                        return new Wall(entityId, assets);
+                    }
+                    case 3: {
+                        return new AmmoPickup(entityId, assets);
+                    }
+                    case 4: {
+                        return new JetpackPickup(entityId, assets);
+                    }
+                    case 5: {
+                        return new HpPickup(entityId, assets);
+                    }
+                }
+            }
+
             return state;
         }
         default:
