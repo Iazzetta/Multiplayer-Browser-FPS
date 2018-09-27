@@ -37,12 +37,15 @@ app.use("/", express.static(__dirname + "/../../dist"));
 
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
-        dispatch(playerJoin(socket.id));
-        dispatch(syncAllPlayers(game.state));
 
-        setTimeout(() => {
-            dispatch(spawnPlayer(socket.id));
-        }, 1000);
+        socket.on("join", data => {
+            console.log(data.name + " joined");
+            dispatch(playerJoin(socket.id));
+            dispatch(syncAllPlayers(game.state));
+            setTimeout(() => {
+                dispatch(spawnPlayer(socket.id));
+            }, 1000);
+        });
 
         socket.on("dispatch", action => {
             dispatch(action);

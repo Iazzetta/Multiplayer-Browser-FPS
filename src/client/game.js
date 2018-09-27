@@ -31,6 +31,11 @@ class Game extends BaseGame {
         this.playerId = "player-1";
 
         /**
+         * @type {string}
+         */
+        this.playerName = "";
+
+        /**
          * @type {SocketIOClient.Socket}
          */
         this.socket = null;
@@ -161,8 +166,11 @@ class Game extends BaseGame {
         this.socket = SocketIO(url, { reconnection: false });
 
         this.socket.on("connect", () => {
-            this.playerId = this.socket.id;
             console.log("Connected");
+
+            this.playerId = this.socket.id;
+            this.playerName = prompt("Please enter your name", "Player");
+            this.socket.emit("join", { name: this.playerName });
 
             this.socket.on("dispatch", action => {
                 this.dispatch(action);

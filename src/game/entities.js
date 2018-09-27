@@ -43,6 +43,11 @@ export class Entity {
         //===========================
 
         /**
+         * @type {string}
+         */
+        this.name = undefined;
+
+        /**
          * @type {boolean}
          */
         this.gravity = false;
