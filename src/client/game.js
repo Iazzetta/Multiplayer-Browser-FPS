@@ -77,7 +77,7 @@ class Game extends BaseGame {
                     break;
                 }
                 case SYNC_ALL_PLAYERS: {
-                    this.syncPlayer();
+                    this.syncPlayerImmediately();
                     break;
                 }
                 case SPAWN_PLAYER: {
@@ -89,10 +89,11 @@ class Game extends BaseGame {
             }
         });
 
-        this.syncPlayer = debounce(() => {
+        this.syncPlayerImmediately = debounce(() => {
             const playerId = this.playerId;
             this.socket.emit("dispatch", syncPlayer(playerId, this.state));
         }, 500);
+        this.syncPlayer = debounce(this.syncPlayerImmediately, 500);
     }
 
     run() {
