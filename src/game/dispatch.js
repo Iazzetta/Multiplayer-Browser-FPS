@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import uniq from "lodash/uniq";
-import without from "lodahs/without";
+import without from "lodash/without";
 import { State } from "./state.js";
 import {
     Entity,
@@ -44,7 +44,7 @@ export function dispatch(state, action) {
         }
         case PLAYER_LEAVE: {
             const { id } = action.data;
-            state.playerIds = without(state.playerIds, [id]);
+            state.playerIds = without(state.playerIds, id);
             return state;
         }
         case SYNC_PLAYER: {
@@ -68,10 +68,12 @@ export function dispatch(state, action) {
         }
         case SYNC_PLAYER_SCORE: {
             const {} = action.data;
+            // TODO ...
             return state;
         }
         case SYNC_ALL_PLAYERS: {
             const {} = action.data;
+            // TODO ...
             return state;
         }
         case SPAWN_PLAYER: {
@@ -83,10 +85,12 @@ export function dispatch(state, action) {
         }
         case SPAWN_BULLET_PACK: {
             const {} = action.data;
+            // TODO ...
             return state;
         }
         case SPAWN_HEALTH_PACK: {
             const {} = action.data;
+            // TODO ...
             return state;
         }
         case SET_CAMERA_VIEW: {
@@ -160,8 +164,12 @@ export function dispatch(state, action) {
             const { id } = action.data;
             const { weapon } = state.getEntityComponents(id);
             if (weapon) {
-                const requiredAmmo = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
-                const availableAmmo = Math.min(requiredAmmo, weapon.reservedAmmo);
+                const requiredAmmo =
+                    weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
+                const availableAmmo = Math.min(
+                    requiredAmmo,
+                    weapon.reservedAmmo
+                );
                 if (availableAmmo > 0) {
                     weapon.loadedAmmo += availableAmmo;
                     weapon.reservedAmmo -= availableAmmo;
@@ -171,10 +179,16 @@ export function dispatch(state, action) {
             return state;
         }
         case HIT_PLAYER: {
-            const {} = action.data;
+            const { id, hp } = action.data;
+            const { health } = state.getEntityComponents(id);
+            if (health) {
+                health.hp = hp;
+            }
             return state;
         }
         case KILL_PLAYER: {
+            const { id } = action.data;
+            state.deleteEntity(id);
             return state;
         }
         default:
