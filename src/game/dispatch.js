@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import map from "lodash/map";
-import uniq from "lodash/uniq";
+import uniqBy from "lodash/uniqBy";
 import without from "lodash/without";
 import { TILE_SIZE } from "./consts.js";
 import { State } from "./state.js";
@@ -47,14 +47,15 @@ import {
 export function dispatch(state, action) {
     switch (action.type) {
         case PLAYER_JOIN: {
-            const { id } = action.data;
-            state.playerIds = uniq(state.playerIds.concat([id]));
+            const { id, name, alive } = action.data;
+            state.players.push({ id, name, alive });
+            state.players = uniqBy(state.players, "id");
             return state;
         }
         case PLAYER_LEAVE: {
             const { id } = action.data;
-            state.playerIds = without(state.playerIds, id);
             state.deleteEntity(id);
+            state.players = state.players.filter(player => player.id !== id);
             return state;
         }
         case SYNC_PLAYER: {
@@ -85,18 +86,16 @@ export function dispatch(state, action) {
             const { players } = action.data;
 
             // Remove players that maybe haven't been removed yet
-            const playerIds = uniq(map(players, "id"));
-            state.playerIds
+            const playerIds = map(players, "id");
+            state.players
+                .map(player => player.id)
                 .filter(id => playerIds.indexOf(id) === -1)
                 .forEach(id => dispatch(state, playerLeave(id)));
 
             // Add missing players
             players.forEach(player => {
-                const { id, alive } = player;
-                if (state.playerIds.indexOf(id) === -1) {
-                    dispatch(state, playerJoin(id));
-                }
-
+                const { id, name, alive } = player;
+                dispatch(state, playerJoin(id, name, alive));
                 if (alive && state.getEntity(id) === undefined) {
                     dispatch(state, spawnPlayer(id));
                 }
@@ -107,14 +106,16 @@ export function dispatch(state, action) {
         case SPAWN_PLAYER: {
             const { id } = action.data;
             const player = new Player(id, state.assets);
-            const index = state.playerIds.indexOf(id);
+            const playerData = state.players.find(p => p.id === player.id);
+            const index = state.players.indexOf(playerData);
             const spawn = state.playerSpawns[index % state.playerSpawns.length];
             if (spawn !== undefined) {
+                playerData.alive = true;
                 player.object3D.position.copy(spawn);
+                state.addEntity(player);
             } else {
-                console.log("undefined spawn", { spawn, index });
+                console.warn("No spawns.");
             }
-            state.addEntity(player);
             return state;
         }
         case SPAWN_BULLET_PACK: {
@@ -218,13 +219,17 @@ export function dispatch(state, action) {
         }
         case KILL_PLAYER: {
             const { id } = action.data;
+            const playerData = state.players.find(p => p.id === id);
+            if (playerData) {
+                playerData.alive = false;
+            }
             state.deleteEntity(id);
             return state;
         }
         case INIT_GAME: {
             state = new State(state.assets);
             state.time.start = Date.now();
-            state.playerIds = [];
+            state.players = [];
             state.playerSpawns = [];
 
             forEachMapTile((id, x, y, z) => {

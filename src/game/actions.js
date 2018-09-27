@@ -58,9 +58,11 @@ export function initGame() {
 
 /**
  * @param {string} id
+ * @param {string} name
+ * @param {boolean} alive
  */
-export function playerJoin(id) {
-    return new Action(PLAYER_JOIN, { id });
+export function playerJoin(id, name, alive = false) {
+    return new Action(PLAYER_JOIN, { id, name, alive });
 }
 
 /**
@@ -108,11 +110,7 @@ export function syncPlayer(id, state) {
  * @param {State} state
  */
 export function syncAllPlayers(state) {
-    const players = state.playerIds.map(id => {
-        const alive = state.getEntity(id) !== undefined;
-        return { id, alive };
-    });
-    return new Action(SYNC_ALL_PLAYERS, { players });
+    return new Action(SYNC_ALL_PLAYERS, { players: state.players });
 }
 
 /**

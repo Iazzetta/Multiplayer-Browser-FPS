@@ -103,7 +103,7 @@ class Game extends BaseGame {
             game.initKeyboardInput();
 
             game.dispatch(initGame());
-            game.dispatch(playerJoin(this.playerId));
+            game.dispatch(playerJoin(this.playerId, this.playerName));
             game.dispatch(spawnPlayer(this.playerId));
             game.initSocket();
 
@@ -388,14 +388,11 @@ class Game extends BaseGame {
 
             // Players
             this.ctx.font = "26px Impact";
-            this.state.playerIds.forEach((playerId, index) => {
+            this.state.players.forEach((player, index) => {
                 this.ctx.fillStyle = "black";
-                this.ctx.fillText(playerId, 16, 130 + 32 * index);
-                this.ctx.fillStyle =
-                    this.state.getEntity(playerId) !== undefined
-                        ? "white"
-                        : "red";
-                this.ctx.fillText(playerId, 16, 128 + 32 * index);
+                this.ctx.fillText(player.name, 16, 130 + 32 * index);
+                this.ctx.fillStyle = player.alive ? "white" : "red";
+                this.ctx.fillText(player.name, 16, 128 + 32 * index);
             });
         }
 

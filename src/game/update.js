@@ -176,7 +176,11 @@ export function damageSystem(bullet, state, dispatch) {
                     } else {
                         dispatch(serverAction(killPlayer(player.id)));
                         setTimeout(function respawn() {
-                            if (state.playerIds.indexOf(player.id) > -1) {
+                            const playerData = state.players.find(p => {
+                                return p.id === player.id;
+                            });
+                            console.log(playerData, player.id);
+                            if (playerData !== undefined) {
                                 dispatch(serverAction(spawnPlayer(player.id)));
                             }
                         }, RESPAWN_TIME);

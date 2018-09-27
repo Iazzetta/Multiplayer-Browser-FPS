@@ -21,9 +21,10 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
-         * @type {string[]}
+         * @typedef {{ id:string, name:string, alive:boolean }} PlayerData
+         * @type {PlayerData[]}
          */
-        this.playerIds = [];
+        this.players = [];
 
         /**
          * @type {THREE.Vector3[]}
