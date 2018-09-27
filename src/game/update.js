@@ -319,7 +319,7 @@ export function physicsSystem(entity, state, dispatch) {
         const velocity = entity.velocity.getForceVector(state.time.delta);
 
         const resolveCollision = (entityMin, entityMax, wallMin, wallMax) => {
-            const width = (entityMax - entityMin) * 0.50001;
+            const width = (entityMax - entityMin) * 0.50000001;
             if (entityMin < wallMin) {
                 return wallMin - width;
             } else {
