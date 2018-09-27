@@ -141,6 +141,10 @@ class Game extends BaseGame {
         this.resize();
     }
 
+    myComponents() {
+        return this.state.getEntityComponents(this.playerId);
+    }
+
     /**
      * @param {Action} action
      */
@@ -215,9 +219,7 @@ class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 const playerId = this.playerId;
-                const { object3D, head } = this.state.getEntityComponents(
-                    playerId
-                );
+                const { object3D, head } = this.myComponents();
                 if (object3D && head) {
                     let ver = object3D.rotation.y - ev.movementX * 0.005;
                     let hor = head.rotation.x - ev.movementY * 0.005;
@@ -287,9 +289,7 @@ class Game extends BaseGame {
         super.update();
 
         // POV - Animations
-        const { controller, weapon, head } = this.state.getEntityComponents(
-            this.playerId
-        );
+        const { controller, weapon, head } = this.myComponents();
 
         if (
             controller !== undefined &&
@@ -343,9 +343,7 @@ class Game extends BaseGame {
     }
 
     renderHUD() {
-        const { weapon, jetpack, health } = this.state.getEntityComponents(
-            this.playerId
-        );
+        const { weapon, health } = this.myComponents();
 
         // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
