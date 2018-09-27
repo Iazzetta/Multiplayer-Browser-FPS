@@ -71,11 +71,11 @@ export function spawnPlayer(id) {
 }
 
 /**
- * @param {string} playerId
+ * @param {string} id
  * @param {State} state
  */
-export function syncPlayer(playerId, state) {
-    const { head, object3D, velocity } = state.getEntityComponents(playerId);
+export function syncPlayer(id, state) {
+    const { head, object3D, velocity } = state.getEntityComponents(id);
     if (object3D === undefined) return;
     if (velocity === undefined) return;
     if (head === undefined) return;
@@ -85,7 +85,7 @@ export function syncPlayer(playerId, state) {
     const rx = head.rotation.x;
     const ry = object3D.rotation.y;
     return new Action(SYNC_PLAYER, {
-        playerId,
+        id,
         x,
         y,
         z,
@@ -95,6 +95,17 @@ export function syncPlayer(playerId, state) {
         rx,
         ry
     });
+}
+
+/**
+ * @param {State} state
+ */
+export function syncAllPlayers(state) {
+    const players = state.playerIds.map(id => {
+        const alive = state.getEntity(id) !== undefined;
+        return { id, alive };
+    });
+    return new Action(SYNC_ALL_PLAYERS, { players });
 }
 
 /**

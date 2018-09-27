@@ -109,7 +109,11 @@ export function dispatch(state, action) {
             const player = new Player(id, state.assets);
             const index = state.playerIds.indexOf(id);
             const spawn = state.playerSpawns[index % state.playerSpawns.length];
-            player.object3D.position.copy(spawn);
+            if (spawn !== undefined) {
+                player.object3D.position.copy(spawn);
+            } else {
+                console.log("undefined spawn", { spawn, index });
+            }
             state.addEntity(player);
             return state;
         }

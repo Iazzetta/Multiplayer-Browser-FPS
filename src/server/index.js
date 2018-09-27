@@ -3,7 +3,14 @@ import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import { PORT } from "../game/consts";
 import debounce from "lodash/debounce";
-import { initGame, kill, syncGameState } from "../game/actions";
+import {
+    initGame,
+    SERVER_ACTION,
+    playerJoin,
+    playerLeave,
+    spawnPlayer,
+    syncAllPlayers
+} from "../game/actions";
 
 // HTTP Server
 //================================================================
@@ -16,9 +23,9 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
-    game.dispatch(initGame([]));
+    game.dispatch(initGame());
     game.subscriptions.push(action => {
-        if (action.type === "SERVER_ACTION") {
+        if (action.type === SERVER_ACTION) {
             dispatch(action.data);
         }
     });
@@ -28,23 +35,21 @@ app.use("/", express.static(__dirname + "/../../dist"));
         io.sockets.emit("dispatch", action);
     };
 
-    const syncGame = debounce(() => {
-        console.log("Syncing players ...");
-        const playerIds = Object.keys(io.sockets.connected);
-        dispatch(syncGameState(playerIds));
-    }, 1000);
-
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
-        syncGame();
+        dispatch(playerJoin(socket.id));
+        dispatch(syncAllPlayers(game.state));
+
+        setTimeout(() => {
+            dispatch(spawnPlayer(socket.id));
+        }, 1000);
 
         socket.on("dispatch", action => {
             dispatch(action);
         });
 
         socket.on("disconnect", () => {
-            dispatch(kill(socket.id));
-            syncGame();
+            dispatch(playerLeave(socket.id));
             console.log("Disconnect", socket.id);
         });
     });
