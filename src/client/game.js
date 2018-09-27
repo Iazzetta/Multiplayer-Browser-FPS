@@ -383,7 +383,10 @@ class Game extends BaseGame {
             this.state.playerIds.forEach((playerId, index) => {
                 this.ctx.fillStyle = "black";
                 this.ctx.fillText(playerId, 16, 130 + 32 * index);
-                this.ctx.fillStyle = "white";
+                this.ctx.fillStyle =
+                    this.state.getEntity(playerId) !== undefined
+                        ? "white"
+                        : "red";
                 this.ctx.fillText(playerId, 16, 128 + 32 * index);
             });
         }
