@@ -1,8 +1,6 @@
 import * as THREE from "three";
-import MTLLoader from "three-mtl-loader";
-import OBJLoader from "three-obj-loader";
-MTLLoader(THREE);
-OBJLoader(THREE);
+import { MTLLoader, OBJLoader } from "three-obj-mtl-loader";
+import { ASSETS_PATH } from "./consts";
 
 export class Assets {
     constructor() {
@@ -26,16 +24,6 @@ export class Assets {
          */
         this.objPromiseList = [];
 
-        /**
-         * @type {THREE.OBJLoader}
-         */
-        this.objLoader = new THREE.OBJLoader();
-
-        /**
-         * @type {MTLLoader}
-         */
-        this.mtlLoader = new MTLLoader();
-
         this.fallback = {
             image: createDefaultImage(),
             geometry: new THREE.BoxGeometry(1, 1, 1),
@@ -51,7 +39,7 @@ export class Assets {
         this.imgPromiseList.push(
             new Promise(resolve => {
                 const img = new Image();
-                img.src = src;
+                img.src = ASSETS_PATH + src;
                 img.onload = () => {
                     this.imgList.set(name, img);
                     resolve(img);
@@ -67,12 +55,15 @@ export class Assets {
     loadObj(name, src) {
         this.objPromiseList.push(
             new Promise(resolve => {
-                this.mtlLoader = new MTLLoader();
-                this.mtlLoader.load(src.replace(".obj", ".mtl"), materials => {
+                const mtlLoader = new MTLLoader();
+                mtlLoader.setTexturePath(ASSETS_PATH);
+                mtlLoader.setPath(ASSETS_PATH);
+                mtlLoader.load(src.replace(".obj", ".mtl"), materials => {
+                    const objLoader = new OBJLoader();
                     materials.preload();
-                    this.objLoader = new THREE.OBJLoader();
-                    this.objLoader.setMaterials(materials);
-                    this.objLoader.load(src, obj => {
+                    objLoader.setPath(ASSETS_PATH);
+                    objLoader.setMaterials(materials);
+                    objLoader.load(src, obj => {
                         this.objList.set(name, obj);
                         resolve(obj);
                     });

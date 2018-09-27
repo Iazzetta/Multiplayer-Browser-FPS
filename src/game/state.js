@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { Player, Entity, Wall } from "./entities.js";
 import { Assets } from "./assets.js";
-import memoize from "lodash/memoize";
 
 export class State {
     /**
@@ -22,9 +21,15 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
-         * @type {string[]}
+         * @typedef {{ id:string, name:string, alive:boolean }} PlayerData
+         * @type {PlayerData[]}
          */
-        this.playerIds = [];
+        this.players = [];
+
+        /**
+         * @type {THREE.Vector3[]}
+         */
+        this.playerSpawns = [];
 
         /**
          * @type {Map<string,Entity>}
@@ -65,6 +70,16 @@ export class State {
      * @returns {Entity}
      */
     getEntity(id) {
+        return this.entities.get(id);
+    }
+
+    /**
+     * for more convenient destructing ...
+     *
+     * @param {string} id
+     * @returns {Entity}
+     */
+    getEntityComponents(id) {
         return this.entities.get(id) || Entity.empty;
     }
 
@@ -83,15 +98,17 @@ export class State {
      */
     deleteEntity(id) {
         const entity = this.getEntity(id);
-        if (entity.object3D) {
-            this.scene.remove(entity.object3D);
+        if (entity !== undefined) {
+            if (entity.object3D) {
+                this.scene.remove(entity.object3D);
+            }
+            for (let i = 0; i < entity.flags.length; i++) {
+                const flag = entity.flags[i];
+                const flaggedEntities = this.getEntityGroup(flag);
+                const index = flaggedEntities.indexOf(entity);
+                flaggedEntities.splice(index, 1);
+            }
+            this.entities.delete(id);
         }
-        for (let i = 0; i < entity.flags.length; i++) {
-            const flag = entity.flags[i];
-            const flaggedEntities = this.getEntityGroup(flag);
-            const index = flaggedEntities.indexOf(entity);
-            flaggedEntities.splice(index, 1);
-        }
-        this.entities.delete(id);
     }
 }

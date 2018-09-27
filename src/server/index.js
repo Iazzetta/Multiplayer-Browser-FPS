@@ -1,12 +1,19 @@
 import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
+import { PORT } from "../game/consts";
 import debounce from "lodash/debounce";
-import { initGame } from "../game/actions";
+import {
+    initGame,
+    SERVER_ACTION,
+    playerJoin,
+    playerLeave,
+    spawnPlayer,
+    syncAllPlayers
+} from "../game/actions";
 
 // HTTP Server
 //================================================================
-const PORT = 8080;
 const app = express();
 const srv = app.listen(PORT);
 app.use("/", express.static(__dirname + "/../../dist"));
@@ -16,32 +23,44 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
+    game.dispatch(initGame());
+    game.subscriptions.push(action => {
+        if (action.type === SERVER_ACTION) {
+            dispatch(action.data);
+        }
+    });
 
     const dispatch = action => {
         game.dispatch(action);
         io.sockets.emit("dispatch", action);
     };
 
-    const newGame = debounce(() => {
-        console.log("Starting new game ...");
-        const playerIds = Object.keys(io.sockets.connected);
-        dispatch(initGame(playerIds));
-    }, 1000);
-
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
-        newGame();
+
+        socket.on("join", data => {
+            console.log(data.name + " joined");
+            game.dispatch(playerJoin(socket.id, data.name));
+            dispatch(syncAllPlayers(game.state));
+            setTimeout(() => {
+                dispatch(spawnPlayer(socket.id));
+            }, 1000);
+        });
 
         socket.on("dispatch", action => {
-            socket.broadcast.emit("dispatch", action);
+            dispatch(action);
         });
 
         socket.on("disconnect", () => {
+            dispatch(playerLeave(socket.id));
             console.log("Disconnect", socket.id);
         });
     });
 
-    setInterval(() => game.update(), 1000 / 60);
+    setInterval(() => {
+        game.update();
+        game.state.scene.updateMatrixWorld(true);
+    }, 1000 / 60);
 
     console.log("Server running at http://localhost:" + PORT);
 }

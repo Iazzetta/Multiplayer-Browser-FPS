@@ -1,8 +1,15 @@
-import * as THREE from "three";
 import { State } from "./state";
-import { Action, shootBullet } from "./actions";
+import {
+    Action,
+    shootBullet,
+    hitPlayer,
+    serverAction,
+    killPlayer,
+    spawnPlayer
+} from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
+import { GRAVITY, JUMP_SPEED, RESPAWN_TIME } from "./consts";
 
 /**
  * @param {State} state
@@ -13,12 +20,13 @@ export function update(state, dispatch) {
 
     // Systems
     state.entities.forEach(entity => {
+        if (entity.sleep) return;
+        controllerSystem(entity, state, dispatch);
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         pickupSystem(entity, state, dispatch);
         jetpackFuelSystem(entity, state, dispatch);
         damageSystem(entity, state, dispatch);
-        controllerSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
@@ -63,7 +71,7 @@ export function decaySystem(entity, state, dispatch) {
 export function gravitySystem(entity, state, dispatch) {
     const { gravity, velocity } = entity;
     if (gravity && velocity) {
-        velocity.y -= 0.001;
+        velocity.y -= GRAVITY * state.time.delta;
     }
 }
 
@@ -86,11 +94,29 @@ export function pickupSystem(entity, state, dispatch) {
                     state.deleteEntity(pickup.id);
                     return;
                 }
-                // Bullets
-                if (entity.ammo && pickup.ammo) {
-                    entity.ammo.bulletCount += pickup.ammo.bulletCount;
-                    state.deleteEntity(pickup.id);
-                    return;
+
+                // Ammo
+                if (entity.weapon && pickup.pickupAmmo !== undefined) {
+                    if (
+                        entity.weapon.reservedAmmo <
+                        entity.weapon.type.maxReservedAmmo
+                    ) {
+                        entity.weapon.reservedAmmo = Math.min(
+                            entity.weapon.reservedAmmo + pickup.pickupAmmo,
+                            entity.weapon.type.maxReservedAmmo
+                        );
+                        state.deleteEntity(pickup.id);
+                        return;
+                    }
+                }
+
+                // HP
+                if (entity.health && pickup.pickupHp !== undefined) {
+                    if (entity.health.hp < entity.health.max) {
+                        entity.health.max += pickup.pickupHp;
+                        state.deleteEntity(pickup.id);
+                        return;
+                    }
                 }
             }
         }
@@ -141,15 +167,26 @@ export function damageSystem(bullet, state, dispatch) {
                 if (player === bullet) return;
                 if (player.health.hp <= 0) return;
                 if (player.id === bullet.damage.creatorId) return;
-
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
-                    bullet.collider.x = 1;
-                    player.health.hp -= bullet.damage.dmg;
-                    if (player.health.hp <= 0) {
-                        state.deleteEntity(player.id);
+                    const hp = player.health.hp - bullet.damage.dmg;
+                    if (hp > 0) {
+                        dispatch(serverAction(hitPlayer(player.id, hp)));
+                    } else {
+                        dispatch(serverAction(killPlayer(player.id)));
+                        setTimeout(function respawn() {
+                            const playerData = state.players.find(p => {
+                                return p.id === player.id;
+                            });
+                            console.log(playerData, player.id);
+                            if (playerData !== undefined) {
+                                dispatch(serverAction(spawnPlayer(player.id)));
+                            }
+                        }, RESPAWN_TIME);
                     }
+
+                    bullet.collider.x = 1;
                 }
             }
         });
@@ -172,6 +209,9 @@ export function controllerSystem(entity, state, dispatch) {
     if (controller && velocity && object3D) {
         const input = controller.input;
 
+        // Reset state
+        controller.state = "idle";
+
         // vetical movement - jumping
         if (input.jump) {
             const { jetpack } = entity;
@@ -181,7 +221,8 @@ export function controllerSystem(entity, state, dispatch) {
             } else {
                 // Normal jump
                 if (entity.collider && entity.collider.bottom()) {
-                    velocity.y = 0.02;
+                    velocity.y = JUMP_SPEED;
+                    input.jump = false;
                 }
             }
         }
@@ -197,6 +238,8 @@ export function controllerSystem(entity, state, dispatch) {
 
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
+
+            controller.state = "running";
         }
 
         velocity.z *= controller.speed;
@@ -213,6 +256,7 @@ export function shootingSystem(entity, state, dispatch) {
     const { weapon, controller } = entity;
     if (weapon && controller) {
         if (weapon.firerateTimer > 0) {
+            controller.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
         }
 
@@ -220,10 +264,10 @@ export function shootingSystem(entity, state, dispatch) {
             controller.input.shoot &&
             weapon.firerateTimer <= 0 &&
             weapon.reloadTimer === 0 &&
-            weapon.ammoCount > 0
+            weapon.loadedAmmo > 0
         ) {
-            weapon.ammoCount = Math.max(weapon.ammoCount - 1, 0);
-            weapon.firerateTimer = weapon.spec.firerate;
+            weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
+            weapon.firerateTimer = weapon.type.firerate;
             dispatch(shootBullet(entity.id));
         }
     }
@@ -235,28 +279,29 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, ammo, controller } = entity;
-    if (weapon && ammo && controller) {
+    const { weapon, controller } = entity;
+    if (weapon && controller) {
         const canReload =
             weapon.reloadTimer === 0 &&
-            ammo.bulletCount > 0 &&
-            weapon.ammoCount < weapon.spec.magazineSize;
+            weapon.reservedAmmo > 0 &&
+            weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
 
-        if (canReload && (controller.input.reload || weapon.ammoCount === 0)) {
-            weapon.reloadTimer = weapon.spec.realod;
+        if (canReload && (controller.input.reload || weapon.loadedAmmo === 0)) {
+            weapon.reloadTimer = weapon.type.reloadSpeed;
         }
 
         const isRelaoding = weapon.reloadTimer > 0;
         if (isRelaoding) {
+            controller.state = "reloading";
             weapon.reloadTimer -= state.time.delta;
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;
 
-                const delta = weapon.spec.magazineSize - weapon.ammoCount;
-                const ammoCount = Math.min(ammo.bulletCount, delta);
-                if (ammoCount > 0) {
-                    weapon.ammoCount += ammoCount;
-                    ammo.bulletCount -= ammoCount;
+                const delta = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
+                const loadedAmmo = Math.min(weapon.reservedAmmo, delta);
+                if (loadedAmmo > 0) {
+                    weapon.loadedAmmo += loadedAmmo;
+                    weapon.reservedAmmo -= loadedAmmo;
                 }
             }
         }
@@ -274,7 +319,7 @@ export function physicsSystem(entity, state, dispatch) {
         const velocity = entity.velocity.getForceVector(state.time.delta);
 
         const resolveCollision = (entityMin, entityMax, wallMin, wallMax) => {
-            const width = (entityMax - entityMin) * 0.51;
+            const width = (entityMax - entityMin) * 0.50000001;
             if (entityMin < wallMin) {
                 return wallMin - width;
             } else {

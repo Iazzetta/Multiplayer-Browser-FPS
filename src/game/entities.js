@@ -11,8 +11,7 @@ import {
     DamageComponent,
     HealthComponent,
     ColliderComponent,
-    WeaponComponent,
-    AmmoComponent
+    WeaponComponent
 } from "./components";
 
 export class Entity {
@@ -20,6 +19,9 @@ export class Entity {
      * @param {string} id
      */
     constructor(id) {
+        // Non-component properties
+        //===========================
+
         /**
          * @readonly
          * @type {string}
@@ -27,14 +29,41 @@ export class Entity {
         this.id = id;
 
         /**
+         * Don't run system updates
+         * @type {boolean}
+         */
+        this.sleep = false;
+
+        /**
          * @type {string[]}
          */
         this.flags = [];
+
+        // Single-value components
+        //===========================
+
+        /**
+         * @type {string}
+         */
+        this.name = undefined;
 
         /**
          * @type {boolean}
          */
         this.gravity = false;
+
+        /**
+         * @type {number}
+         */
+        this.pickupAmmo = undefined;
+
+        /**
+         * @type {number}
+         */
+        this.pickupHp = undefined;
+
+        // Components
+        //===========================
 
         /**
          * @type {Object3DComponent}
@@ -85,11 +114,6 @@ export class Entity {
          * @type {WeaponComponent}
          */
         this.weapon = undefined;
-
-        /**
-         * @type {AmmoComponent}
-         */
-        this.ammo = undefined;
     }
 }
 
@@ -104,8 +128,6 @@ export class Player extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
-        this.ammo = new AmmoComponent();
-        this.ammo.bulletCount = 90;
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();
@@ -128,12 +150,12 @@ export class Bullet extends Entity {
      */
     constructor(id, assets) {
         super(id);
-        this.decay = new DecayComponent(1000);
+        this.decay = new DecayComponent(10000);
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
         this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 0.5, 0.5));
-        this.object3D.add(assets.mesh("wall_tile"));
+        this.object3D.add(assets.mesh("bullet"));
     }
 }
 
@@ -152,6 +174,7 @@ export class Wall extends Entity {
         mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
         super(id);
+        this.sleep = true;
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
@@ -175,7 +198,24 @@ export class JetpackPickup extends Entity {
     }
 }
 
-export class BulletkPickup extends Entity {
+export class AmmoPickup extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     */
+    constructor(id, assets) {
+        super(id);
+        this.flags = ["pickup"];
+        this.pickupAmmo = 30;
+        this.gravity = true;
+        this.velocity = new VelocityComponent();
+        this.collider = new ColliderComponent();
+        this.object3D = new Object3DComponent();
+        this.object3D.add(assets.mesh("bullet_pickup"));
+    }
+}
+
+export class HpPickup extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -184,10 +224,10 @@ export class BulletkPickup extends Entity {
         super(id);
         this.flags = ["pickup"];
         this.gravity = true;
+        this.pickupHp = 10;
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
-        this.ammo = new AmmoComponent();
         this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("bullet_pickup"));
+        this.object3D.add(assets.mesh("hp_pickup"));
     }
 }

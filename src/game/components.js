@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { DEBUG } from "./consts.js";
+import { DEBUG, WEAPON_TYPE } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
 export class DecayComponent {
@@ -10,7 +10,11 @@ export class DecayComponent {
 
 export class ControllerComponent {
     constructor() {
-        this.speed = 0.01;
+        /**
+         * @type {"idle"|"running"|"shooting"|"reloading"}
+         */
+        this.state = "idle";
+        this.speed = 0.02;
         this.input = {
             forward: false,
             left: false,
@@ -25,14 +29,11 @@ export class ControllerComponent {
 
 export class WeaponComponent {
     constructor() {
-        this.ammoCount = 30;
+        this.type = WEAPON_TYPE.MACHINEGUN;
+        this.loadedAmmo = this.type.maxLoadedAmmo;
+        this.reservedAmmo = this.type.maxReservedAmmo;
         this.firerateTimer = 0;
         this.reloadTimer = 0;
-        this.spec = {
-            magazineSize: 30,
-            firerate: 100,
-            realod: 5000
-        };
     }
 }
 
@@ -133,7 +134,7 @@ export class Object3DComponent extends THREE.Object3D {
 export class HeadComponent extends THREE.Object3D {
     constructor() {
         super();
-        this.position.y = 2;
+        this.position.y = 1.5;
         this.position.z = 0;
 
         if (DEBUG) {
@@ -146,12 +147,5 @@ export class HeadComponent extends THREE.Object3D {
         const matrix = new THREE.Matrix4();
         matrix.extractRotation(this.matrixWorld);
         return direction.applyMatrix4(matrix);
-    }
-}
-
-export class AmmoComponent {
-    constructor() {
-        this.bulletCount = 10;
-        this.max = 200;
     }
 }
