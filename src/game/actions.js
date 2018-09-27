@@ -43,3 +43,27 @@ export class Action {
         this.data = data;
     }
 }
+
+/**
+ * @param {string} id
+ */
+export function playerJoin(id) {
+    return new Action(PLAYER_JOIN, { id });
+}
+
+/**
+ * @param {string} id
+ */
+export function playerLeave(id) {
+    return new Action(PLAYER_LEAVE, { id });
+}
+
+/**
+ * @param {string} id
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ */
+export function spawnPlayer(id, x, y, z) {
+    return new Action(SPAWN_PLAYER, { id, x, y, z });
+}

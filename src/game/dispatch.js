@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import map from "lodash/map";
 import uniq from "lodash/uniq";
 import without from "lodash/without";
 import { TILE_SIZE } from "./consts.js";
@@ -14,7 +15,6 @@ import {
     HpPickup
 } from "./entities";
 import {
-    Action,
     INIT_GAME,
     PLAYER_JOIN,
     PLAYER_LEAVE,
@@ -31,7 +31,13 @@ import {
     RELOAD_START,
     RELOAD_DONE,
     HIT_PLAYER,
-    KILL_PLAYER
+    KILL_PLAYER,
+
+    // Actions
+    Action,
+    playerLeave,
+    spawnPlayer,
+    playerJoin
 } from "./actions.js";
 
 /**
@@ -48,6 +54,7 @@ export function dispatch(state, action) {
         case PLAYER_LEAVE: {
             const { id } = action.data;
             state.playerIds = without(state.playerIds, id);
+            state.deleteEntity(id);
             return state;
         }
         case SYNC_PLAYER: {
@@ -75,8 +82,26 @@ export function dispatch(state, action) {
             return state;
         }
         case SYNC_ALL_PLAYERS: {
-            const {} = action.data;
-            // TODO ...
+            const { players } = action.data;
+
+            // Remove players that maybe haven't been removed yet
+            const playerIds = uniq(map(players, "id"));
+            state.playerIds
+                .filter(id => playerIds.indexOf(id) === -1)
+                .forEach(id => dispatch(state, playerLeave(id)));
+
+            // Add missing players
+            players.forEach(player => {
+                const { id, x, y, z, alive } = player;
+                if (state.playerIds.indexOf(id) === -1) {
+                    dispatch(state, playerJoin(id));
+                }
+
+                if (alive && state.getEntity(id) === undefined) {
+                    dispatch(state, spawnPlayer(id, x, y, z));
+                }
+            });
+
             return state;
         }
         case SPAWN_PLAYER: {
