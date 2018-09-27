@@ -40,7 +40,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
 
         socket.on("join", data => {
             console.log(data.name + " joined");
-            dispatch(playerJoin(socket.id, data.name));
+            game.dispatch(playerJoin(socket.id, data.name));
             dispatch(syncAllPlayers(game.state));
             setTimeout(() => {
                 dispatch(spawnPlayer(socket.id));
