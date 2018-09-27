@@ -2,10 +2,10 @@ import { State } from "./state";
 import {
     Action,
     shootBullet,
-    setHP,
+    hitPlayer,
     serverAction,
-    kill,
-    syncGameState
+    killPlayer,
+    spawnPlayer
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
@@ -172,12 +172,13 @@ export function damageSystem(bullet, state, dispatch) {
                 if (AABB.collision(bulletAABB, playerAABB)) {
                     const hp = player.health.hp - bullet.damage.dmg;
                     if (hp > 0) {
-                        dispatch(serverAction(setHP(player.id, hp)));
+                        dispatch(serverAction(hitPlayer(player.id, hp)));
                     } else {
-                        dispatch(serverAction(kill(player.id)));
+                        dispatch(serverAction(killPlayer(player.id)));
                         setTimeout(function respawn() {
-                            const playerIds = state.playerIds;
-                            dispatch(serverAction(syncGameState(playerIds)));
+                            if (state.playerIds.indexOf(player.id) > -1) {
+                                dispatch(serverAction(spawnPlayer(player.id)));
+                            }
                         }, RESPAWN_TIME);
                     }
 
