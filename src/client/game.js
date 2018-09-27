@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
 import Stats from "stats.js";
+import { PORT } from "../game/consts.js"
 import { Game as BaseGame } from "../game/game.js";
 import {
     initGame,
@@ -136,9 +137,8 @@ class Game extends BaseGame {
     }
 
     initSocket() {
-        this.socket = SocketIO("http://192.168.19.101:8080/", {
-            reconnection: false
-        });
+        const url = location.href.replace(location.port, PORT);;
+        this.socket = SocketIO(url, { reconnection: false});
 
         this.socket.on("connect", () => {
             this.playerId = this.socket.id;

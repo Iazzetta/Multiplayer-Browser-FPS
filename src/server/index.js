@@ -1,12 +1,12 @@
 import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
+import { PORT } from "../game/consts";
 import debounce from "lodash/debounce";
 import { initGame, kill, syncGameState } from "../game/actions";
 
 // HTTP Server
 //================================================================
-const PORT = 8080;
 const app = express();
 const srv = app.listen(PORT);
 app.use("/", express.static(__dirname + "/../../dist"));
