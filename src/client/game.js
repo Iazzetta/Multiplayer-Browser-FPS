@@ -15,7 +15,8 @@ import {
     CLIENT_ACTION,
     spawnPlayer,
     playerJoin,
-    SPAWN_PLAYER
+    SPAWN_PLAYER,
+    HIT_PLAYER
 } from "../game/actions.js";
 import { toRadians } from "../game/utils.js";
 import debounce from "lodash/debounce";
@@ -34,6 +35,11 @@ class Game extends BaseGame {
          * @type {string}
          */
         this.playerName = "";
+
+        /**
+         * @type {number}
+         */
+        this.bloodScreen = 0;
 
         /**
          * @type {SocketIOClient.Socket}
@@ -83,6 +89,12 @@ class Game extends BaseGame {
                 case SPAWN_PLAYER: {
                     if (this.playerId === action.data.id) {
                         this.mountPlayerCamera();
+                    }
+                    break;
+                }
+                case HIT_PLAYER: {
+                    if (this.playerId === action.data.id) {
+                        this.bloodScreen = 500;
                     }
                     break;
                 }
@@ -348,6 +360,17 @@ class Game extends BaseGame {
 
         // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
+
+        // Blood screen
+        if (this.bloodScreen > 0) {
+            this.bloodScreen -= this.state.time.delta;
+            this.bloodScreen = Math.max(this.bloodScreen, 0);
+
+            this.ctx.globalAlpha = this.bloodScreen / 2000;
+            this.ctx.fillStyle = "red";
+            this.ctx.fillRect(0, 0, this.hud.width, this.hud.height);
+            this.ctx.globalAlpha = 1;
+        }
 
         // Weapon
         if (weapon) {

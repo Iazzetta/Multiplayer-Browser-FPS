@@ -2,7 +2,7 @@ import * as THREE from "three";
 import map from "lodash/map";
 import uniqBy from "lodash/uniqBy";
 import random from "lodash/random";
-import { TILE_SIZE, BULLET_SPEED } from "./consts.js";
+import { TILE_SIZE, BULLET_SPEED, JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { forEachMapTile } from "./utils.js";
 import {
@@ -222,9 +222,14 @@ export function dispatch(state, action) {
         }
         case HIT_PLAYER: {
             const { id, hp } = action.data;
-            const { health } = state.getEntityComponents(id);
+            const { health, velocity, collider } = state.getEntityComponents(
+                id
+            );
             if (health) {
                 health.hp = hp;
+            }
+            if (velocity && collider && collider.bottom()) {
+                velocity.y = JUMP_SPEED * 0.5;
             }
             return state;
         }
