@@ -150,7 +150,7 @@ export class Bullet extends Entity {
      */
     constructor(id, assets) {
         super(id);
-        this.decay = new DecayComponent(1000);
+        this.decay = new DecayComponent(10000);
         this.damage = new DamageComponent();
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();

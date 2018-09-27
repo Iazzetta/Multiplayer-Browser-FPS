@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import map from "lodash/map";
 import uniqBy from "lodash/uniqBy";
-import without from "lodash/without";
-import { TILE_SIZE } from "./consts.js";
+import random from "lodash/random";
+import { TILE_SIZE, BULLET_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { forEachMapTile } from "./utils.js";
 import {
@@ -163,11 +163,15 @@ export function dispatch(state, action) {
                 bullet.damage.creatorId = player.id;
 
                 // Set velocity
-                const bulletSpeed = 0.05;
                 const direction = player.head.getFacingDirection();
-                bullet.velocity.z = direction.z * bulletSpeed;
-                bullet.velocity.x = direction.x * bulletSpeed;
-                bullet.velocity.y = direction.y * bulletSpeed;
+                bullet.velocity.z = direction.z * BULLET_SPEED;
+                bullet.velocity.x = direction.x * BULLET_SPEED;
+                bullet.velocity.y = direction.y * BULLET_SPEED;
+
+                // Spread - randomize
+                bullet.velocity.z += random(-100, 100) * 0.000025;
+                bullet.velocity.x += random(-100, 100) * 0.000025;
+                bullet.velocity.y += random(-100, 100) * 0.000025;
 
                 // Set position
                 const playerAABB = player.object3D.getAABB();
@@ -175,8 +179,15 @@ export function dispatch(state, action) {
                 bullet.object3D.position.y = playerAABB.max.y - 0.5;
                 bullet.object3D.position.z = player.object3D.position.z;
 
+                // Rotate - randomize
+                bullet.object3D.rotation.set(
+                    random(-1, 1) * 0.1,
+                    random(-1, 1) * 0.1,
+                    random(-1, 1) * 0.1
+                );
+
                 // Offset infrotn of camera
-                const DIST = 1.25;
+                const DIST = 0.75;
                 const offset = new THREE.Vector3();
                 offset.copy(bullet.velocity);
                 offset.normalize();
