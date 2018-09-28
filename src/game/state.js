@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Player, Entity, Wall } from "./entities.js";
+import { Entity } from "./entities.js";
 import { Assets } from "./assets.js";
 
 export class State {
@@ -19,12 +19,6 @@ export class State {
          * @type {THREE.Scene}
          */
         this.scene = new THREE.Scene();
-
-        /**
-         * @typedef {{ id:string, name:string, alive:boolean }} PlayerData
-         * @type {PlayerData[]}
-         */
-        this.players = [];
 
         /**
          * @type {THREE.Vector3[]}

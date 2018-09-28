@@ -12,7 +12,8 @@ import {
     WallEntity,
     AmmoPickupEntity,
     JetpackPickupEntity,
-    HpPickupEntity
+    HpPickupEntity,
+    PlayerGhostEntity
 } from "./entities";
 import {
     INIT_GAME,
@@ -47,9 +48,9 @@ import {
 export function dispatch(state, action) {
     switch (action.type) {
         case PLAYER_JOIN: {
-            const { id, name, alive } = action.data;
-            state.players.push({ id, name, alive });
-            state.players = uniqBy(state.players, "id");
+            const { id, name } = action.data;
+            const playerGhost = new PlayerGhostEntity(id, name);
+            state.addEntity(playerGhost);
             return state;
         }
         case PLAYER_LEAVE: {

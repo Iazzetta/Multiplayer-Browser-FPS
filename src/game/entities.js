@@ -14,6 +14,7 @@ import {
     WeaponComponent,
     PlayerComponent
 } from "./components";
+import { toRadians } from "./utils";
 
 export class Entity {
     /**
@@ -124,6 +125,28 @@ export class Entity {
 }
 
 Entity.empty = Object.freeze(new Entity(undefined));
+
+export class PlayerGhostEntity extends Entity {
+    /**
+     * @param {string} id
+     * @param {string} name
+     */
+    constructor(id, name) {
+        super(id);
+        this.flags = ["player"];
+        this.gravity = false;
+        this.player = new PlayerComponent(id, name);
+        this.controller = new ControllerComponent();
+        this.velocity = new VelocityComponent();
+
+        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
+        this.object3D.visible = false;
+        this.object3D.position.y = 4.5 * TILE_SIZE;
+
+        this.head = new HeadComponent();
+        this.object3D.add(this.head);
+    }
+}
 
 export class PlayerEntity extends Entity {
     /**
