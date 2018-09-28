@@ -56,7 +56,6 @@ export function dispatch(state, action) {
         case PLAYER_LEAVE: {
             const { id } = action.data;
             state.deleteEntity(id);
-            state.players = state.players.filter(player => player.id !== id);
             return state;
         }
         case SYNC_PLAYER: {
@@ -86,21 +85,28 @@ export function dispatch(state, action) {
         case SYNC_ALL_PLAYERS: {
             const { players } = action.data;
 
-            // Remove players that maybe haven't been removed yet
-            const playerIds = map(players, "id");
-            state.players
-                .map(player => player.id)
-                .filter(id => playerIds.indexOf(id) === -1)
-                .forEach(id => dispatch(state, playerLeave(id)));
+            // Sync player data
+            players.forEach(playerData => {
+                const { id, name, kills, deaths } = playerData;
+                if (state.getEntity(id) === undefined) {
+                    dispatch(state, playerJoin(id, name));
+                }
 
-            // Add missing players
-            players.forEach(player => {
-                const { id, name, alive } = player;
-                dispatch(state, playerJoin(id, name, alive));
-                if (alive && state.getEntity(id) === undefined) {
-                    dispatch(state, spawnPlayer(id));
+                const player = state.getEntity(id);
+                if (player.player !== undefined) {
+                    player.player.name = name;
+                    player.player.kills = kills;
+                    player.player.deaths = deaths;
                 }
             });
+
+            // Remove players that maybe haven't been removed yet
+            const playerIds = map(players, "id");
+            state
+                .getEntityGroup("player")
+                .filter(player => playerIds.indexOf(player.id) === -1)
+                .map(player => playerLeave(player.id))
+                .forEach(playerLeave => dispatch(state, playerLeave));
 
             return state;
         }
