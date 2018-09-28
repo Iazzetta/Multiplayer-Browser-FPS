@@ -13,7 +13,6 @@ import {
     SYNC_ALL_PLAYERS,
     SERVER_ACTION,
     CLIENT_ACTION,
-    spawnPlayer,
     playerJoin,
     SPAWN_PLAYER,
     HIT_PLAYER
@@ -21,6 +20,7 @@ import {
 import { toRadians } from "../game/utils.js";
 import debounce from "lodash/debounce";
 import clamp from "lodash/clamp";
+import { PlayerComponent } from "../game/components.js";
 
 class Game extends BaseGame {
     constructor() {
@@ -87,7 +87,7 @@ class Game extends BaseGame {
                     break;
                 }
                 case SPAWN_PLAYER: {
-                    if (this.playerId === action.data.id) {
+                    if (this.playerId === action.data.player.id) {
                         this.mountPlayerCamera();
                     }
                     break;
@@ -115,8 +115,12 @@ class Game extends BaseGame {
             game.initMouseInput();
             game.initKeyboardInput();
 
+            const playerData = new PlayerComponent({
+                id: this.playerId,
+                name: this.playerName
+            });
             game.dispatch(initGame());
-            game.dispatch(playerJoin(this.playerId, this.playerName));
+            game.dispatch(playerJoin(playerData));
             game.initSocket();
 
             requestAnimationFrame(function next() {

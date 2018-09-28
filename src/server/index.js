@@ -10,6 +10,7 @@ import {
     spawnPlayer,
     syncAllPlayers
 } from "../game/actions";
+import { PlayerComponent } from "../game/components";
 
 // HTTP Server
 //================================================================
@@ -37,10 +38,12 @@ app.use("/", express.static(__dirname + "/../../dist"));
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
 
-        socket.on("join", data => {
-            console.log(data.name + " joined");
-            dispatch(playerJoin(socket.id, data.name));
+        socket.on("join", ({ name }) => {
+            const id = socket.id;
+            const playerData = new PlayerComponent({ id, name });
+            dispatch(playerJoin(playerData));
             dispatch(syncAllPlayers(game.state));
+            console.log(name + " joined");
         });
 
         socket.on("dispatch", action => {

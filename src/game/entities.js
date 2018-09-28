@@ -117,15 +117,14 @@ Entity.empty = Object.freeze(new Entity(undefined));
 
 export class PlayerGhostEntity extends Entity {
     /**
-     * @param {string} id
-     * @param {string} name
+     * @param {PlayerComponent} player
      */
-    constructor(id, name) {
-        super(id);
+    constructor(player) {
+        super(player.id);
         this.flags = ["player"];
         this.gravity = false;
 
-        this.player = new PlayerComponent(id, name);
+        this.player = new PlayerComponent(player);
         this.player.respawnTimer = RESPAWN_TIME;
 
         this.controller = new ControllerComponent();
@@ -142,16 +141,15 @@ export class PlayerGhostEntity extends Entity {
 
 export class PlayerEntity extends Entity {
     /**
-     * @param {string} id
-     * @param {string} name
+     * @param {PlayerComponent} player
      * @param {Assets} assets
      */
-    constructor(id, name, assets) {
-        super(id);
+    constructor(player, assets) {
+        super(player.id);
         this.flags = ["player"];
         this.gravity = true;
 
-        this.player = new PlayerComponent(id, name);
+        this.player = new PlayerComponent(player);
         this.player.respawnTimer = 0;
 
         this.weapon = new WeaponComponent();

@@ -48,21 +48,29 @@ import { PlayerComponent } from "./components.js";
 export function dispatch(state, action) {
     switch (action.type) {
         case PLAYER_JOIN: {
-            const { id, name } = action.data;
-            const playerGhost = new PlayerGhostEntity(id, name);
+            const { player } = action.data;
+            const playerGhost = new PlayerGhostEntity(player);
             state.addEntity(playerGhost);
             return state;
         }
         case SPAWN_PLAYER: {
-            const { id, x, y, z } = action.data;
-            const playerGhost = state.getEntity(id);
+            /**
+             * @type {PlayerComponent}
+             */
+            const player = action.data.player;
+
+            /**
+             * @type {THREE.Vector3}
+             */
+            const spawn = action.data.spawn;
+
+            const playerGhost = state.getEntity(player.id);
             if (playerGhost && playerGhost.player) {
                 const player = new PlayerEntity(
-                    id,
-                    playerGhost.player.name,
+                    playerGhost.player,
                     state.assets
                 );
-                player.object3D.position.set(x, y, z);
+                player.object3D.position.copy(spawn);
                 state.addEntity(player);
             }
             return state;
@@ -82,7 +90,7 @@ export function dispatch(state, action) {
             players.forEach(playerComp => {
                 const { id } = playerComp;
                 if (state.getEntity(id) === undefined) {
-                    dispatch(state, playerJoin(id, name));
+                    dispatch(state, playerJoin(playerComp));
                 }
 
                 const player = state.getEntity(id);
@@ -131,14 +139,26 @@ export function dispatch(state, action) {
             }
             return state;
         }
-        case SPAWN_BULLET_PACK: {
-            const {} = action.data;
-            // TODO ...
+        case HIT_PLAYER: {
+            const { id, hp } = action.data;
+            const { health, velocity, collider } = state.getEntityComponents(
+                id
+            );
+            if (health) {
+                health.hp = hp;
+            }
+            if (velocity && collider && collider.bottom()) {
+                velocity.y = JUMP_SPEED * 0.5;
+            }
             return state;
         }
-        case SPAWN_HEALTH_PACK: {
-            const {} = action.data;
-            // TODO ...
+        case KILL_PLAYER: {
+            const { id } = action.data;
+            const player = state.getEntity(id);
+            if (player !== undefined) {
+                const playerGhost = new PlayerGhostEntity(player.player);
+                state.addEntity(playerGhost);
+            }
             return state;
         }
         case SET_CAMERA_VIEW: {
@@ -230,31 +250,6 @@ export function dispatch(state, action) {
                     weapon.reservedAmmo -= reload;
                 }
                 weapon.reloadTimer = 0;
-            }
-            return state;
-        }
-        case HIT_PLAYER: {
-            const { id, hp } = action.data;
-            const { health, velocity, collider } = state.getEntityComponents(
-                id
-            );
-            if (health) {
-                health.hp = hp;
-            }
-            if (velocity && collider && collider.bottom()) {
-                velocity.y = JUMP_SPEED * 0.5;
-            }
-            return state;
-        }
-        case KILL_PLAYER: {
-            const { id } = action.data;
-            const player = state.getEntity(id);
-            if (player !== undefined) {
-                const playerGhost = new PlayerGhostEntity(
-                    player.player.id,
-                    player.player.name
-                );
-                state.addEntity(playerGhost);
             }
             return state;
         }

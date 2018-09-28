@@ -10,15 +10,19 @@ export class DecayComponent {
 
 export class PlayerComponent {
     /**
-     * @param {string} id
-     * @param {string} name
+     * @param {object} data
+     * @param {string} data.id
+     * @param {string} data.name
+     * @param {number=} data.kills
+     * @param {number=} data.deaths
+     * @param {number=} data.respawnTimer
      */
-    constructor(id, name) {
-        this.id = id;
-        this.name = name;
-        this.kills = 0;
-        this.deaths = 0;
-        this.respawnTimer = 0;
+    constructor(data) {
+        this.id = data.id;
+        this.name = data.name;
+        this.kills = data.kills || 0;
+        this.deaths = data.deaths || 0;
+        this.respawnTimer = data.respawnTimer || 0;
     }
 }
 
