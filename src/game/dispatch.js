@@ -39,6 +39,7 @@ import {
     spawnPlayer,
     playerJoin
 } from "./actions.js";
+import { PlayerComponent } from "./components.js";
 
 /**
  * @param {State} state
@@ -52,9 +53,63 @@ export function dispatch(state, action) {
             state.addEntity(playerGhost);
             return state;
         }
+        case SPAWN_PLAYER: {
+            const { id, x, y, z } = action.data;
+            const playerGhost = state.getEntity(id);
+            if (playerGhost && playerGhost.player) {
+                const player = new PlayerEntity(
+                    id,
+                    playerGhost.player.name,
+                    state.assets
+                );
+                player.object3D.position.set(x, y, z);
+                state.addEntity(player);
+            }
+            return state;
+        }
         case PLAYER_LEAVE: {
             const { id } = action.data;
             state.deleteEntity(id);
+            return state;
+        }
+        case SYNC_ALL_PLAYERS: {
+            /**
+             * @type {PlayerComponent[]}
+             */
+            const players = action.data.players;
+
+            // Sync player data
+            players.forEach(playerComp => {
+                const { id } = playerComp;
+                if (state.getEntity(id) === undefined) {
+                    dispatch(state, playerJoin(id, name));
+                }
+
+                const player = state.getEntity(id);
+                if (player.player !== undefined) {
+                    for (const key in player.player) {
+                        if (playerComp[key] !== undefined) {
+                            player.player[key] = playerComp[key];
+                        }
+                    }
+
+                    // Spawn entity if playe is alive
+                    const isAlive = player.player.respawnTimer === 0;
+                    if (isAlive && player.health === undefined) {
+                        const spawn = new THREE.Vector3(0, 0, 0);
+                        dispatch(state, spawnPlayer(player.player, spawn));
+                    }
+                }
+            });
+
+            // Remove players that maybe haven't been removed yet
+            const playerIds = map(players, "id");
+            state
+                .getEntityGroup("player")
+                .filter(player => playerIds.indexOf(player.id) === -1)
+                .map(player => playerLeave(player.id))
+                .forEach(playerLeave => dispatch(state, playerLeave));
+
             return state;
         }
         case SYNC_PLAYER: {
@@ -74,47 +129,6 @@ export function dispatch(state, action) {
                     player.velocity.set(vx, vy, vz);
                 }
             }
-            return state;
-        }
-        case SYNC_PLAYER_SCORE: {
-            const {} = action.data;
-            // TODO ...
-            return state;
-        }
-        case SYNC_ALL_PLAYERS: {
-            const { players } = action.data;
-
-            // Sync player data
-            players.forEach(playerData => {
-                const { id, name, kills, deaths } = playerData;
-                if (state.getEntity(id) === undefined) {
-                    dispatch(state, playerJoin(id, name));
-                }
-
-                const player = state.getEntity(id);
-                if (player.player !== undefined) {
-                    player.player.name = name;
-                    player.player.kills = kills;
-                    player.player.deaths = deaths;
-                }
-            });
-
-            // Remove players that maybe haven't been removed yet
-            const playerIds = map(players, "id");
-            state
-                .getEntityGroup("player")
-                .filter(player => playerIds.indexOf(player.id) === -1)
-                .map(player => playerLeave(player.id))
-                .forEach(playerLeave => dispatch(state, playerLeave));
-
-            return state;
-        }
-        case SPAWN_PLAYER: {
-            const { id, x, y, z } = action.data;
-            const name = "player-name";
-            const player = new PlayerEntity(id, name, state.assets);
-            player.object3D.position.set(x, y, z);
-            state.addEntity(player);
             return state;
         }
         case SPAWN_BULLET_PACK: {
@@ -234,17 +248,20 @@ export function dispatch(state, action) {
         }
         case KILL_PLAYER: {
             const { id } = action.data;
-            const playerData = state.players.find(p => p.id === id);
-            if (playerData) {
-                playerData.alive = false;
+            const player = state.getEntity(id);
+            if (player !== undefined) {
+                const playerGhost = new PlayerGhostEntity(
+                    player.player.id,
+                    player.player.name
+                );
+                state.deleteEntity(player.id);
+                state.addEntity(playerGhost);
             }
-            state.deleteEntity(id);
             return state;
         }
         case INIT_GAME: {
             state = new State(state.assets);
             state.time.start = Date.now();
-            state.players = [];
             state.playerSpawns = [];
 
             forEachMapTile((id, x, y, z) => {

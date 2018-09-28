@@ -409,11 +409,16 @@ class Game extends BaseGame {
 
             // Players
             this.ctx.font = "26px Impact";
-            this.state.players.forEach((player, index) => {
-                this.ctx.fillStyle = "black";
-                this.ctx.fillText(player.name, 16, 130 + 32 * index);
-                this.ctx.fillStyle = player.alive ? "white" : "red";
-                this.ctx.fillText(player.name, 16, 128 + 32 * index);
+            this.state.getEntityGroup("player").forEach((player, index) => {
+                if (player.player) {
+                    const name = player.player.name;
+                    this.ctx.fillStyle = "black";
+                    this.ctx.fillText(name, 16, 130 + 32 * index);
+
+                    const health = player.health;
+                    this.ctx.fillStyle = health ? "white" : "red";
+                    this.ctx.fillText(name, 16, 128 + 32 * index);
+                }
             });
         }
 

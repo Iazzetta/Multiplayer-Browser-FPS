@@ -157,15 +157,6 @@ export function damageSystem(bullet, state, dispatch) {
                         dispatch(serverAction(hitPlayer(player.id, hp)));
                     } else {
                         dispatch(serverAction(killPlayer(player.id)));
-                        // setTimeout(function respawn() {
-                        //     const playerData = state.players.find(p => {
-                        //         return p.id === player.id;
-                        //     });
-                        //     console.log(playerData, player.id);
-                        //     if (playerData !== undefined) {
-                        //         dispatch(serverAction(spawnPlayer(player.id)));
-                        //     }
-                        // }, RESPAWN_TIME);
                     }
 
                     bullet.collider.x = 1;

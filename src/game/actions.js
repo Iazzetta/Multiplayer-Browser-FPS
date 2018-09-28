@@ -60,10 +60,9 @@ export function initGame() {
 /**
  * @param {string} id
  * @param {string} name
- * @param {boolean} alive
  */
-export function playerJoin(id, name, alive = false) {
-    return new Action(PLAYER_JOIN, { id, name, alive });
+export function playerJoin(id, name) {
+    return new Action(PLAYER_JOIN, { id, name });
 }
 
 /**
@@ -78,9 +77,9 @@ export function playerLeave(id) {
  * @param {THREE.Vector3} spawn
  */
 export function spawnPlayer(player, spawn) {
-    const { id } = player;
+    const { id, name } = player;
     const { x, y, z } = spawn;
-    return new Action(SPAWN_PLAYER, { id, x, y, z });
+    return new Action(SPAWN_PLAYER, { id, name, x, y, z });
 }
 
 /**

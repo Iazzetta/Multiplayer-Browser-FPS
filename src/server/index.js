@@ -2,7 +2,6 @@ import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import { PORT } from "../game/consts";
-import debounce from "lodash/debounce";
 import {
     initGame,
     SERVER_ACTION,
@@ -40,11 +39,8 @@ app.use("/", express.static(__dirname + "/../../dist"));
 
         socket.on("join", data => {
             console.log(data.name + " joined");
-            game.dispatch(playerJoin(socket.id, data.name));
+            dispatch(playerJoin(socket.id, data.name));
             dispatch(syncAllPlayers(game.state));
-            setTimeout(() => {
-                dispatch(spawnPlayer(socket.id));
-            }, 1000);
         });
 
         socket.on("dispatch", action => {
