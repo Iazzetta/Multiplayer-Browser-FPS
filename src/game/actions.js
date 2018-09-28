@@ -107,6 +107,15 @@ export function syncPlayer(id, state) {
 }
 
 /**
+ * @param {string} id
+ * @param {number} kills
+ * @param {number} deaths
+ */
+export function syncPlayerScore(id, kills, deaths) {
+    return new Action(SYNC_PLAYER_SCORE, { id, kills, deaths });
+}
+
+/**
  * @param {State} state
  */
 export function syncAllPlayers(state) {

@@ -5,7 +5,8 @@ import {
     hitPlayer,
     serverAction,
     killPlayer,
-    spawnPlayer
+    spawnPlayer,
+    syncPlayerScore
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
@@ -152,11 +153,23 @@ export function damageSystem(bullet, state, dispatch) {
                 const playerAABB = player.object3D.getAABB();
                 const bulletAABB = bullet.object3D.getAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
+                    const sync = a => dispatch(serverAction(a));
                     const hp = player.health.hp - bullet.damage.dmg;
                     if (hp > 0) {
-                        dispatch(serverAction(hitPlayer(player.id, hp)));
+                        sync(hitPlayer(player.id, hp));
                     } else {
-                        dispatch(serverAction(killPlayer(player.id)));
+                        const killer = state.getEntity(bullet.damage.creatorId);
+                        if (killer && killer.player) {
+                            const { id, kills, deaths } = killer.player;
+                            sync(syncPlayerScore(id, kills + 1, deaths));
+                        }
+
+                        if (player.player) {
+                            const { id, kills, deaths } = player.player;
+                            sync(syncPlayerScore(id, kills, deaths + 1));
+                        }
+
+                        sync(killPlayer(player.id));
                     }
 
                     bullet.collider.x = 1;

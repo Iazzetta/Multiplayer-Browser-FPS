@@ -75,6 +75,15 @@ export function dispatch(state, action) {
             }
             return state;
         }
+        case SYNC_PLAYER_SCORE: {
+            const { id, kills, deaths } = action.data;
+            const { player } = state.getEntityComponents(id);
+            if (player) {
+                player.kills = kills;
+                player.deaths = deaths;
+            }
+            return state;
+        }
         case PLAYER_LEAVE: {
             const { id } = action.data;
             state.deleteEntity(id);
