@@ -11,7 +11,6 @@ import {
     BulletEntity,
     WallEntity,
     AmmoPickupEntity,
-    JetpackPickupEntity,
     HpPickupEntity,
     PlayerGhostEntity
 } from "./entities";
@@ -315,9 +314,7 @@ export function dispatch(state, action) {
                     case 3: {
                         return new AmmoPickupEntity(entityId, assets);
                     }
-                    case 4: {
-                        return new JetpackPickupEntity(entityId, assets);
-                    }
+
                     case 5: {
                         return new HpPickupEntity(entityId, assets);
                     }

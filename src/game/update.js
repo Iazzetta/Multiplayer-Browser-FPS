@@ -25,7 +25,6 @@ export function update(state, dispatch) {
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         pickupSystem(entity, state, dispatch);
-        jetpackFuelSystem(entity, state, dispatch);
         damageSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
@@ -88,13 +87,6 @@ export function pickupSystem(entity, state, dispatch) {
             const aabb1 = entity.object3D.getAABB();
             const aabb2 = pickup.object3D.getAABB();
             if (AABB.collision(aabb1, aabb2)) {
-                // Jetpack
-                if (!entity.jetpack && pickup.jetpack) {
-                    entity.jetpack = pickup.jetpack;
-                    state.deleteEntity(pickup.id);
-                    return;
-                }
-
                 // Ammo
                 if (entity.weapon && pickup.pickupAmmo !== undefined) {
                     if (
@@ -119,35 +111,6 @@ export function pickupSystem(entity, state, dispatch) {
                     }
                 }
             }
-        }
-    }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function jetpackFuelSystem(entity, state, dispatch) {
-    const { jetpack, controller } = entity;
-
-    if (jetpack && controller) {
-        const jump = controller.input.jump;
-
-        // Fly - burn fuel
-        if (!jump && jetpack.fuel < jetpack.maxFuel) {
-            jetpack.fuel = Math.min(
-                jetpack.fuel + state.time.delta,
-                jetpack.maxFuel
-            );
-        }
-
-        // Recharge
-        if (jump && jetpack.fuel > jetpack.minFuel) {
-            jetpack.fuel = Math.max(
-                jetpack.fuel - state.time.delta * 2,
-                jetpack.minFuel
-            );
         }
     }
 }
@@ -214,16 +177,10 @@ export function controllerSystem(entity, state, dispatch) {
 
         // vetical movement - jumping
         if (input.jump) {
-            const { jetpack } = entity;
-            if (jetpack && jetpack.fuel > 0) {
-                // Jetpacl
-                velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else {
-                // Normal jump
-                if (entity.collider && entity.collider.bottom()) {
-                    velocity.y = JUMP_SPEED;
-                    input.jump = false;
-                }
+            // Normal jump
+            if (entity.collider && entity.collider.bottom()) {
+                velocity.y = JUMP_SPEED;
+                input.jump = false;
             }
         }
 

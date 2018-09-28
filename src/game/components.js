@@ -95,14 +95,6 @@ export class ColliderComponent extends THREE.Vector3 {
     }
 }
 
-export class JetpackComponent {
-    constructor() {
-        this.maxFuel = 2000;
-        this.minFuel = -1000;
-        this.fuel = this.maxFuel;
-    }
-}
-
 export class HealthComponent {
     constructor() {
         this.hp = this.max = 100;

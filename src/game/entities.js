@@ -4,7 +4,6 @@ import { TILE_SIZE } from "./consts.js";
 import {
     ControllerComponent,
     VelocityComponent,
-    JetpackComponent,
     DecayComponent,
     Object3DComponent,
     HeadComponent,
@@ -86,11 +85,6 @@ export class Entity {
          * @type {DecayComponent}
          */
         this.decay = undefined;
-
-        /**
-         * @type {JetpackComponent}
-         */
-        this.jetpack = undefined;
 
         /**
          * @type {ColliderComponent}
@@ -209,23 +203,6 @@ export class WallEntity extends Entity {
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
         this.object3D.add(mesh);
-    }
-}
-
-export class JetpackPickupEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.gravity = true;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.jetpack = new JetpackComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("jetpack_pickup"));
     }
 }
 
