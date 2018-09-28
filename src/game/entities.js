@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
-import { TILE_SIZE } from "./consts.js";
+import { TILE_SIZE, RESPAWN_TIME } from "./consts.js";
 import {
     ControllerComponent,
     VelocityComponent,
@@ -126,7 +126,7 @@ export class PlayerGhostEntity extends Entity {
         this.gravity = false;
 
         this.player = new PlayerComponent(id, name);
-        this.player.respawnTimer = 1500;
+        this.player.respawnTimer = RESPAWN_TIME;
 
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();

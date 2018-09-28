@@ -254,7 +254,6 @@ export function dispatch(state, action) {
                     player.player.id,
                     player.player.name
                 );
-                state.deleteEntity(player.id);
                 state.addEntity(playerGhost);
             }
             return state;

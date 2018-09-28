@@ -9,7 +9,7 @@ import {
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED, RESPAWN_TIME } from "./consts";
+import { GRAVITY, JUMP_SPEED } from "./consts";
 import sample from "lodash/sample";
 
 /**
