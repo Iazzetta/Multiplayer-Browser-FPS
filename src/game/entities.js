@@ -119,7 +119,7 @@ export class Entity {
 
 Entity.empty = Object.freeze(new Entity(undefined));
 
-export class Player extends Entity {
+export class PlayerEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -143,7 +143,7 @@ export class Player extends Entity {
     }
 }
 
-export class Bullet extends Entity {
+export class BulletEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -159,7 +159,7 @@ export class Bullet extends Entity {
     }
 }
 
-export class Wall extends Entity {
+export class WallEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -181,7 +181,7 @@ export class Wall extends Entity {
     }
 }
 
-export class JetpackPickup extends Entity {
+export class JetpackPickupEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -198,7 +198,7 @@ export class JetpackPickup extends Entity {
     }
 }
 
-export class AmmoPickup extends Entity {
+export class AmmoPickupEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
@@ -215,7 +215,7 @@ export class AmmoPickup extends Entity {
     }
 }
 
-export class HpPickup extends Entity {
+export class HpPickupEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets

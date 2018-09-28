@@ -7,12 +7,12 @@ import { State } from "./state.js";
 import { forEachMapTile } from "./utils.js";
 import {
     Entity,
-    Player,
-    Bullet,
-    Wall,
-    AmmoPickup,
-    JetpackPickup,
-    HpPickup
+    PlayerEntity,
+    BulletEntity,
+    WallEntity,
+    AmmoPickupEntity,
+    JetpackPickupEntity,
+    HpPickupEntity
 } from "./entities";
 import {
     INIT_GAME,
@@ -105,7 +105,7 @@ export function dispatch(state, action) {
         }
         case SPAWN_PLAYER: {
             const { id } = action.data;
-            const player = new Player(id, state.assets);
+            const player = new PlayerEntity(id, state.assets);
             const playerData = state.players.find(p => p.id === player.id);
             const index = state.players.indexOf(playerData);
             const spawn = state.playerSpawns[index % state.playerSpawns.length];
@@ -159,7 +159,7 @@ export function dispatch(state, action) {
             if (player && player.object3D && player.head) {
                 // Create bullet
                 const bulletId = player.id + Date.now().toString(16);
-                const bullet = new Bullet(bulletId, state.assets);
+                const bullet = new BulletEntity(bulletId, state.assets);
                 bullet.damage.creatorId = player.id;
 
                 // Set velocity
@@ -302,16 +302,16 @@ export function dispatch(state, action) {
                         return;
                     }
                     case 2: {
-                        return new Wall(entityId, assets);
+                        return new WallEntity(entityId, assets);
                     }
                     case 3: {
-                        return new AmmoPickup(entityId, assets);
+                        return new AmmoPickupEntity(entityId, assets);
                     }
                     case 4: {
-                        return new JetpackPickup(entityId, assets);
+                        return new JetpackPickupEntity(entityId, assets);
                     }
                     case 5: {
-                        return new HpPickup(entityId, assets);
+                        return new HpPickupEntity(entityId, assets);
                     }
                 }
             }
