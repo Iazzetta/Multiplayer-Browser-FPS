@@ -10,7 +10,7 @@ import {
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED } from "./consts";
+import { GRAVITY, JUMP_SPEED, DEBUG } from "./consts";
 import sample from "lodash/sample";
 
 /**
@@ -61,7 +61,9 @@ export function respawnSystem(entity, state, dispatch) {
         player.respawnTimer -= state.time.delta;
         if (player.respawnTimer < 0) {
             player.respawnTimer = 0;
-            const spawn = sample(state.playerSpawns);
+            const spawn = DEBUG
+                ? state.playerSpawns[0]
+                : sample(state.playerSpawns);
             dispatch(serverAction(spawnPlayer(player, spawn)));
         }
     }
