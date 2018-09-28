@@ -11,7 +11,8 @@ import {
     DamageComponent,
     HealthComponent,
     ColliderComponent,
-    WeaponComponent
+    WeaponComponent,
+    PlayerComponent
 } from "./components";
 
 export class Entity {
@@ -64,6 +65,11 @@ export class Entity {
 
         // Components
         //===========================
+
+        /**
+         * @type {PlayerComponent}
+         */
+        this.player = undefined;
 
         /**
          * @type {Object3DComponent}
@@ -122,12 +128,14 @@ Entity.empty = Object.freeze(new Entity(undefined));
 export class PlayerEntity extends Entity {
     /**
      * @param {string} id
+     * @param {string} name
      * @param {Assets} assets
      */
-    constructor(id, assets) {
+    constructor(id, name, assets) {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
+        this.player = new PlayerComponent(id, name);
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();

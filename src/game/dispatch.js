@@ -105,7 +105,8 @@ export function dispatch(state, action) {
         }
         case SPAWN_PLAYER: {
             const { id } = action.data;
-            const player = new PlayerEntity(id, state.assets);
+            const name = "player-name";
+            const player = new PlayerEntity(id, name, state.assets);
             const playerData = state.players.find(p => p.id === player.id);
             const index = state.players.indexOf(playerData);
             const spawn = state.playerSpawns[index % state.playerSpawns.length];

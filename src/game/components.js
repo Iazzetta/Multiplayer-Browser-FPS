@@ -8,6 +8,19 @@ export class DecayComponent {
     }
 }
 
+export class PlayerComponent {
+    /**
+     * @param {string} id
+     * @param {string} name
+     */
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+        this.kills = 0;
+        this.deaths = 0;
+    }
+}
+
 export class ControllerComponent {
     constructor() {
         /**
