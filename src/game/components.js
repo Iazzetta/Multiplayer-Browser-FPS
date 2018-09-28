@@ -18,6 +18,7 @@ export class PlayerComponent {
         this.name = name;
         this.kills = 0;
         this.deaths = 0;
+        this.respawnTimer = 0;
     }
 }
 

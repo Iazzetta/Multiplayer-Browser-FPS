@@ -10,6 +10,7 @@ import {
 import { Entity } from "./entities";
 import { AABB } from "./utils";
 import { GRAVITY, JUMP_SPEED, RESPAWN_TIME } from "./consts";
+import sample from "lodash/sample";
 
 /**
  * @param {State} state
@@ -21,6 +22,7 @@ export function update(state, dispatch) {
     // Systems
     state.entities.forEach(entity => {
         if (entity.sleep) return;
+        respawnSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
@@ -45,6 +47,23 @@ export function updateTime(state) {
     const elapsed = Date.now() - time.start;
     time.delta = elapsed - time.elapsed;
     time.elapsed = elapsed;
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function respawnSystem(entity, state, dispatch) {
+    const { player } = entity;
+    if (player && player.respawnTimer > 0) {
+        player.respawnTimer -= state.time.delta;
+        if (player.respawnTimer < 0) {
+            player.respawnTimer = 0;
+            const spawn = sample(state.playerSpawns);
+            dispatch(serverAction(spawnPlayer(player, spawn)));
+        }
+    }
 }
 
 /**
@@ -138,15 +157,15 @@ export function damageSystem(bullet, state, dispatch) {
                         dispatch(serverAction(hitPlayer(player.id, hp)));
                     } else {
                         dispatch(serverAction(killPlayer(player.id)));
-                        setTimeout(function respawn() {
-                            const playerData = state.players.find(p => {
-                                return p.id === player.id;
-                            });
-                            console.log(playerData, player.id);
-                            if (playerData !== undefined) {
-                                dispatch(serverAction(spawnPlayer(player.id)));
-                            }
-                        }, RESPAWN_TIME);
+                        // setTimeout(function respawn() {
+                        //     const playerData = state.players.find(p => {
+                        //         return p.id === player.id;
+                        //     });
+                        //     console.log(playerData, player.id);
+                        //     if (playerData !== undefined) {
+                        //         dispatch(serverAction(spawnPlayer(player.id)));
+                        //     }
+                        // }, RESPAWN_TIME);
                     }
 
                     bullet.collider.x = 1;

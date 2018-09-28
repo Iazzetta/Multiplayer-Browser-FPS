@@ -110,19 +110,11 @@ export function dispatch(state, action) {
             return state;
         }
         case SPAWN_PLAYER: {
-            const { id } = action.data;
+            const { id, x, y, z } = action.data;
             const name = "player-name";
             const player = new PlayerEntity(id, name, state.assets);
-            const playerData = state.players.find(p => p.id === player.id);
-            const index = state.players.indexOf(playerData);
-            const spawn = state.playerSpawns[index % state.playerSpawns.length];
-            if (spawn !== undefined) {
-                playerData.alive = true;
-                player.object3D.position.copy(spawn);
-                state.addEntity(player);
-            } else {
-                console.warn("No spawns.");
-            }
+            player.object3D.position.set(x, y, z);
+            state.addEntity(player);
             return state;
         }
         case SPAWN_BULLET_PACK: {

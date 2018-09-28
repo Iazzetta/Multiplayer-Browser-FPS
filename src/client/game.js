@@ -117,7 +117,6 @@ class Game extends BaseGame {
 
             game.dispatch(initGame());
             game.dispatch(playerJoin(this.playerId, this.playerName));
-            game.dispatch(spawnPlayer(this.playerId));
             game.initSocket();
 
             requestAnimationFrame(function next() {

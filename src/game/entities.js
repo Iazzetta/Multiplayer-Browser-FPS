@@ -129,7 +129,10 @@ export class PlayerGhostEntity extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = false;
+
         this.player = new PlayerComponent(id, name);
+        this.player.respawnTimer = 1500;
+
         this.controller = new ControllerComponent();
         this.velocity = new VelocityComponent();
 
@@ -152,7 +155,10 @@ export class PlayerEntity extends Entity {
         super(id);
         this.flags = ["player"];
         this.gravity = true;
+
         this.player = new PlayerComponent(id, name);
+        this.player.respawnTimer = 0;
+
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
         this.controller = new ControllerComponent();

@@ -1,4 +1,5 @@
 import { State } from "./state";
+import { PlayerComponent } from "./components";
 import times from "lodash/times";
 
 export const [
@@ -73,10 +74,13 @@ export function playerLeave(id) {
 }
 
 /**
- * @param {string} id
+ * @param {PlayerComponent} player
+ * @param {THREE.Vector3} spawn
  */
-export function spawnPlayer(id) {
-    return new Action(SPAWN_PLAYER, { id });
+export function spawnPlayer(player, spawn) {
+    const { id } = player;
+    const { x, y, z } = spawn;
+    return new Action(SPAWN_PLAYER, { id, x, y, z });
 }
 
 /**
@@ -110,7 +114,11 @@ export function syncPlayer(id, state) {
  * @param {State} state
  */
 export function syncAllPlayers(state) {
-    return new Action(SYNC_ALL_PLAYERS, { players: state.players });
+    const players = state
+        .getEntityGroup("player")
+        .map(player => player.player)
+        .filter(player => player);
+    return new Action(SYNC_ALL_PLAYERS, { players });
 }
 
 /**
