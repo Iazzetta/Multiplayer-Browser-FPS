@@ -135,6 +135,7 @@ export class PlayerGhostEntity extends Entity {
         this.object3D.position.y = 4.5 * TILE_SIZE;
 
         this.head = new HeadComponent();
+        this.head.rotation.x = toRadians(-80);
         this.object3D.add(this.head);
     }
 }
