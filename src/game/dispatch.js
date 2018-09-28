@@ -167,6 +167,13 @@ export function dispatch(state, action) {
             if (player !== undefined) {
                 const playerGhost = new PlayerGhostEntity(player.player);
                 state.addEntity(playerGhost);
+                if (player.object3D) {
+                    playerGhost.object3D.position.set(
+                        player.object3D.position.x,
+                        playerGhost.object3D.position.y,
+                        player.object3D.position.z
+                    );
+                }
             }
             return state;
         }

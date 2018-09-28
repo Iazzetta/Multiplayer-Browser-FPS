@@ -15,7 +15,9 @@ import {
     CLIENT_ACTION,
     playerJoin,
     SPAWN_PLAYER,
-    HIT_PLAYER
+    HIT_PLAYER,
+    PLAYER_JOIN,
+    KILL_PLAYER
 } from "../game/actions.js";
 import { toRadians } from "../game/utils.js";
 import debounce from "lodash/debounce";
@@ -86,6 +88,13 @@ class Game extends BaseGame {
                     this.syncPlayerImmediately();
                     break;
                 }
+                case KILL_PLAYER: {
+                    if (this.playerId === action.data.id) {
+                        this.mountPlayerCamera();
+                    }
+                    break;
+                }
+                case PLAYER_JOIN:
                 case SPAWN_PLAYER: {
                     if (this.playerId === action.data.player.id) {
                         this.mountPlayerCamera();
@@ -135,7 +144,7 @@ class Game extends BaseGame {
 
     mountPlayerCamera() {
         const playerId = this.playerId;
-        const player = this.state.entities.get(playerId);
+        const player = this.state.getEntity(playerId);
         if (player !== undefined) {
             player.object3D.children.forEach(child => {
                 child.visible = false;
@@ -359,7 +368,7 @@ class Game extends BaseGame {
     }
 
     renderHUD() {
-        const { weapon, health } = this.myComponents();
+        const { player, weapon, health } = this.myComponents();
 
         // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
@@ -373,6 +382,18 @@ class Game extends BaseGame {
             this.ctx.fillStyle = "red";
             this.ctx.fillRect(0, 0, this.hud.width, this.hud.height);
             this.ctx.globalAlpha = 1;
+        }
+
+        // Respawn
+        if (player && player.respawnTimer > 0) {
+            const sec = Math.ceil(player.respawnTimer / 1000);
+            this.ctx.font = "32px Impact";
+            this.ctx.fillStyle = "red";
+            this.ctx.fillText(
+                "Respawn in: " + sec,
+                this.hud.width * 0.5 - 100,
+                this.hud.height * 0.4
+            );
         }
 
         // Weapon
