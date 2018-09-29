@@ -28,7 +28,16 @@ body {
             margin: 0 auto;
             position: relative;
 
+            .level-object {
+                position: absolute;
+                background: rgb(191, 209, 238);
+                border: 1px solid white;
+                box-sizing: border-box;
+                pointer-events: none;
+            }
+
             .grid {
+                position: absolute;
                 display: flex;
                 flex-direction: column;
 
@@ -41,21 +50,14 @@ body {
                     $size: 2px;
                     min-width: $size;
                     min-height: $size;
-                    border: 1px solid #333;
+                    border: 1px solid white;
                     box-sizing: border-box;
+                    opacity: 0.25;
 
                     &:hover {
                         border-color: yellow;
                     }
                 }
-            }
-
-            .level-object {
-                position: absolute;
-                background: rgb(191, 209, 238);
-                border: 1px solid white;
-                box-sizing: border-box;
-                pointer-events: none;
             }
         }
     }

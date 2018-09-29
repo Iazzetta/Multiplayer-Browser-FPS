@@ -21,8 +21,11 @@
         <div class="view">
             <div class="level" :style="levelViewStyle">
 
-                <!-- Background grid -->
-                <div class="grid">
+                <!-- Level objects -->
+                <div class="level-object" v-for="rect in levelRects" :key="rect.id" :style="rect.style"></div>
+
+                 <!-- Background grid -->
+                 <div class="grid">
                     <div class="grid--row" v-for="y in grid.rows" :key="y">
                         <div class="grid--cell"
                             v-for="x in grid.cols"
@@ -34,9 +37,6 @@
                             @mouseup="drawObjectEnd(x - 1, y - 1)"></div>
                     </div>
                 </div>
-
-                <!-- Level objects -->
-                <div class="level-object" v-for="rect in levelRects" :key="rect.id" :style="rect.style"></div>
             </div>
         </div>
 
