@@ -133,7 +133,6 @@ new Vue({
         },
         selectObject(obj) {
             this.select_object = obj;
-            console.log(this.select_object);
         }
     },
     mounted() {
@@ -146,7 +145,6 @@ new Vue({
                     this.onDelete(ev);
                     break;
                 default:
-                    console.log(ev.keyCode);
                     break;
             }
         });
