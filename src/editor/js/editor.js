@@ -241,7 +241,13 @@ new Vue({
                 floor.position.y -= TILE_SIZE;
             });
 
-            console.log({ objects });
+            // Download the file
+            const a = document.createElement("a");
+            const json = JSON.stringify(objects);
+            const file = new Blob([json], { type: "json" });
+            a.href = URL.createObjectURL(file);
+            a.download = "level.json";
+            a.click();
         }
     },
     mounted() {

@@ -29,6 +29,9 @@ $hover_color: rgb(255, 135, 43);
             padding: 8px;
             margin-bottom: 8px;
             font-size: 0;
+            * {
+                font-size: 16px;
+            }
 
             .brush {
                 display: inline-block;
