@@ -114,38 +114,46 @@ new Vue({
             if (this.draw_object === null) {
                 const { x, y } = this.getMouseGridPoint(ev);
                 this.draw_object_origin = { x, y };
-                this.draw_object = this.addObject(x, y);
+                this.draw_object = this.createObject(x, y);
                 this.select_object = this.draw_object;
             }
         },
         drawObject(ev) {
             if (this.draw_object !== null) {
                 const { x, y } = this.getMouseGridPoint(ev);
-                const origin = this.draw_object_origin;
-                const min = {
-                    x: Math.min(x, origin.x),
-                    y: Math.min(y, origin.y)
-                };
-                const max = {
-                    x: Math.max(x, origin.x),
-                    y: Math.max(y, origin.y)
-                };
+                if (this.draw_object.resiziable) {
+                    const origin = this.draw_object_origin;
+                    const min = {
+                        x: Math.min(x, origin.x),
+                        y: Math.min(y, origin.y)
+                    };
+                    const max = {
+                        x: Math.max(x, origin.x),
+                        y: Math.max(y, origin.y)
+                    };
 
-                this.draw_object.x = min.x;
-                this.draw_object.y = min.y;
-                this.draw_object.w = max.x - min.x + 1;
-                this.draw_object.h = max.y - min.y + 1;
+                    this.draw_object.x = min.x;
+                    this.draw_object.y = min.y;
+                    this.draw_object.w = max.x - min.x + 1;
+                    this.draw_object.h = max.y - min.y + 1;
+                } else {
+                    this.draw_object.x = x;
+                    this.draw_object.y = y;
+                    this.draw_object.w = 1;
+                    this.draw_object.h = 1;
+                }
             }
         },
-        drawObjectEnd(ev) {
+        drawObjectEnd() {
             if (this.draw_object !== null) {
                 this.draw_object = null;
             }
         },
-        addObject(x, y, w = 1, h = 1) {
+        createObject(x, y, w = 1, h = 1) {
             const id = Date.now().toString(16);
             const type = this.brush;
-            const obj = { id, type, x, y, w, h };
+            const resiziable = type === "wall";
+            const obj = { id, type, resiziable, x, y, w, h };
             this.level.objects.push(obj);
             return obj;
         },
