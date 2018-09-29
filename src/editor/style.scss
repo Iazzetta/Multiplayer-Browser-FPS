@@ -23,6 +23,25 @@ $hover_color: rgb(255, 135, 43);
         grid-row: 2;
         padding: 16px;
 
+        .brush-panel {
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 0;
+
+            .brush {
+                display: inline-block;
+                margin: 8px;
+                width: 40px;
+                height: 40px;
+
+                &.selected {
+                    border: 2px solid $hover_color;
+                    box-sizing: border-box;
+                }
+            }
+        }
+
         small {
             opacity: 0.25;
         }

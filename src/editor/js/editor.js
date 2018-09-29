@@ -1,18 +1,19 @@
 import Vue from "./vue.js";
 import map from "lodash/map";
-import get from "lodash/get";
 
 new Vue({
     el: "#editor",
     data() {
         return {
+            brush: "wall",
+            brush_options: [
+                { type: "wall", style: { background: "#697478" } },
+                { type: "player", style: { background: "cornflowerblue" } },
+                { type: "bullet-pickup", style: { background: "#b87ecf" } }
+            ],
             select_object: null,
             draw_object: null,
             draw_object_origin: { x: 0, y: 0 },
-            object_types: [
-                { id: "wall", name: "Wall", color: "#697478" },
-                { id: "player", name: "Player", color: "#697478" }
-            ],
             grid: {
                 cell_size: 32,
                 rows: 16,
@@ -44,9 +45,14 @@ new Vue({
         },
         levelRects() {
             const { cell_size } = this.grid;
+            const colors = this.brush_options.reduce((colors, opt) => {
+                colors[opt.type] = opt.style.background;
+                return colors;
+            }, {});
             return map(this.level.objects, obj => {
                 const { x, y, w, h } = obj;
                 const style = {
+                    background: colors[obj.type],
                     top: y * cell_size + "px",
                     left: x * cell_size + "px",
                     width: w * cell_size + "px",
@@ -77,7 +83,6 @@ new Vue({
         }
     },
     methods: {
-        onEscape(ev) {},
         onDelete(ev) {
             if (this.select_object !== null) {
                 this.level.objects = this.level.objects.filter(obj => {
@@ -139,7 +144,8 @@ new Vue({
         },
         addObject(x, y, w = 1, h = 1) {
             const id = Date.now().toString(16);
-            const obj = { id, x, y, w, h };
+            const type = this.brush;
+            const obj = { id, type, x, y, w, h };
             this.level.objects.push(obj);
             return obj;
         },
@@ -178,6 +184,9 @@ new Vue({
                     break;
                 }
             }
+        },
+        setBrush(brush) {
+            this.brush = brush;
         }
     },
     mounted() {

@@ -14,6 +14,19 @@
 
         <!-- Menu -->
         <div class="menu">
+
+            <!-- Brush panel -->
+            <div class="brush-panel">
+                <div class="brush"
+                    v-for="option in brush_options"
+                    :key="option.id"
+                    :style="option.style"
+                    :title="option.type"
+                    :class="{ selected: option.type === brush }"
+                    @click="setBrush(option.type)"></div>
+            </div>
+
+            <!-- Selected object info -->
             <div v-if="select_object">
                 <small>
                     Selected object:<br>
