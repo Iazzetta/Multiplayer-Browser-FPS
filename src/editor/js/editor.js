@@ -58,7 +58,7 @@ new Vue({
 
                 const classList = [];
                 if (this.select_object && this.select_object.id === obj.id) {
-                    classList.push("selected")
+                    classList.push("selected");
                 }
 
                 return { obj, style, classList };
@@ -66,6 +66,14 @@ new Vue({
         }
     },
     methods: {
+        onEscape(ev) {},
+        onDelete(ev) {
+            if (this.select_object !== null) {
+                this.level.objects = this.level.objects.filter(obj => {
+                    return obj.id !== this.select_object.id;
+                });
+            }
+        },
         getMouseGridPoint(ev) {
             function getOffset(object, offset = { x: 0, y: 0 }) {
                 if (!object) return offset;
@@ -125,7 +133,22 @@ new Vue({
         },
         selectObject(obj) {
             this.select_object = obj;
-            console.log(this.select_object)
+            console.log(this.select_object);
         }
+    },
+    mounted() {
+        document.addEventListener("keydown", ev => {
+            switch (ev.keyCode) {
+                case 27:
+                    this.onEscape(ev);
+                    break;
+                case 46:
+                    this.onDelete(ev);
+                    break;
+                default:
+                    console.log(ev.keyCode);
+                    break;
+            }
+        });
     }
 });
