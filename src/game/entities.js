@@ -166,20 +166,22 @@ export class WallEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
+     * @param {THREE.Vector3} size
      */
-    constructor(id, assets) {
+    constructor(id, assets, size) {
         const radius = new THREE.Vector3(
-            TILE_SIZE * 0.5,
-            TILE_SIZE * 0.5,
-            TILE_SIZE * 0.5
+            size.x * 0.5,
+            size.y * 0.5,
+            size.z * 0.5
         );
-        const mesh = assets.mesh("wall_tile");
-        mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
         super(id);
         this.sleep = true;
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
+
+        const mesh = assets.mesh("wall_tile");
+        mesh.scale.copy(size)
         this.object3D.add(mesh);
     }
 }

@@ -2,7 +2,6 @@ import * as THREE from "three";
 import map from "lodash/map";
 import { TILE_SIZE, JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
-import { forEachMapTile } from "./utils.js";
 import {
     Entity,
     PlayerEntity,
@@ -34,6 +33,9 @@ import {
     playerJoin
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
+
+// @ts-ignore
+import LEVEL_1_JSON from "../assets/levels/level-1.json";
 
 /**
  * @param {State} state
@@ -223,24 +225,22 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerSpawns = [];
 
-            forEachMapTile((id, x, y, z) => {
-                const entity = createEntity(id);
-                const vector = new THREE.Vector3(
-                    TILE_SIZE * x,
-                    TILE_SIZE * y,
-                    TILE_SIZE * z
-                );
+            LEVEL_1_JSON.forEach(obj => {
+                const position = new THREE.Vector3();
+                position.copy(obj.position);
 
-                if (entity !== undefined) {
-                    if (entity.object3D) {
-                        entity.object3D.position.copy(vector);
-                    }
-                    state.addEntity(entity);
-                }
+                const size = new THREE.Vector3();
+                size.copy(obj.size);
 
-                // Save player spawn
-                if (id === 1) {
-                    state.playerSpawns.push(vector.clone());
+                switch (obj.type) {
+                    case "player":
+                        state.playerSpawns.push(position.clone());
+                        break;
+                    case "wall":
+                        const wall = new WallEntity(obj.id, state.assets, size);
+                        wall.object3D.position.copy(position);
+                        state.addEntity(wall);
+                        break;
                 }
             });
 
@@ -263,31 +263,6 @@ export function dispatch(state, action) {
             const backLight = dirLight("#FFFFFF", 0.5);
             backLight.position.set(100, 0, -100).normalize();
             state.scene.add(backLight);
-
-            /**
-             * @param {number} tileId
-             * @return {Entity}
-             */
-            function createEntity(tileId) {
-                const entityId = (128 + state.entities.size).toString(16);
-                const assets = state.assets;
-                switch (tileId) {
-                    case 1: {
-                        // Player spawner
-                        return;
-                    }
-                    case 2: {
-                        return new WallEntity(entityId, assets);
-                    }
-                    case 3: {
-                        return new AmmoPickupEntity(entityId, assets);
-                    }
-
-                    case 5: {
-                        return new HpPickupEntity(entityId, assets);
-                    }
-                }
-            }
 
             return state;
         }
