@@ -11,15 +11,15 @@ new Vue({
                 cols: 16
             },
             level: {
-                objects: {
-                    "wall-1": {
+                objects: [
+                    {
                         id: "wall-1",
                         x: 1,
                         y: 1,
                         w: 1,
                         h: 1
                     }
-                }
+                ]
             }
         };
     },
@@ -49,6 +49,13 @@ new Vue({
                 };
                 return { id, style };
             });
+        }
+    },
+    methods: {
+        addObject(x, y, w = 1, h = 1) {
+            const id = Date.now().toString(16);
+            const obj = { id, x, y, w, h };
+            this.level.objects.push(obj);
         }
     }
 });

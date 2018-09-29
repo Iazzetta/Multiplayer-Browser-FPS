@@ -41,7 +41,7 @@ body {
                     $size: 2px;
                     min-width: $size;
                     min-height: $size;
-                    border: 1px solid #999;
+                    border: 1px solid #333;
 
                     &:hover {
                         border-color: yellow;
@@ -51,7 +51,8 @@ body {
 
             .level-object {
                 position: absolute;
-                background: cornflowerblue;
+                background: rgb(191, 209, 238);
+                border: 1px solid white;
             }
         }
     }

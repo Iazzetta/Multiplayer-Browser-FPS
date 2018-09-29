@@ -23,11 +23,13 @@
 
                 <!-- Background grid -->
                 <div class="grid">
-                    <div class="grid--row" v-for="y in grid.rows" :key="y + 1">
+                    <div class="grid--row" v-for="y in grid.rows" :key="y">
                         <div class="grid--cell"
                             v-for="x in grid.cols"
-                            :key="x + 1"
-                            :style="cellStyle"></div>
+                            :key="x"
+                            :style="cellStyle"
+                            :title="`(${x-1},${y-1})`"
+                            @mousedown="addObject(x - 1, y - 1)"></div>
                     </div>
                 </div>
 
