@@ -106,13 +106,6 @@ export class HealthComponent {
     }
 }
 
-export class DamageComponent {
-    constructor() {
-        this.creatorId = "";
-        this.dmg = 5;
-    }
-}
-
 export class Object3DComponent extends THREE.Object3D {
     /**
      * @param {THREE.Vector3} radius

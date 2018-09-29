@@ -7,7 +7,6 @@ import {
     DecayComponent,
     Object3DComponent,
     HeadComponent,
-    DamageComponent,
     HealthComponent,
     ColliderComponent,
     WeaponComponent,
@@ -97,11 +96,6 @@ export class Entity {
         this.velocity = undefined;
 
         /**
-         * @type {DamageComponent}
-         */
-        this.damage = undefined;
-
-        /**
          * @type {HealthComponent}
          */
         this.health = undefined;
@@ -165,22 +159,6 @@ export class PlayerEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
         this.object3D.add(assets.mesh("player_body"));
         this.object3D.add(this.head);
-    }
-}
-
-export class BulletEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.decay = new DecayComponent(10000);
-        this.damage = new DamageComponent();
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 0.5, 0.5));
-        this.object3D.add(assets.mesh("bullet"));
     }
 }
 

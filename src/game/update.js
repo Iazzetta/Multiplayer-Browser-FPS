@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { State } from "./state";
 import {
     Action,
-    shootBullet,
     hitPlayer,
     serverAction,
     killPlayer,
@@ -30,7 +29,6 @@ export function update(state, dispatch) {
         decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         pickupSystem(entity, state, dispatch);
-        damageSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
@@ -139,54 +137,6 @@ export function pickupSystem(entity, state, dispatch) {
     }
 }
 
-/**
- * @param {Entity} bullet
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function damageSystem(bullet, state, dispatch) {
-    if (bullet.damage && bullet.collider && bullet.object3D) {
-        const players = state.getEntityGroup("player");
-
-        // Hit player
-        players.forEach(player => {
-            if (player.object3D && player.health) {
-                if (player === bullet) return;
-                if (player.health.hp <= 0) return;
-                if (player.id === bullet.damage.creatorId) return;
-                const playerAABB = player.object3D.toAABB();
-                const bulletAABB = bullet.object3D.toAABB();
-                if (AABB.collision(bulletAABB, playerAABB)) {
-                    const sync = a => dispatch(serverAction(a));
-                    const hp = player.health.hp - bullet.damage.dmg;
-                    if (hp > 0) {
-                        sync(hitPlayer(player.id, hp));
-                    } else {
-                        const killer = state.getEntity(bullet.damage.creatorId);
-                        if (killer && killer.player) {
-                            const { id, kills, deaths } = killer.player;
-                            sync(syncPlayerScore(id, kills + 1, deaths));
-                        }
-
-                        if (player.player) {
-                            const { id, kills, deaths } = player.player;
-                            sync(syncPlayerScore(id, kills, deaths + 1));
-                        }
-
-                        sync(killPlayer(player.id));
-                    }
-
-                    bullet.collider.x = 1;
-                }
-            }
-        });
-
-        // Die on wall collision
-        if (bullet.collider.any()) {
-            state.deleteEntity(bullet.id);
-        }
-    }
-}
 
 /**
  * @param {Entity} entity
@@ -252,7 +202,6 @@ export function shootingSystem(entity, state, dispatch) {
         ) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = weapon.type.firerate;
-            // dispatch(shootBullet(entity.id));
 
             const origin = entity.object3D.position.toArray();
             const dir = entity.head.getFacingDirection().toArray();

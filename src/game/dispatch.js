@@ -1,14 +1,11 @@
 import * as THREE from "three";
 import map from "lodash/map";
-import uniqBy from "lodash/uniqBy";
-import random from "lodash/random";
-import { TILE_SIZE, BULLET_SPEED, JUMP_SPEED } from "./consts.js";
+import { TILE_SIZE, JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { forEachMapTile } from "./utils.js";
 import {
     Entity,
     PlayerEntity,
-    BulletEntity,
     WallEntity,
     AmmoPickupEntity,
     HpPickupEntity,
@@ -22,12 +19,9 @@ import {
     SYNC_PLAYER_SCORE,
     SYNC_ALL_PLAYERS,
     SPAWN_PLAYER,
-    SPAWN_BULLET_PACK,
-    SPAWN_HEALTH_PACK,
     SET_CAMERA_VIEW,
     SET_INPUT,
     SET_AIM,
-    SHOOT_BULLET,
     RELOAD_START,
     RELOAD_DONE,
     HIT_PLAYER,
@@ -199,51 +193,6 @@ export function dispatch(state, action) {
             if (object3D && head) {
                 object3D.rotation.y = ver;
                 head.rotation.x = hor;
-            }
-            return state;
-        }
-        case SHOOT_BULLET: {
-            const { id } = action.data;
-            const player = state.getEntity(id);
-            if (player && player.object3D && player.head) {
-                // Create bullet
-                const bulletId = player.id + Date.now().toString(16);
-                const bullet = new BulletEntity(bulletId, state.assets);
-                bullet.damage.creatorId = player.id;
-
-                // Set velocity
-                const direction = player.head.getFacingDirection();
-                bullet.velocity.z = direction.z * BULLET_SPEED;
-                bullet.velocity.x = direction.x * BULLET_SPEED;
-                bullet.velocity.y = direction.y * BULLET_SPEED;
-
-                // Spread - randomize
-                bullet.velocity.z += random(-100, 100) * 0.000025;
-                bullet.velocity.x += random(-100, 100) * 0.000025;
-                bullet.velocity.y += random(-100, 100) * 0.000025;
-
-                // Set position
-                const playerAABB = player.object3D.toAABB();
-                bullet.object3D.position.x = player.object3D.position.x;
-                bullet.object3D.position.y = playerAABB.max.y - 0.5;
-                bullet.object3D.position.z = player.object3D.position.z;
-
-                // Rotate - randomize
-                bullet.object3D.rotation.set(
-                    random(-1, 1) * 0.1,
-                    random(-1, 1) * 0.1,
-                    random(-1, 1) * 0.1
-                );
-
-                // Offset infrotn of camera
-                const DIST = 0.75;
-                const offset = new THREE.Vector3();
-                offset.copy(bullet.velocity);
-                offset.normalize();
-                offset.multiply(new THREE.Vector3(DIST, DIST, DIST));
-                bullet.object3D.position.add(offset);
-
-                state.addEntity(bullet);
             }
             return state;
         }

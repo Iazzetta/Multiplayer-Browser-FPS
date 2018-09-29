@@ -28,7 +28,6 @@ export const [
     SET_AIM,
 
     // Gameplay actions
-    SHOOT_BULLET,
     RELOAD_START,
     RELOAD_DONE,
     HIT_PLAYER,
@@ -150,13 +149,6 @@ export function setPlayerInput(id, input, value) {
  */
 export function setPlayerAim(id, ver, hor) {
     return new Action(SET_AIM, { id, ver, hor });
-}
-
-/**
- * @param {string} id
- */
-export function shootBullet(id) {
-    return new Action(SHOOT_BULLET, { id });
 }
 
 /**
