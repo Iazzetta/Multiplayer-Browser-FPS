@@ -44,9 +44,10 @@ new Vue({
                 const style = {
                     top: y * cell_size + "px",
                     left: x * cell_size + "px",
-                    width: w * cell_size + "px",
-                    height: h * cell_size + "px"
+                    width: w * (cell_size - 2) + "px",
+                    height: h * (cell_size - 2) + "px"
                 };
+
                 return { id, style };
             });
         }
