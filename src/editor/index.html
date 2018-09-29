@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="style.scss" />
+</head>
+
+<body>
+    <div id="editor">
+
+        <!-- MENU -->
+        <div class="menu">
+            <div>
+                <h5>GRID:</h5>
+                <div class="form-group">
+                    <label>Rows:</label>
+                    <input type="number" v-model="grid.rows">
+                </div>
+                <div class="form-group">
+                    <label>Cols:</label>
+                    <input type="number" v-model="grid.cols">
+                </div>
+                <div class="form-group">
+                    <label>Cell size:</label>
+                    <input type="number" v-model="grid.cell_size">
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="view">
+            <div class="grid">
+                <div v-for="i in gridRows" :key="i + 1" class="grid--row">
+                    <div v-for="i in gridCols" :key="i + 1" :style="cellStyle" class="grid--cell"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="js/editor.js"></script>
+</body>
+
+</html>

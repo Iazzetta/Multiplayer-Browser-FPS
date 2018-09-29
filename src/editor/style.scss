@@ -1,0 +1,52 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    color: #f2f2f2;
+    background: #222;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 16px;
+}
+
+#editor {
+    display: grid;
+    grid-template-rows: 64px auto 64px;
+    grid-template-columns: 256px auto 64px;
+    height: 100vh;
+
+    .menu {
+        grid-row: 2;
+    }
+
+    .view {
+        grid-row: 2;
+        overflow: auto;
+        background-color: black;
+    }
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+
+    .grid--row {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .grid--cell {
+        $size: 2px;
+        min-width: $size;
+        min-height: $size;
+        border: 1px solid #999;
+    }
+}
+
+.form-group {
+    margin-bottom: 4px;
+    font-size: 12px;
+    label,
+    input {
+        display: block;
+    }
+}
