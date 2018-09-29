@@ -83,12 +83,8 @@ new Vue({
         }
     },
     methods: {
-        onDelete(ev) {
-            if (this.select_object !== null) {
-                this.level.objects = this.level.objects.filter(obj => {
-                    return obj.id !== this.select_object.id;
-                });
-            }
+        isObjResizable(obj) {
+            return obj.type === "wall";
         },
         getMouseGridPoint(ev) {
             function getOffset(object, offset = { x: 0, y: 0 }) {
@@ -110,6 +106,14 @@ new Vue({
                 y: Math.floor(point.y / this.grid.cell_size)
             };
         },
+
+        onDelete(ev) {
+            if (this.select_object !== null) {
+                this.level.objects = this.level.objects.filter(obj => {
+                    return obj.id !== this.select_object.id;
+                });
+            }
+        },
         drawObjectBegin(ev, obj = null) {
             if (this.draw_object === null) {
                 const { x, y } = this.getMouseGridPoint(ev);
@@ -121,7 +125,7 @@ new Vue({
         drawObject(ev) {
             if (this.draw_object !== null) {
                 const { x, y } = this.getMouseGridPoint(ev);
-                if (this.draw_object.resizable) {
+                if (this.isObjResizable(this.draw_object)) {
                     const origin = this.draw_object_origin;
                     const min = {
                         x: Math.min(x, origin.x),
@@ -152,8 +156,7 @@ new Vue({
         createObject(x, y, w = 1, h = 1) {
             const id = Date.now().toString(16);
             const type = this.brush;
-            const resizable = type === "wall";
-            const obj = { id, type, resizable, x, y, w, h };
+            const obj = { id, type, x, y, w, h };
             this.level.objects.push(obj);
             return obj;
         },
