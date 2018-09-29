@@ -21,6 +21,11 @@ $hover_color: rgb(255, 135, 43);
 
     .menu {
         grid-row: 2;
+        padding: 16px;
+
+        small {
+            opacity: 0.25;
+        }
     }
 
     .viewport {

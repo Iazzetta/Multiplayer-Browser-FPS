@@ -14,7 +14,16 @@
 
         <!-- Menu -->
         <div class="menu">
-            Menu
+            <div v-if="select_object">
+                <small>
+                    Selected object:<br>
+                    id: {{ select_object.id }}<br>
+                    x: {{ select_object.x }}<br>
+                    x: {{ select_object.y }}<br>
+                    h: {{ select_object.w }}<br>
+                    w: {{ select_object.h }}<br>
+                </small>
+            </div>
         </div>
 
         <!-- Viewport -->

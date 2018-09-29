@@ -9,21 +9,17 @@ new Vue({
             select_object: null,
             draw_object: null,
             draw_object_origin: { x: 0, y: 0 },
+            object_types: [
+                { id: "wall", name: "Wall", color: "#697478" },
+                { id: "player", name: "Player", color: "#697478" }
+            ],
             grid: {
                 cell_size: 32,
                 rows: 16,
                 cols: 16
             },
             level: {
-                objects: [
-                    {
-                        id: "wall-1",
-                        x: 1,
-                        y: 1,
-                        w: 1,
-                        h: 1
-                    }
-                ]
+                objects: []
             }
         };
     },
