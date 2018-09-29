@@ -6,6 +6,7 @@ new Vue({
     data() {
         return {
             draw_object: null,
+            draw_object_origin: { x: 0, y: 0 },
             grid: {
                 cell_size: 32,
                 rows: 16,
@@ -55,19 +56,29 @@ new Vue({
     },
     methods: {
         drawObjectBegin(x, y) {
-            console.log("Begin");
+            this.draw_object_origin = { x, y };
             this.draw_object = this.addObject(x, y);
         },
         drawObject(x, y) {
             if (this.draw_object !== null) {
-                console.log("Draw");
-                this.draw_object.w = x - this.draw_object.x + 1;
-                this.draw_object.h = y - this.draw_object.y + 1;
+                const origin = this.draw_object_origin;
+                const min = {
+                    x: Math.min(x, origin.x),
+                    y: Math.min(y, origin.y)
+                };
+                const max = {
+                    x: Math.max(x, origin.x),
+                    y: Math.max(y, origin.y)
+                };
+
+                this.draw_object.x = min.x;
+                this.draw_object.y = min.y;
+                this.draw_object.w = max.x - min.x + 1;
+                this.draw_object.h = max.y - min.y + 1;
             }
         },
         drawObjectEnd(x, y) {
             if (this.draw_object !== null) {
-                console.log("End");
                 this.draw_object = null;
             }
         },

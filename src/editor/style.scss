@@ -23,6 +23,7 @@ body {
         grid-row: 2;
         overflow: auto;
         background-color: black;
+        user-select: none;
 
         .level {
             margin: 0 auto;
