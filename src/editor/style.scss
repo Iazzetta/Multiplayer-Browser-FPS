@@ -19,6 +19,7 @@ body {
     }
 
     .view {
+        padding: 32px;
         grid-row: 2;
         overflow: auto;
         background-color: black;
@@ -26,6 +27,7 @@ body {
 }
 
 .grid {
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
 
@@ -39,14 +41,9 @@ body {
         min-width: $size;
         min-height: $size;
         border: 1px solid #999;
-    }
-}
 
-.form-group {
-    margin-bottom: 4px;
-    font-size: 12px;
-    label,
-    input {
-        display: block;
+        &:hover {
+            border-color: yellow;
+        }
     }
 }

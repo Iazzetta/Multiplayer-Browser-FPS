@@ -5,24 +5,28 @@ new Vue({
     data() {
         return {
             grid: {
-                cell_size: 24,
+                cell_size: 32,
                 rows: 16,
                 cols: 16
             }
         };
     },
     computed: {
-        gridRows(){
-            return parseInt(this.grid.rows);
-        },
-        gridCols(){
-            return parseInt(this.grid.cols);
+        gridStyle() {
+            const { cols, rows, cell_size } = this.grid;
+            return {
+                width: cols * cell_size + "px",
+                height: rows * cell_size + "px"
+            };
         },
         cellStyle() {
             return {
-                width: this.grid.cell_size + "px",
-                height: this.grid.cell_size + "px"
+                width: this.grid.cell_size - 2 + "px",
+                height: this.grid.cell_size - 2 + "px"
             };
         }
+    },
+    methods: {
+
     }
 });
