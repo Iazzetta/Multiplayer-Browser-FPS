@@ -108,8 +108,8 @@ export function pickupSystem(entity, state, dispatch) {
         const pickups = state.getEntityGroup("pickup");
         for (let i = 0; i < pickups.length; i++) {
             const pickup = pickups[i];
-            const aabb1 = entity.object3D.getAABB();
-            const aabb2 = pickup.object3D.getAABB();
+            const aabb1 = entity.object3D.toAABB();
+            const aabb2 = pickup.object3D.toAABB();
             if (AABB.collision(aabb1, aabb2)) {
                 // Ammo
                 if (entity.weapon && pickup.pickupAmmo !== undefined) {
@@ -154,8 +154,8 @@ export function damageSystem(bullet, state, dispatch) {
                 if (player === bullet) return;
                 if (player.health.hp <= 0) return;
                 if (player.id === bullet.damage.creatorId) return;
-                const playerAABB = player.object3D.getAABB();
-                const bulletAABB = bullet.object3D.getAABB();
+                const playerAABB = player.object3D.toAABB();
+                const bulletAABB = bullet.object3D.toAABB();
                 if (AABB.collision(bulletAABB, playerAABB)) {
                     const sync = a => dispatch(serverAction(a));
                     const hp = player.health.hp - bullet.damage.dmg;
@@ -265,7 +265,7 @@ export function shootingSystem(entity, state, dispatch) {
             state.entities.forEach(target => {
                 if (target.id === entity.id) return;
                 if (!target.object3D) return;
-                const aabb = target.object3D.getAABB().toArray();
+                const aabb = target.object3D.toAABB().toArray();
                 const dist = intersection.distance(origin, dir, aabb);
                 if (dist > 0 && dist < hitscan.dist) {
                     hitscan.entity = target;
@@ -363,8 +363,8 @@ export function physicsSystem(entity, state, dispatch) {
             }
 
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.y = resolveCollision(
                         aabb1.min.y,
@@ -385,8 +385,8 @@ export function physicsSystem(entity, state, dispatch) {
         entity.object3D.position.x += velocity.x;
         if (entity.collider) {
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.x = resolveCollision(
                         aabb1.min.x,
@@ -407,8 +407,8 @@ export function physicsSystem(entity, state, dispatch) {
         entity.object3D.position.z += velocity.z;
         if (entity.collider) {
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.z = resolveCollision(
                         aabb1.min.z,

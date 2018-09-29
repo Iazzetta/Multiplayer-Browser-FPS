@@ -125,7 +125,7 @@ export class Object3DComponent extends THREE.Object3D {
         }
     }
 
-    getAABB() {
+    toAABB() {
         return new AABB(
             new THREE.Vector3(
                 this.position.x - this.radius.x,

@@ -223,7 +223,7 @@ export function dispatch(state, action) {
                 bullet.velocity.y += random(-100, 100) * 0.000025;
 
                 // Set position
-                const playerAABB = player.object3D.getAABB();
+                const playerAABB = player.object3D.toAABB();
                 bullet.object3D.position.x = player.object3D.position.x;
                 bullet.object3D.position.y = playerAABB.max.y - 0.5;
                 bullet.object3D.position.z = player.object3D.position.z;
