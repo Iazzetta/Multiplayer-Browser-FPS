@@ -43,8 +43,41 @@ body {
                 box-sizing: border-box;
                 @include highlightable;
 
+                .vertex {
+                    display: none;
+                }
+
                 &.selected {
                     border: 1px solid red;
+
+                    .vertex {
+                        display: block;
+                        position: absolute;
+                        width: 16px;
+                        height: 16px;
+                        background-color: white;
+                        opacity: 0.25;
+                        &:hover {
+                            @include highlightable();
+                        }
+
+                        &.top-left {
+                            top: 0;
+                            left: 0;
+                        }
+                        &.top-right {
+                            top: 0;
+                            right: 0;
+                        }
+                        &.bot-left {
+                            bottom: 0;
+                            left: 0;
+                        }
+                        &.bot-right {
+                            bottom: 0;
+                            right: 0;
+                        }
+                    }
                 }
             }
 

@@ -94,11 +94,12 @@ new Vue({
                 y: Math.floor(point.y / this.grid.cell_size)
             };
         },
-        drawObjectBegin(ev) {
+        drawObjectBegin(ev, obj = null) {
             if (this.draw_object === null) {
                 const { x, y } = this.getMouseGridPoint(ev);
                 this.draw_object_origin = { x, y };
                 this.draw_object = this.addObject(x, y);
+                this.select_object = this.draw_object;
             }
         },
         drawObject(ev) {
@@ -133,6 +134,39 @@ new Vue({
         },
         selectObject(obj) {
             this.select_object = obj;
+        },
+        resizeObj(obj, point) {
+            this.draw_object = obj;
+            switch (point) {
+                case "tl": {
+                    this.draw_object_origin = {
+                        x: obj.x + obj.w - 1,
+                        y: obj.y + obj.h - 1
+                    };
+                    break;
+                }
+                case "tr": {
+                    this.draw_object_origin = {
+                        x: obj.x,
+                        y: obj.y + obj.h - 1
+                    };
+                    break;
+                }
+                case "bl": {
+                    this.draw_object_origin = {
+                        x: obj.x + obj.w - 1,
+                        y: obj.y
+                    };
+                    break;
+                }
+                case "br": {
+                    this.draw_object_origin = {
+                        x: obj.x,
+                        y: obj.y
+                    };
+                    break;
+                }
+            }
         }
     },
     mounted() {

@@ -41,7 +41,12 @@
                     :key="rect.obj.id"
                     :style="rect.style"
                     :class="rect.classList"
-                    @click="selectObject(rect.obj)"></div>
+                    @click="selectObject(rect.obj)">
+                    <div @mousedown="resizeObj(rect.obj, 'tl')" class="vertex top-left"></div>
+                    <div @mousedown="resizeObj(rect.obj, 'tr')" class="vertex top-right"></div>
+                    <div @mousedown="resizeObj(rect.obj, 'bl')" class="vertex bot-left"></div>
+                    <div @mousedown="resizeObj(rect.obj, 'br')" class="vertex bot-right"></div>
+                </div>
             </div>
         </div>
 
