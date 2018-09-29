@@ -26,6 +26,12 @@ npm run build
 npm run server
 ```
 
+### Level editor
+```
+npm run editor
+```
+
+
 ## Built With
 
 * [Socket.IO](https://socket.io/) - Netcode
