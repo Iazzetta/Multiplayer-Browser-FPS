@@ -59,18 +59,22 @@ $hover_color: rgb(255, 135, 43);
                     &.top-left {
                         top: 0;
                         left: 0;
+                        border-bottom-right-radius: 100%;
                     }
                     &.top-right {
                         top: 0;
                         right: 0;
+                        border-bottom-left-radius: 100%;
                     }
                     &.bot-left {
                         bottom: 0;
                         left: 0;
+                        border-top-right-radius: 100%;
                     }
                     &.bot-right {
                         bottom: 0;
                         right: 0;
+                        border-top-left-radius: 100%;
                     }
                 }
 
