@@ -8,11 +8,9 @@ body {
     font-size: 16px;
 }
 
-@mixin highlightable() {
-    &:hover {
-        border: 1px solid rgb(255, 135, 43);
-        opacity: 1;
-    }
+$hover_color: rgb(255, 135, 43);
+@mixin highlight_border {
+    border: 1px solid $hover_color;
 }
 
 #editor {
@@ -41,43 +39,43 @@ body {
                 background: rgb(99, 97, 118);
                 border: 1px solid white;
                 box-sizing: border-box;
-                @include highlightable;
+                &:hover {
+                    @include highlight_border;
+                }
 
                 .vertex {
-                    display: none;
+                    display: block;
+                    position: absolute;
+                    width: 20px;
+                    height: 20px;
+                    background-color: white;
+                    opacity: 0;
+                    &:hover {
+                        @include highlight_border;
+                        background-color: $hover_color;
+                        opacity: 1;
+                    }
+
+                    &.top-left {
+                        top: 0;
+                        left: 0;
+                    }
+                    &.top-right {
+                        top: 0;
+                        right: 0;
+                    }
+                    &.bot-left {
+                        bottom: 0;
+                        left: 0;
+                    }
+                    &.bot-right {
+                        bottom: 0;
+                        right: 0;
+                    }
                 }
 
                 &.selected {
                     border: 1px solid red;
-
-                    .vertex {
-                        display: block;
-                        position: absolute;
-                        width: 16px;
-                        height: 16px;
-                        background-color: white;
-                        opacity: 0.25;
-                        &:hover {
-                            @include highlightable();
-                        }
-
-                        &.top-left {
-                            top: 0;
-                            left: 0;
-                        }
-                        &.top-right {
-                            top: 0;
-                            right: 0;
-                        }
-                        &.bot-left {
-                            bottom: 0;
-                            left: 0;
-                        }
-                        &.bot-right {
-                            bottom: 0;
-                            right: 0;
-                        }
-                    }
                 }
             }
 
@@ -98,7 +96,10 @@ body {
                     border: 1px solid white;
                     box-sizing: border-box;
                     opacity: 0.25;
-                    @include highlightable;
+                    &:hover {
+                        @include highlight_border;
+                        opacity: 1;
+                    }
                 }
             }
         }
