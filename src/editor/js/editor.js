@@ -50,14 +50,19 @@ new Vue({
                     height: h * cell_size + "px"
                 };
 
-                return { id, style };
+                return { obj, style };
             });
         }
     },
     methods: {
-        drawObjectBegin(x, y) {
-            this.draw_object_origin = { x, y };
-            this.draw_object = this.addObject(x, y);
+        preventDefault(ev) {
+            ev.preventDefault();
+        },
+        drawObjectBegin(x, y, ev) {
+            if (this.draw_object === null) {
+                this.draw_object_origin = { x, y };
+                this.draw_object = this.addObject(x, y);
+            }
         },
         drawObject(x, y) {
             if (this.draw_object !== null) {

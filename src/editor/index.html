@@ -18,11 +18,13 @@
         </div>
 
         <!-- Viewport -->
-        <div class="view">
+        <div class="view" @contextmenu="preventDefault">
             <div class="level" :style="levelViewStyle">
 
                 <!-- Level objects -->
-                <div class="level-object" v-for="rect in levelRects" :key="rect.id" :style="rect.style"></div>
+                <div class="level-object" v-for="rect in levelRects"
+                    :key="rect.obj.id"
+                    :style="rect.style"></div>
 
                  <!-- Background grid -->
                  <div class="grid">
@@ -32,7 +34,7 @@
                             :key="x"
                             :style="cellStyle"
                             :title="`(${x-1},${y-1})`"
-                            @mousedown="drawObjectBegin(x - 1, y - 1)"
+                            @mousedown="drawObjectBegin(x - 1, y - 1, $event)"
                             @mouseenter="drawObject(x - 1, y - 1)"
                             @mouseup="drawObjectEnd(x - 1, y - 1)"></div>
                     </div>
