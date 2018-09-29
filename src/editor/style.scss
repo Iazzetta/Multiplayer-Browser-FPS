@@ -8,6 +8,13 @@ body {
     font-size: 16px;
 }
 
+@mixin highlightable($opacity: 1) {
+    &:hover {
+        border: 2px solid rgb(255, 135, 43);
+        opacity: $opacity;
+    }
+}
+
 #editor {
     display: grid;
     grid-template-rows: 64px auto 64px;
@@ -31,9 +38,10 @@ body {
 
             .level-object {
                 position: absolute;
-                background: rgb(191, 209, 238);
+                background: rgb(99, 97, 118);
                 border: 1px solid white;
                 box-sizing: border-box;
+                @include highlightable;
             }
 
             .grid {
@@ -53,10 +61,7 @@ body {
                     border: 1px solid white;
                     box-sizing: border-box;
                     opacity: 0.25;
-
-                    &:hover {
-                        border-color: yellow;
-                    }
+                    @include highlightable;
                 }
             }
         }
