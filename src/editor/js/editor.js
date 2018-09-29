@@ -1,5 +1,6 @@
 import Vue from "./vue.js";
 import map from "lodash/map";
+import get from "lodash/get";
 
 new Vue({
     el: "#editor",
@@ -63,6 +64,20 @@ new Vue({
 
                 return { obj, style, classList };
             });
+        }
+    },
+    watch: {
+        "level.objects": function(objects) {
+            const objIds = objects.map(obj => obj.id);
+            const missing = obj => obj && objIds.indexOf(obj.id) === -1;
+
+            if (missing(this.select_object)) {
+                this.select_object = null;
+            }
+
+            if (missing(this.draw_object)) {
+                this.draw_object = null;
+            }
         }
     },
     methods: {
