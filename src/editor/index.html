@@ -15,8 +15,13 @@
         <!-- Menu -->
         <div class="menu">
 
+            <!-- Export -->
+            <div class="panel">
+                <button @click="exportJSON">Export</button>
+            </div>
+
             <!-- Brush panel -->
-            <div class="brush-panel">
+            <div class="panel">
                 <div class="brush"
                     v-for="option in brush_options"
                     :key="option.id"

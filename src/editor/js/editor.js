@@ -106,7 +106,6 @@ new Vue({
                 y: Math.floor(point.y / this.grid.cell_size)
             };
         },
-
         onDelete(ev) {
             if (this.select_object !== null) {
                 this.level.objects = this.level.objects.filter(obj => {
@@ -199,6 +198,50 @@ new Vue({
         },
         setBrush(brush) {
             this.brush = brush;
+        },
+        exportJSON() {
+            const TILE_SIZE = 12;
+            const vector3 = vec2 => ({
+                x: vec2.x,
+                y: TILE_SIZE,
+                z: vec2.y
+            });
+
+            const srcObjects = this.level.objects.concat({
+                id: "floor",
+                type: "wall",
+                x: 0,
+                y: 0,
+                w: Math.min(...this.level.objects.map(o => o.x + o.w)),
+                h: Math.min(...this.level.objects.map(o => o.y + o.h))
+            });
+
+            const objects = srcObjects.map((obj, index) => {
+                const x = obj.x * TILE_SIZE;
+                const y = obj.y * TILE_SIZE;
+                const w = obj.w * TILE_SIZE;
+                const h = obj.h * TILE_SIZE;
+
+                return {
+                    id: obj.id,
+                    type: obj.type,
+                    position: vector3({
+                        x: x + w * 0.5,
+                        y: y + h * 0.5
+                    }),
+                    size: vector3({
+                        x: w,
+                        y: h
+                    })
+                };
+            });
+
+            // Move floor down
+            objects.filter(o => o.id === "floor").forEach(floor => {
+                floor.position.y -= TILE_SIZE;
+            });
+
+            console.log({ objects });
         }
     },
     mounted() {
