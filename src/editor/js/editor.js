@@ -212,8 +212,8 @@ new Vue({
                 type: "wall",
                 x: 0,
                 y: 0,
-                w: Math.min(...this.level.objects.map(o => o.x + o.w)),
-                h: Math.min(...this.level.objects.map(o => o.y + o.h))
+                w: Math.max(...this.level.objects.map(o => o.x + o.w)),
+                h: Math.max(...this.level.objects.map(o => o.y + o.h))
             });
 
             const objects = srcObjects.map((obj, index) => {
