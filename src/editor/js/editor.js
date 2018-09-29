@@ -165,6 +165,7 @@ new Vue({
         },
         resizeObj(obj, point) {
             this.draw_object = obj;
+            this.select_object = obj;
             switch (point) {
                 case "tl": {
                     this.draw_object_origin = {
