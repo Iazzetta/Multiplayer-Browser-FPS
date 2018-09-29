@@ -8,6 +8,10 @@ export class AABB {
         this.min = min;
         this.max = max;
     }
+
+    toArray() {
+        return [this.min.toArray(), this.max.toArray()];
+    }
 }
 
 /**

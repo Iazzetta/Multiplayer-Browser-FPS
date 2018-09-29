@@ -13,6 +13,7 @@ import { Entity } from "./entities";
 import { AABB } from "./utils";
 import { GRAVITY, JUMP_SPEED, DEBUG } from "./consts";
 import sample from "lodash/sample";
+import intersection from "ray-aabb-intersection";
 
 /**
  * @param {State} state
@@ -253,15 +254,29 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.firerateTimer = weapon.type.firerate;
             // dispatch(shootBullet(entity.id));
 
-            {
-                const direction = entity.head.getFacingDirection();
-                const p1 = new THREE.Vector3();
-                p1.setFromMatrixPosition(entity.head.matrixWorld);
+            const origin = entity.object3D.position.toArray();
+            const dir = entity.head.getFacingDirection().toArray();
+            const hitscan = {
+                point: new Float32Array(3),
+                entity: null,
+                dist: Infinity
+            };
 
-                const p2 = entity.object3D.position.clone();
-                p2.z += direction.z * 1000;
-                p2.x += direction.x * 1000;
-                p2.y += direction.y * 1000;
+            state.entities.forEach(target => {
+                if (target.id === entity.id) return;
+                if (!target.object3D) return;
+                const aabb = target.object3D.getAABB().toArray();
+                const dist = intersection.distance(origin, dir, aabb);
+                if (dist > 0 && dist < hitscan.dist) {
+                    hitscan.entity = target;
+                    hitscan.dist = dist;
+                    intersection(hitscan.point, origin, dir, aabb);
+                }
+            });
+
+            if (hitscan.entity) {
+                const p1 = new THREE.Vector3(...origin);
+                const p2 = new THREE.Vector3(...hitscan.point);
 
                 var material = new THREE.LineBasicMaterial({
                     color: 0x0000ff
