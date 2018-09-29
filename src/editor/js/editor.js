@@ -121,7 +121,7 @@ new Vue({
         drawObject(ev) {
             if (this.draw_object !== null) {
                 const { x, y } = this.getMouseGridPoint(ev);
-                if (this.draw_object.resiziable) {
+                if (this.draw_object.resizable) {
                     const origin = this.draw_object_origin;
                     const min = {
                         x: Math.min(x, origin.x),
@@ -152,8 +152,8 @@ new Vue({
         createObject(x, y, w = 1, h = 1) {
             const id = Date.now().toString(16);
             const type = this.brush;
-            const resiziable = type === "wall";
-            const obj = { id, type, resiziable, x, y, w, h };
+            const resizable = type === "wall";
+            const obj = { id, type, resizable, x, y, w, h };
             this.level.objects.push(obj);
             return obj;
         },
