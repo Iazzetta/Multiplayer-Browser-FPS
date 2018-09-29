@@ -137,7 +137,6 @@ export function pickupSystem(entity, state, dispatch) {
     }
 }
 
-
 /**
  * @param {Entity} entity
  * @param {State} state
@@ -223,7 +222,27 @@ export function shootingSystem(entity, state, dispatch) {
                 }
             });
 
-            if (hitscan.entity) {
+            if (hitscan.entity && hitscan.entity.health) {
+                const target = hitscan.entity;
+                const sync = a => dispatch(serverAction(a));
+                const hp = target.health.hp - 10;
+                if (hp > 0) {
+                    sync(hitPlayer(target.id, hp));
+                } else {
+                    const killer = entity;
+                    if (killer && killer.player) {
+                        const { id, kills, deaths } = killer.player;
+                        sync(syncPlayerScore(id, kills + 1, deaths));
+                    }
+
+                    if (target.player) {
+                        const { id, kills, deaths } = target.player;
+                        sync(syncPlayerScore(id, kills, deaths + 1));
+                    }
+
+                    sync(killPlayer(target.id));
+                }
+
                 if (DEBUG) {
                     const p1 = new THREE.Vector3(...origin);
                     const p2 = new THREE.Vector3(...hitscan.point);
