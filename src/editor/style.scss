@@ -23,27 +23,36 @@ body {
         grid-row: 2;
         overflow: auto;
         background-color: black;
-    }
-}
 
-.grid {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
+        .level {
+            margin: 0 auto;
+            position: relative;
 
-    .grid--row {
-        display: flex;
-        flex-direction: row;
-    }
+            .grid {
+                display: flex;
+                flex-direction: column;
 
-    .grid--cell {
-        $size: 2px;
-        min-width: $size;
-        min-height: $size;
-        border: 1px solid #999;
+                .grid--row {
+                    display: flex;
+                    flex-direction: row;
+                }
 
-        &:hover {
-            border-color: yellow;
+                .grid--cell {
+                    $size: 2px;
+                    min-width: $size;
+                    min-height: $size;
+                    border: 1px solid #999;
+
+                    &:hover {
+                        border-color: yellow;
+                    }
+                }
+            }
+
+            .level-object {
+                position: absolute;
+                background: cornflowerblue;
+            }
         }
     }
 }

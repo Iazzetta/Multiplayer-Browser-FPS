@@ -12,20 +12,27 @@
 <body>
     <div id="editor">
 
-        <!-- MENU -->
+        <!-- Menu -->
         <div class="menu">
             Menu
         </div>
 
-        <!-- GRID -->
+        <!-- Viewport -->
         <div class="view">
-            <div class="grid" :style="gridStyle">
-                <div class="grid--row" v-for="y in grid.rows" :key="y + 1">
-                    <div class="grid--cell"
-                        v-for="x in grid.cols"
-                        :key="x + 1"
-                        :style="cellStyle"></div>
+            <div class="level" :style="levelViewStyle">
+
+                <!-- Background grid -->
+                <div class="grid">
+                    <div class="grid--row" v-for="y in grid.rows" :key="y + 1">
+                        <div class="grid--cell"
+                            v-for="x in grid.cols"
+                            :key="x + 1"
+                            :style="cellStyle"></div>
+                    </div>
                 </div>
+
+                <!-- Level objects -->
+                <div class="level-object" v-for="rect in levelRects" :key="rect.id" :style="rect.style"></div>
             </div>
         </div>
 
