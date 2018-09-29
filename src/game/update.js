@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { State } from "./state";
 import {
     Action,
@@ -250,7 +251,28 @@ export function shootingSystem(entity, state, dispatch) {
         ) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = weapon.type.firerate;
-            dispatch(shootBullet(entity.id));
+            // dispatch(shootBullet(entity.id));
+
+            {
+                const direction = entity.head.getFacingDirection();
+                const p1 = new THREE.Vector3();
+                p1.setFromMatrixPosition(entity.head.matrixWorld);
+
+                const p2 = entity.object3D.position.clone();
+                p2.z += direction.z * 1000;
+                p2.x += direction.x * 1000;
+                p2.y += direction.y * 1000;
+
+                var material = new THREE.LineBasicMaterial({
+                    color: 0x0000ff
+                });
+
+                var geometry = new THREE.Geometry();
+                geometry.vertices.push(p1, p2);
+
+                var line = new THREE.Line(geometry, material);
+                state.scene.add(line);
+            }
         }
     }
 }
