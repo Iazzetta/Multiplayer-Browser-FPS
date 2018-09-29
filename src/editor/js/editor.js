@@ -5,6 +5,7 @@ new Vue({
     el: "#editor",
     data() {
         return {
+            select_object: null,
             draw_object: null,
             draw_object_origin: { x: 0, y: 0 },
             grid: {
@@ -47,7 +48,7 @@ new Vue({
         levelRects() {
             const { cell_size } = this.grid;
             return map(this.level.objects, obj => {
-                const { id, x, y, w, h } = obj;
+                const { x, y, w, h } = obj;
                 const style = {
                     top: y * cell_size + "px",
                     left: x * cell_size + "px",
@@ -55,7 +56,12 @@ new Vue({
                     height: h * cell_size + "px"
                 };
 
-                return { obj, style };
+                const classList = [];
+                if (this.select_object && this.select_object.id === obj.id) {
+                    classList.push("selected")
+                }
+
+                return { obj, style, classList };
             });
         }
     },
@@ -75,15 +81,10 @@ new Vue({
                 y: ev.clientY - grid.y
             };
 
-            console.log({ point });
-
             return {
                 x: Math.floor(point.x / this.grid.cell_size),
                 y: Math.floor(point.y / this.grid.cell_size)
             };
-        },
-        preventDefault(ev) {
-            ev.preventDefault();
         },
         drawObjectBegin(ev) {
             if (this.draw_object === null) {
@@ -121,6 +122,10 @@ new Vue({
             const obj = { id, x, y, w, h };
             this.level.objects.push(obj);
             return obj;
+        },
+        selectObject(obj) {
+            this.select_object = obj;
+            console.log(this.select_object)
         }
     }
 });

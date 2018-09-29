@@ -8,10 +8,10 @@ body {
     font-size: 16px;
 }
 
-@mixin highlightable($opacity: 1) {
+@mixin highlightable() {
     &:hover {
-        border: 2px solid rgb(255, 135, 43);
-        opacity: $opacity;
+        border: 1px solid rgb(255, 135, 43);
+        opacity: 1;
     }
 }
 
@@ -42,6 +42,10 @@ body {
                 border: 1px solid white;
                 box-sizing: border-box;
                 @include highlightable;
+
+                &.selected {
+                    border: 1px solid red;
+                }
             }
 
             .grid {

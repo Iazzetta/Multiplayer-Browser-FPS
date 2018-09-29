@@ -18,7 +18,7 @@
         </div>
 
         <!-- Viewport -->
-        <div class="viewport" :class="viewportClass" @contextmenu="preventDefault">
+        <div class="viewport" :class="viewportClass">
             <div class="level" :style="levelStyle">
 
                  <!-- Background grid -->
@@ -39,7 +39,9 @@
                 <!-- Level objects -->
                 <div class="level-object" v-for="rect in levelRects"
                     :key="rect.obj.id"
-                    :style="rect.style"></div>
+                    :style="rect.style"
+                    :class="rect.classList"
+                    @click="selectObject(rect.obj)"></div>
             </div>
         </div>
 
