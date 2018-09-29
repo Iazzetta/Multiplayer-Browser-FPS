@@ -42,6 +42,7 @@ body {
                     min-width: $size;
                     min-height: $size;
                     border: 1px solid #333;
+                    box-sizing: border-box;
 
                     &:hover {
                         border-color: yellow;
@@ -53,6 +54,8 @@ body {
                 position: absolute;
                 background: rgb(191, 209, 238);
                 border: 1px solid white;
+                box-sizing: border-box;
+                pointer-events: none;
             }
         }
     }

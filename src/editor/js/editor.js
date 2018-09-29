@@ -5,6 +5,7 @@ new Vue({
     el: "#editor",
     data() {
         return {
+            draw_object: null,
             grid: {
                 cell_size: 32,
                 rows: 16,
@@ -33,8 +34,8 @@ new Vue({
         },
         cellStyle() {
             return {
-                width: this.grid.cell_size - 2 + "px",
-                height: this.grid.cell_size - 2 + "px"
+                width: this.grid.cell_size + "px",
+                height: this.grid.cell_size + "px"
             };
         },
         levelRects() {
@@ -44,8 +45,8 @@ new Vue({
                 const style = {
                     top: y * cell_size + "px",
                     left: x * cell_size + "px",
-                    width: w * (cell_size - 2) + "px",
-                    height: h * (cell_size - 2) + "px"
+                    width: w * cell_size + "px",
+                    height: h * cell_size + "px"
                 };
 
                 return { id, style };
@@ -53,10 +54,28 @@ new Vue({
         }
     },
     methods: {
+        drawObjectBegin(x, y) {
+            console.log("Begin");
+            this.draw_object = this.addObject(x, y);
+        },
+        drawObject(x, y) {
+            if (this.draw_object !== null) {
+                console.log("Draw");
+                this.draw_object.w = x - this.draw_object.x + 1;
+                this.draw_object.h = y - this.draw_object.y + 1;
+            }
+        },
+        drawObjectEnd(x, y) {
+            if (this.draw_object !== null) {
+                console.log("End");
+                this.draw_object = null;
+            }
+        },
         addObject(x, y, w = 1, h = 1) {
             const id = Date.now().toString(16);
             const obj = { id, x, y, w, h };
             this.level.objects.push(obj);
+            return obj;
         }
     }
 });

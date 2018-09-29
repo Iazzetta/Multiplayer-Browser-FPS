@@ -29,7 +29,9 @@
                             :key="x"
                             :style="cellStyle"
                             :title="`(${x-1},${y-1})`"
-                            @mousedown="addObject(x - 1, y - 1)"></div>
+                            @mousedown="drawObjectBegin(x - 1, y - 1)"
+                            @mouseenter="drawObject(x - 1, y - 1)"
+                            @mouseup="drawObjectEnd(x - 1, y - 1)"></div>
                     </div>
                 </div>
 
