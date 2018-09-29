@@ -26,7 +26,12 @@ new Vue({
         };
     },
     computed: {
-        levelViewStyle() {
+        viewportClass() {
+            if (this.draw_object !== null) {
+                return "mode--drawing";
+            }
+        },
+        levelStyle() {
             const { cols, rows, cell_size } = this.grid;
             return {
                 width: cols * cell_size + "px",
@@ -55,17 +60,41 @@ new Vue({
         }
     },
     methods: {
+        getMouseGridPoint(ev) {
+            function getOffset(object, offset = { x: 0, y: 0 }) {
+                if (!object) return offset;
+                offset.x += object.offsetLeft;
+                offset.y += object.offsetTop;
+
+                return getOffset(object.offsetParent, offset);
+            }
+
+            const grid = getOffset(this.$refs.grid);
+            const point = {
+                x: ev.clientX - grid.x,
+                y: ev.clientY - grid.y
+            };
+
+            console.log({ point });
+
+            return {
+                x: Math.floor(point.x / this.grid.cell_size),
+                y: Math.floor(point.y / this.grid.cell_size)
+            };
+        },
         preventDefault(ev) {
             ev.preventDefault();
         },
-        drawObjectBegin(x, y, ev) {
+        drawObjectBegin(ev) {
             if (this.draw_object === null) {
+                const { x, y } = this.getMouseGridPoint(ev);
                 this.draw_object_origin = { x, y };
                 this.draw_object = this.addObject(x, y);
             }
         },
-        drawObject(x, y) {
+        drawObject(ev) {
             if (this.draw_object !== null) {
+                const { x, y } = this.getMouseGridPoint(ev);
                 const origin = this.draw_object_origin;
                 const min = {
                     x: Math.min(x, origin.x),
@@ -82,7 +111,7 @@ new Vue({
                 this.draw_object.h = max.y - min.y + 1;
             }
         },
-        drawObjectEnd(x, y) {
+        drawObjectEnd(ev) {
             if (this.draw_object !== null) {
                 this.draw_object = null;
             }

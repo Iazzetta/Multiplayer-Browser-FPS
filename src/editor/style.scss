@@ -18,7 +18,7 @@ body {
         grid-row: 2;
     }
 
-    .view {
+    .viewport {
         padding: 32px;
         grid-row: 2;
         overflow: auto;
@@ -58,6 +58,12 @@ body {
                         border-color: yellow;
                     }
                 }
+            }
+        }
+
+        &.mode--drawing {
+            .level-object {
+                pointer-events: none;
             }
         }
     }
