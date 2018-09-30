@@ -15,6 +15,7 @@
         <div class="menu">
             <button @click="playLevel(true)" v-if="!game.running">Play</button>
             <button @click="playLevel(false)" v-if="game.running">Exit</button>
+            <button ref="export_btn" @mousedown="downloadAsJSON">Download</button>
             <hr>
             <button
                 v-for="brush in brushes"
