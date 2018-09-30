@@ -1,6 +1,7 @@
 import Vue from "./vue.js";
 import clamp from "lodash/clamp";
 import "./level-object.vue.js";
+import { ActionHandler, GrabAction, ScaleAction } from "./actions.js";
 
 new Vue({
     el: "#editor",
@@ -10,12 +11,13 @@ new Vue({
         cols: 64,
         objects: [],
         selected_obj_id: null,
-        action: null
+        action: null,
+        actionHandler: new ActionHandler({ tile_size: 0 })
     },
     computed: {
         viewportClassList() {
             const classList = [];
-            if (this.action === "grab") {
+            if (this.action) {
                 classList.push("grabbing");
             }
             return classList;
@@ -63,28 +65,17 @@ new Vue({
         /**
          * @param {MouseEvent} ev
          */
-        onMouseDown(ev) {},
-        /**
-         * @param {MouseEvent} ev
-         */
         onMouseMove(ev) {
-            if (!this.selectedObj) {
-                return;
-            }
-
-            switch (this.action) {
-                case "grab":
-                    this.selectedObj.x = Math.floor(ev.layerX / this.tile_size);
-                    this.selectedObj.y = Math.floor(ev.layerY / this.tile_size);
-                    ev.stopPropagation();
-                    ev.preventDefault();
-                    break;
+            if (this.selectedObj) {
+                this.actionHandler.onMouseMove(ev, this.selectedObj);
             }
         },
         /**
          * @param {MouseEvent} ev
          */
         onMouseUp(ev) {
+            this.actionHandler.onMouseUp(ev, this.selectedObj);
+            this.actionHandler = new ActionHandler(this);
             this.action = null;
         },
 
@@ -98,10 +89,15 @@ new Vue({
         grabObj(obj) {
             this.selected_obj_id = obj.id;
             this.action = "grab";
+            this.actionHandler = new GrabAction(this);
+            this.actionHandler.onMouseDown();
         },
         scaleObj(ev) {
             const { obj, dir } = ev;
-            console.log(obj, dir);
+            this.selected_obj_id = obj.id;
+            this.action = "scale";
+            this.actionHandler = new ScaleAction(this, obj, dir);
+            this.actionHandler.onMouseDown(obj, dir);
         }
     }
 });
