@@ -32,4 +32,25 @@
         grid-column-start: 3;
         grid-column-end: $cols;
     }
+
+    .game-screen {
+        grid-row-start: 2;
+        grid-row-end: $rows;
+        grid-column-start: 3;
+        grid-column-end: $cols;
+        position: relative;
+        background-color: black;
+
+        canvas {
+            z-index: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        canvas.hud {
+            z-index: 10;
+            pointer-events: none;
+        }
+    }
 }

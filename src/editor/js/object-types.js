@@ -1,5 +1,5 @@
 export const [PLAYER_SPAWN, WALL, AMMO_PACK, HEALTH_PACK] = [
-    "player-spawn",
+    "player",
     "wall",
     "ammo-pack",
     "health-pack"

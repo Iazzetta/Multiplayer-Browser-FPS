@@ -13,6 +13,9 @@
     <div id="editor">
         <div class="header"></div>
         <div class="menu">
+            <button @click="playLevel(true)" v-if="!game.running">Play</button>
+            <button @click="playLevel(false)" v-if="game.running">Exit</button>
+            <hr>
             <button
                 v-for="brush in brushes"
                 :key="brush.type"
@@ -22,7 +25,8 @@
             <button title="alt + scroll" @click="zoom(8)">Zoom in</button>
             <button title="alt + scroll" @click="zoom(-8)">Zoom out</button>
         </div>
-        <div class="viewport" :class="viewportClassList" @mousewheel="onScroll">
+        <div v-if="game.running" class="game-screen" ref="gameScreen"></div>
+        <div v-else class="viewport" :class="viewportClassList" @mousewheel="onScroll">
             <div class="level"
                 ref="level"
                 :style="gridSizeStyle"

@@ -3,10 +3,12 @@ import clamp from "lodash/clamp";
 import "./level-object.vue.js";
 import { ActionHandler, GrabAction, ScaleAction } from "./actions.js";
 import { PLAYER_SPAWN, WALL, AMMO_PACK, HEALTH_PACK } from "./object-types";
+import { Game } from "../../client/js/game";
 
 new Vue({
     el: "#editor",
     data: {
+        game: { running: false, inst: null },
         tile_size: 32,
         rows: 64,
         cols: 64,
@@ -120,6 +122,81 @@ new Vue({
             this.action = "scale";
             this.actionHandler = new ScaleAction(this, dir);
             this.actionHandler.onMouseDown(obj, dir);
+        },
+        getLevelExportData() {
+            const TILE_SIZE = 12;
+            const vector3 = vec2 => ({
+                x: vec2.x,
+                y: TILE_SIZE,
+                z: vec2.y
+            });
+
+            const myObjects = this.objects;
+            const srcObjects = myObjects.concat({
+                id: "floor",
+                type: "wall",
+                x: 0,
+                y: 0,
+                w: Math.max(...myObjects.map(o => o.x + o.w)),
+                h: Math.max(...myObjects.map(o => o.y + o.h))
+            });
+
+            const objects = srcObjects.map((obj, index) => {
+                const x = obj.x * TILE_SIZE;
+                const y = obj.y * TILE_SIZE;
+                const w = obj.w * TILE_SIZE;
+                const h = obj.h * TILE_SIZE;
+
+                return {
+                    id: obj.id,
+                    type: obj.type,
+                    position: vector3({
+                        x: x + w * 0.5,
+                        y: y + h * 0.5
+                    }),
+                    size: vector3({
+                        x: w,
+                        y: h
+                    })
+                };
+            });
+
+            // Move floor down
+            objects.filter(o => o.id === "floor").forEach(floor => {
+                floor.position.y -= TILE_SIZE;
+            });
+
+            return objects;
+        },
+        downloadAsJSON() {
+            // Download the file
+            const objects = this.getLevelExportData();
+            const a = document.createElement("a");
+            const json = JSON.stringify(objects);
+            const file = new Blob([json], { type: "json" });
+            a.href = URL.createObjectURL(file);
+            a.download = "level.json";
+            a.click();
+        },
+        playLevel(play) {
+            this.game.running = play;
+
+            if (this.game.running) {
+                const game = new Game();
+                this.game.inst = game;
+
+                this.$nextTick()
+                    .then(() => game.loadAssets())
+                    .then(() => {
+                        const objects = this.getLevelExportData();
+                        game.state.assets.setLevel("level-1", objects);
+                        game.container = this.$refs.gameScreen;
+                        game.run();
+                    });
+            } else {
+                this.game.inst.destroy();
+                this.game.inst = null;
+            }
         }
     }
 });
