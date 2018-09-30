@@ -31,8 +31,7 @@ new Vue({
         onScroll(ev) {
             if (ev.altKey) {
                 const delta = ev.wheelDelta * 0.01;
-                this.tile_size = clamp(this.tile_size + delta, 8, 64);
-                this.tile_site = Math.round(this.tile_size);
+                this.zoom(delta);
                 ev.preventDefault();
             }
         },
@@ -47,6 +46,14 @@ new Vue({
             };
             console.log(obj);
             this.objects.push(obj);
+        },
+
+        /**
+         * @param {number} delta
+         */
+        zoom(delta) {
+            this.tile_size = clamp(this.tile_size + delta, 8, 64);
+            this.tile_site = Math.round(this.tile_size);
         }
     }
 });
