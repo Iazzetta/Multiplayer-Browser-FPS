@@ -62,6 +62,20 @@ new Vue({
         }
     },
     methods: {
+        onDelete(ev) {
+            if (this.selectedObj) {
+                console.log(this.selectedObj);
+                this.objects = this.objects.filter(obj => {
+                    return obj.id !== this.selectedObj.id;
+                });
+                this.selected_obj_id = null;
+            }
+        },
+        onEscape(ev) {
+            if (this.game.running) {
+                this.playLevel(false);
+            }
+        },
         /**
          * @param  {MouseWheelEvent} ev
          */
@@ -198,5 +212,19 @@ new Vue({
                 this.game.inst = null;
             }
         }
+    },
+    mounted() {
+        document.addEventListener("keydown", ev => {
+            switch (ev.keyCode) {
+                case 27:
+                    this.onEscape(ev);
+                    break;
+                case 46:
+                    this.onDelete(ev);
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 });
