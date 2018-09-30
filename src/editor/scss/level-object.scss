@@ -4,9 +4,18 @@
     background-color: #666666;
     border: 1px solid #ccc;
 
+    &.grabbed {
+        pointer-events: none;
+    }
+
     &:hover {
         border-color: $active_color;
         cursor: move;
+    }
+
+    .body {
+        width: 100%;
+        height: 100%;
     }
 
     .control {

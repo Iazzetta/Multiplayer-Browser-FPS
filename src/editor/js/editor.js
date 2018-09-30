@@ -85,6 +85,10 @@ new Vue({
                 this.grabbed_obj = this.objects.find(o => o.id === obj.id);
                 this.selected_obj = this.grabbed_obj;
             }
+        },
+        scaleObj(ev) {
+            const { obj, dir } = ev;
+            console.log(obj, dir)
         }
     }
 });
