@@ -19,16 +19,30 @@
             <button>Pillar</button>
         </div>
         <div class="viewport">
-            <div class="grid-background">
-                <div class="row" v-for="y in 64" :key="y">
-                    <div class="col" v-for="x in 64" :key="x">
-                        <div class="cell"></div>
+            <div class="level" :style="gridSizeStyle" @click="onViewportClick">
+
+                <level-object
+                    v-for="obj in objects"
+                    :key="obj.id"
+                    :obj="obj"
+                    :tile_size="tile_size"></level-object>
+
+                <div class="grid-background" :style="gridSizeStyle">
+                    <div class="row" v-for="y in rows" :key="y">
+                        <div class="col" v-for="x in cols" :key="x">
+                            <div class="cell" :style="gridCellStyle"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="footer"></div>
     </div>
+
+    <template id="level-object-vue-template">
+        <div class="level-object" :style="objStyle"></div>
+    </template>
+
     <script src="js/editor.js"></script>
 </body>
 
