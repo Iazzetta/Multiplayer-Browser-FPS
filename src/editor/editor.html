@@ -32,8 +32,8 @@
                     :key="obj.id"
                     :obj="obj"
                     :tile_size="tile_size"
-                    :grabbed="grabbed_obj && grabbed_obj.id === obj.id"
-                    :selected="selected_obj && selected_obj.id === obj.id"
+                    :grabbed="selected_obj_id === obj.id && action === 'grab'"
+                    :selected="selected_obj_id === obj.id"
                     @grab="grabObj"
                     @scale="scaleObj"></level-object>
 

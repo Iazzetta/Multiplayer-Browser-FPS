@@ -9,8 +9,8 @@ new Vue({
         rows: 64,
         cols: 64,
         objects: [],
-        grabbed_obj: null,
-        selected_obj: null
+        selected_obj_id: null,
+        action: null
     },
     computed: {
         gridSizeStyle() {
@@ -24,6 +24,10 @@ new Vue({
                 width: this.tile_size + "px",
                 height: this.tile_size + "px"
             };
+        },
+        selectedObj() {
+            const id = this.selected_obj_id;
+            return this.objects.find(obj => obj.id === id);
         }
     },
     methods: {
@@ -47,7 +51,7 @@ new Vue({
                 y: Math.floor(ev.layerY / this.tile_size)
             };
             this.objects.push(obj);
-            this.selected_obj = obj;
+            this.selected_obj_id = obj.id;
         },
         /**
          * @param {MouseEvent} ev
@@ -57,20 +61,24 @@ new Vue({
          * @param {MouseEvent} ev
          */
         onMouseMove(ev) {
-            if (this.grabbed_obj !== null) {
-                this.grabbed_obj.x = Math.floor(ev.layerX / this.tile_size);
-                this.grabbed_obj.y = Math.floor(ev.layerY / this.tile_size);
-                ev.stopPropagation();
-                ev.preventDefault();
+            if (!this.selectedObj) {
+                return;
+            }
+
+            switch (this.action) {
+                case "grab":
+                    this.selectedObj.x = Math.floor(ev.layerX / this.tile_size);
+                    this.selectedObj.y = Math.floor(ev.layerY / this.tile_size);
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    break;
             }
         },
         /**
          * @param {MouseEvent} ev
          */
         onMouseUp(ev) {
-            if (this.grabbed_obj !== null) {
-                this.grabbed_obj = null;
-            }
+            this.action = null;
         },
 
         /**
@@ -81,14 +89,12 @@ new Vue({
             this.tile_site = Math.round(this.tile_size);
         },
         grabObj(obj) {
-            if (this.grabbed_obj === null) {
-                this.grabbed_obj = this.objects.find(o => o.id === obj.id);
-                this.selected_obj = this.grabbed_obj;
-            }
+            this.selected_obj_id = obj.id;
+            this.action = "grab";
         },
         scaleObj(ev) {
             const { obj, dir } = ev;
-            console.log(obj, dir)
+            console.log(obj, dir);
         }
     }
 });
