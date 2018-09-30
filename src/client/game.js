@@ -180,6 +180,7 @@ class Game extends BaseGame {
     }
 
     loadAssets() {
+        this.state.assets.loadLevel("level-1", "levels/level.json");
         this.state.assets.loadObj("bullet", "bullet.obj");
         this.state.assets.loadObj("wall_tile", "wall_tile.obj");
         this.state.assets.loadObj("player_head", "player_head.obj");
