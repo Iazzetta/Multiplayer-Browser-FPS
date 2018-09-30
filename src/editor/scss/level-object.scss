@@ -15,12 +15,16 @@
 
         width: $size;
         height: $size;
-        background-color: #444;
+        background-color: white;
         position: absolute;
+
+        border-radius: 50%;
+        opacity: 0.25;
 
         &.scale {
             &:hover {
                 background: $active_color;
+                opacity: 1;
             }
             &.up {
                 cursor: n-resize;

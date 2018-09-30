@@ -3,7 +3,7 @@ import Vue from "./vue.js";
 // @ts-ignore
 Vue.component("level-object", {
     template: "#level-object-vue-template",
-    props: ["obj", "tile_size", "grabbed"],
+    props: ["obj", "tile_size", "grabbed", "selected"],
     computed: {
         objStyle() {
             const size = this.tile_size;

@@ -9,7 +9,8 @@ new Vue({
         rows: 64,
         cols: 64,
         objects: [],
-        grabbed_obj: null
+        grabbed_obj: null,
+        selected_obj: null
     },
     computed: {
         gridSizeStyle() {
@@ -46,6 +47,7 @@ new Vue({
                 y: Math.floor(ev.layerY / this.tile_size)
             };
             this.objects.push(obj);
+            this.selected_obj = obj;
         },
         /**
          * @param {MouseEvent} ev
@@ -81,6 +83,7 @@ new Vue({
         grabObj(obj) {
             if (this.grabbed_obj === null) {
                 this.grabbed_obj = this.objects.find(o => o.id === obj.id);
+                this.selected_obj = this.grabbed_obj;
             }
         }
     }

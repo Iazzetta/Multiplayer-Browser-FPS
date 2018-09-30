@@ -33,6 +33,7 @@
                     :obj="obj"
                     :tile_size="tile_size"
                     :grabbed="grabbed_obj && grabbed_obj.id === obj.id"
+                    :selected="selected_obj && selected_obj.id === obj.id"
                     @grab="grabObj"></level-object>
 
                 <div class="grid-background" :style="gridSizeStyle" @click="onGridClick">
@@ -49,10 +50,12 @@
 
     <template id="level-object-vue-template">
         <div class="level-object" :style="objStyle" @mousedown="onGrab">
-            <div class="control scale up"></div>
-            <div class="control scale down"></div>
-            <div class="control scale left"></div>
-            <div class="control scale right"></div>
+            <div v-if="selected">
+                <div class="control scale up"></div>
+                <div class="control scale down"></div>
+                <div class="control scale left"></div>
+                <div class="control scale right"></div>
+            </div>
         </div>
     </template>
 
