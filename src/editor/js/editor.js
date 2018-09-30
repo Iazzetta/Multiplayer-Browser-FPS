@@ -253,10 +253,6 @@ new Vue({
         playLevel() {
             const game = new Game();
             game.container = this.$refs.gameScreen;
-            console.log({
-                w: game.container.clientWidth,
-                h: game.container.clientHeight,
-            })
             game.run();
         }
     },

@@ -311,7 +311,6 @@ export class Game extends BaseGame {
         if (this.container !== document.body) {
             width = this.container.clientWidth;
             height = this.container.clientHeight;
-            console.log({ width, height });
         }
 
         Object.assign(this.hud, { width, height });
