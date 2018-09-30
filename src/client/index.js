@@ -1,2 +1,6 @@
 import { Game } from "./game";
-new Game().run();
+
+const game = new Game();
+game.loadAssets().then(() => {
+    game.run();
+});

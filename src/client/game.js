@@ -129,29 +129,28 @@ export class Game extends BaseGame {
 
     run() {
         const game = this;
-        game.loadAssets().then(() => {
-            game.initRenderer();
-            game.initMouseInput();
-            game.initKeyboardInput();
 
-            const playerData = new PlayerComponent({
-                id: this.playerId,
-                name: this.playerName
-            });
-            game.dispatch(initGame());
-            game.dispatch(playerJoin(playerData));
-            game.initSocket();
+        game.initRenderer();
+        game.initMouseInput();
+        game.initKeyboardInput();
 
-            game.running = true;
-            requestAnimationFrame(function next() {
-                game.stats.begin();
-                game.update();
-                game.render();
-                game.stats.end();
-                if (game.running) {
-                    requestAnimationFrame(next);
-                }
-            });
+        const playerData = new PlayerComponent({
+            id: this.playerId,
+            name: this.playerName
+        });
+        game.dispatch(initGame());
+        game.dispatch(playerJoin(playerData));
+        game.initSocket();
+
+        game.running = true;
+        requestAnimationFrame(function next() {
+            game.stats.begin();
+            game.update();
+            game.render();
+            game.stats.end();
+            if (game.running) {
+                requestAnimationFrame(next);
+            }
         });
     }
 
