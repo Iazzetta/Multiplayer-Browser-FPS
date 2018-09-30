@@ -4,86 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="scss/main.scss" />
 </head>
 
 <body>
     <div id="editor">
-
-        <!-- Game screen -->
-        <div v-if="game_running" class="game-screen" ref="gameScreen"></div>
-
-        <!-- Menu -->
-        <div class="menu">
-
-            <!-- Actions -->
-            <div class="panel">
-                <button ref="export_btn" @mousedown="exportJSON">Export</button>
-                <button v-if="!game_running" @click="playLevel(true)">Play</button>
-                <button v-else @click="playLevel(false)">Stop</button>
-            </div>
-
-            <!-- Viewport -->
-            <div class="panel">
-                <input type="number" v-model="grid.cell_size">
-                <input type="number" v-model="grid.rows">
-                <input type="number" v-model="grid.cols">
-            </div>
-
-            <!-- Brush panel -->
-            <div class="panel">
-                <div class="brush"
-                    v-for="option in brush_options"
-                    :key="option.id"
-                    :style="option.style"
-                    :title="option.type"
-                    :class="{ selected: option.type === brush }"
-                    @click="setBrush(option.type)"></div>
-            </div>
-
-            <!-- Selected object info -->
-            <div v-if="select_object">
-                <small>
-                    Selected object:<br>
-                    id: {{ select_object.id }}<br>
-                    x: {{ select_object.x }}<br>
-                    x: {{ select_object.y }}<br>
-                    h: {{ select_object.w }}<br>
-                    w: {{ select_object.h }}<br>
-                </small>
-            </div>
-        </div>
-
-        <!-- Viewport -->
-        <div class="viewport" :class="viewportClass">
-            <div class="level" ref="level" :style="levelStyle">
-
-                 <!-- Background grid -->
-                 <canvas class="grid"
-                    :style="levelStyle"
-                    ref="grid"
-                    @mousedown="drawObjectBegin"
-                    @mousemove="drawObject"
-                    @mouseup="drawObjectEnd">
-                </canvas>
-
-                <!-- Level objects -->
-                <div class="level-object"
-                    v-for="rect in levelRects"
-                    :key="rect.obj.id"
-                    :style="rect.style"
-                    :class="rect.classList"
-                    @click="selectObject(rect.obj)">
-                    <div @mousedown="resizeObj(rect.obj, 'tl')" class="vertex top-left"></div>
-                    <div @mousedown="resizeObj(rect.obj, 'tr')" class="vertex top-right"></div>
-                    <div @mousedown="resizeObj(rect.obj, 'bl')" class="vertex bot-left"></div>
-                    <div @mousedown="resizeObj(rect.obj, 'br')" class="vertex bot-right"></div>
-                </div>
-            </div>
-        </div>
-
+        <div class="header"></div>
+        <div class="menu"></div>
+        <div class="viewport"></div>
+        <div class="footer"></div>
     </div>
     <script src="js/editor.js"></script>
 </body>
