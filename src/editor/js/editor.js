@@ -1,4 +1,5 @@
 import Vue from "./vue.js";
+import clamp from "lodash/clamp";
 import "./level-object.vue.js";
 
 new Vue({
@@ -24,6 +25,20 @@ new Vue({
         }
     },
     methods: {
+        /**
+         * @param  {MouseWheelEvent} ev
+         */
+        onScroll(ev) {
+            if (ev.altKey) {
+                const delta = ev.wheelDelta * 0.01;
+                this.tile_size = clamp(this.tile_size + delta, 8, 64);
+                this.tile_site = Math.round(this.tile_size);
+                ev.preventDefault();
+            }
+        },
+        /**
+         * @param {MouseEvent} ev
+         */
         onViewportClick(ev) {
             const obj = {
                 id: Date.now().toString(16),

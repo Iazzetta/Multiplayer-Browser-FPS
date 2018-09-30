@@ -18,7 +18,7 @@
             <button>Wall</button>
             <button>Pillar</button>
         </div>
-        <div class="viewport">
+        <div class="viewport" @mousewheel="onScroll">
             <div class="level" :style="gridSizeStyle" @click="onViewportClick">
 
                 <level-object
