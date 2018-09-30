@@ -51,25 +51,20 @@
 
         <!-- Viewport -->
         <div class="viewport" :class="viewportClass">
-            <div class="level" :style="levelStyle">
+            <div class="level" ref="level" :style="levelStyle">
 
                  <!-- Background grid -->
-                 <div class="grid"
+                 <canvas class="grid"
+                    :style="levelStyle"
                     ref="grid"
                     @mousedown="drawObjectBegin($event)"
                     @mousemove="drawObject($event)"
                     @mouseup="drawObjectEnd($event)">
-                    <div class="grid--row" v-for="y in grid.rows" :key="y">
-                        <div class="grid--cell"
-                            v-for="x in grid.cols"
-                            :key="x"
-                            :style="cellStyle"
-                            :title="`(${x-1},${y-1})`"></div>
-                    </div>
-                </div>
+                </canvas>
 
                 <!-- Level objects -->
-                <div class="level-object" v-for="rect in levelRects"
+                <div class="level-object"
+                    v-for="rect in levelRects"
                     :key="rect.obj.id"
                     :style="rect.style"
                     :class="rect.classList"

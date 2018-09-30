@@ -1,5 +1,6 @@
 import Vue from "./vue.js";
 import map from "lodash/map";
+import debounce from "lodash/debounce";
 import { Game } from "../../client/game";
 
 new Vue({
@@ -20,8 +21,8 @@ new Vue({
             draw_object_origin: { x: 0, y: 0 },
             grid: {
                 cell_size: 32,
-                rows: 16,
-                cols: 16
+                rows: 32,
+                cols: 32
             },
             level: {
                 objects: []
@@ -73,6 +74,9 @@ new Vue({
         }
     },
     watch: {
+        "grid.cell_size": { immediate: true, handler: "drawGrid" },
+        "grid.rows": { immediate: true, handler: "drawGrid" },
+        "grid.cols": { immediate: true, handler: "drawGrid" },
         "level.objects": function(objects) {
             const objIds = objects.map(obj => obj.id);
             const missing = obj => obj && objIds.indexOf(obj.id) === -1;
@@ -91,23 +95,9 @@ new Vue({
             return obj.type === "wall";
         },
         getMouseGridPoint(ev) {
-            function getOffset(object, offset = { x: 0, y: 0 }) {
-                if (!object) return offset;
-                offset.x += object.offsetLeft;
-                offset.y += object.offsetTop;
-
-                return getOffset(object.offsetParent, offset);
-            }
-
-            const grid = getOffset(this.$refs.grid);
-            const point = {
-                x: ev.clientX - grid.x,
-                y: ev.clientY - grid.y
-            };
-
             return {
-                x: Math.floor(point.x / this.grid.cell_size),
-                y: Math.floor(point.y / this.grid.cell_size)
+                x: Math.floor(ev.layerX / this.grid.cell_size),
+                y: Math.floor(ev.layerY / this.grid.cell_size)
             };
         },
         getLevelExportData() {
@@ -162,6 +152,33 @@ new Vue({
                 });
             }
         },
+        drawGrid: debounce(function() {
+            this.$nextTick(() => {
+                /**
+                 * @type {HTMLCanvasElement}
+                 */
+                const canvas = this.$refs.grid;
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+
+                const ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = "#444";
+
+                const { cell_size, rows, cols } = this.grid;
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        ctx.strokeRect(
+                            x * cell_size,
+                            y * cell_size,
+                            cell_size,
+                            cell_size
+                        );
+                    }
+                }
+            });
+        }, 100),
+
         drawObjectBegin(ev, obj = null) {
             if (this.draw_object === null) {
                 const { x, y } = this.getMouseGridPoint(ev);
