@@ -102,12 +102,18 @@ export class ScaleAction extends ActionHandler {
         }
 
         if (this.dir.y === -1) {
-            obj.y = Math.min(this.origin.y, point.y + 1);
+            if (point.y + 1 > this.origin.y + this.origin.h - 1) {
+                return;
+            }
+            obj.y = point.y + 1;
             obj.h = this.origin.y + this.origin.h - point.y - 1;
         }
 
         if (this.dir.x === -1) {
-            obj.x = Math.min(this.origin.x, point.x + 1);
+            if (point.x + 1 > this.origin.x + this.origin.w - 1) {
+                return;
+            }
+            obj.x = point.x + 1;
             obj.w = this.origin.x + this.origin.w - point.x - 1;
         }
 
