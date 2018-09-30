@@ -218,12 +218,13 @@ export function dispatch(state, action) {
             return state;
         }
         case INIT_GAME: {
+            const { level = "level-1" } = action.data;
             state = new State(state.assets);
             state.time.start = Date.now();
             state.playerSpawns = [];
 
-            const level = state.assets.level("level-1");
-            level.forEach(obj => {
+            const levelObjects = state.assets.level(level);
+            levelObjects.forEach(obj => {
                 const position = new THREE.Vector3();
                 position.copy(obj.position);
 
