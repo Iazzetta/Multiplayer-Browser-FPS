@@ -12,7 +12,26 @@ new Vue({
         objects: [],
         selected_obj_id: null,
         action: null,
-        actionHandler: ActionHandler.Empty()
+        actionHandler: ActionHandler.Empty(),
+        selected_brush_type: "wall",
+        brushes: [
+            {
+                name: "Player spawn",
+                type: "player-spawn"
+            },
+            {
+                name: "Wall",
+                type: "wall"
+            },
+            {
+                name: "Ammo pack",
+                type: "ammo-pack"
+            },
+            {
+                name: "Health pack",
+                type: "health-pack"
+            }
+        ]
     },
     computed: {
         viewportClassList() {
