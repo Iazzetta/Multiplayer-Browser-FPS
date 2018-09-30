@@ -3,6 +3,12 @@
     border-radius: 4px;
     overflow: auto;
 
+    &.grabbing {
+        .level-object {
+            pointer-events: none;
+        }
+    }
+
     .level {
         position: relative;
         width: 100%;

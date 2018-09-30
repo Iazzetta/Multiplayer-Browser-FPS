@@ -5,13 +5,6 @@ Vue.component("level-object", {
     template: "#level-object-vue-template",
     props: ["obj", "tile_size", "grabbed", "selected"],
     computed: {
-        classList() {
-            const classList = [];
-            if (this.grabbed) {
-                classList.push("grabbed");
-            }
-            return classList;
-        },
         objStyle() {
             const size = this.tile_size;
             return {

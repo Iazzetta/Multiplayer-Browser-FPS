@@ -13,6 +13,13 @@ new Vue({
         action: null
     },
     computed: {
+        viewportClassList() {
+            const classList = [];
+            if (this.action === "grab") {
+                classList.push("grabbing");
+            }
+            return classList;
+        },
         gridSizeStyle() {
             return {
                 width: this.tile_size * this.cols + "px",

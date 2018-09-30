@@ -21,7 +21,7 @@
             <button title="alt + scroll" @click="zoom(8)">Zoom in</button>
             <button title="alt + scroll" @click="zoom(-8)">Zoom out</button>
         </div>
-        <div class="viewport" @mousewheel="onScroll">
+        <div class="viewport" :class="viewportClassList" @mousewheel="onScroll">
             <div class="level"
                 ref="level"
                 :style="gridSizeStyle"
@@ -50,7 +50,7 @@
     </div>
 
     <template id="level-object-vue-template">
-        <div class="level-object" :style="objStyle" :class="classList">
+        <div class="level-object" :style="objStyle">
             <div @mousedown="onGrab" class="body"></div>
             <div v-if="selected">
                 <div @mousedown="onScale($event, 0, -1)" class="control scale up"></div>
