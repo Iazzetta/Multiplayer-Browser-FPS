@@ -1,5 +1,6 @@
 import Vue from "./vue.js";
 import map from "lodash/map";
+import { Game } from "../../client/game";
 
 new Vue({
     el: "#editor",
@@ -248,6 +249,15 @@ new Vue({
             a.href = URL.createObjectURL(file);
             a.download = "level.json";
             a.click();
+        },
+        playLevel() {
+            const game = new Game();
+            game.container = this.$refs.gameScreen;
+            console.log({
+                w: game.container.clientWidth,
+                h: game.container.clientHeight,
+            })
+            game.run();
         }
     },
     mounted() {

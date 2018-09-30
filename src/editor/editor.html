@@ -12,12 +12,16 @@
 <body>
     <div id="editor">
 
+        <!-- Game screen -->
+        <div class="game-screen" ref="gameScreen"></div>
+
         <!-- Menu -->
         <div class="menu">
 
             <!-- Export -->
             <div class="panel">
                 <button ref="export_btn" @mousedown="exportJSON">Export</button>
+                <button @click="playLevel">Play</button>
             </div>
 
             <!-- Brush panel -->

@@ -29,6 +29,11 @@ export class Game extends BaseGame {
         super();
 
         /**
+         * @type {HTMLElement}
+         */
+        this.container = document.body;
+
+        /**
          * @type {string}
          */
         this.playerId = "player-1";
@@ -222,10 +227,10 @@ export class Game extends BaseGame {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
         // Append to dom
-        document.body.innerHTML = "";
-        document.body.appendChild(this.hud);
-        document.body.appendChild(this.stats.dom);
-        document.body.appendChild(this.renderer.domElement);
+        this.container.innerHTML = "";
+        this.container.appendChild(this.hud);
+        this.container.appendChild(this.stats.dom);
+        this.container.appendChild(this.renderer.domElement);
 
         // Resize - full screen
         this.resize();
@@ -301,8 +306,13 @@ export class Game extends BaseGame {
     }
 
     resize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        if (this.container !== document.body) {
+            width = this.container.clientWidth;
+            height = this.container.clientHeight;
+            console.log({ width, height });
+        }
 
         Object.assign(this.hud, { width, height });
         Object.assign(this.ctx.canvas, { width, height });
@@ -498,5 +508,3 @@ export class Game extends BaseGame {
         }
     }
 }
-
-
