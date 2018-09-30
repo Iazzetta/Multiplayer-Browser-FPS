@@ -18,7 +18,15 @@
             <button>Wall</button>
             <button>Pillar</button>
         </div>
-        <div class="viewport"></div>
+        <div class="viewport">
+            <div class="grid-background">
+                <div class="row" v-for="y in 64" :key="y">
+                    <div class="col" v-for="x in 64" :key="x">
+                        <div class="cell"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="footer"></div>
     </div>
     <script src="js/editor.js"></script>
