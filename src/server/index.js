@@ -23,6 +23,8 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
+    const level = require("../../dist/assets/levels/level.json");
+    game.state.assets.setLevel("level-1", level);
     game.dispatch(initGame());
     game.subscriptions.push(action => {
         if (action.type === SERVER_ACTION) {
