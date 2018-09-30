@@ -6,6 +6,9 @@ new Vue({
     el: "#editor",
     data() {
         return {
+            game_running: false,
+            game_inst: null,
+
             brush: "wall",
             brush_options: [
                 { type: "wall", style: { background: "#697478" } },
@@ -250,10 +253,19 @@ new Vue({
             a.download = "level.json";
             a.click();
         },
-        playLevel() {
-            const game = new Game();
-            game.container = this.$refs.gameScreen;
-            game.run();
+        playLevel(play) {
+            this.game_running = play;
+
+            if (this.game_running) {
+                this.game_inst = new Game();
+                this.$nextTick().then(() => {
+                    this.game_inst.container = this.$refs.gameScreen;
+                    this.game_inst.run();
+                });
+            } else {
+                this.game_inst.destroy();
+                this.game_inst = null;
+            }
         }
     },
     mounted() {

@@ -34,6 +34,11 @@ export class Game extends BaseGame {
         this.container = document.body;
 
         /**
+         * @type {boolean}
+         */
+        this.running = false;
+
+        /**
          * @type {string}
          */
         this.playerId = "player-1";
@@ -137,14 +142,22 @@ export class Game extends BaseGame {
             game.dispatch(playerJoin(playerData));
             game.initSocket();
 
+            game.running = true;
             requestAnimationFrame(function next() {
                 game.stats.begin();
                 game.update();
                 game.render();
-                requestAnimationFrame(next);
                 game.stats.end();
+                if (game.running) {
+                    requestAnimationFrame(next);
+                }
             });
         });
+    }
+
+    destroy() {
+        this.running = false;
+        this.container.innerHTML = "";
     }
 
     mountPlayerCamera() {

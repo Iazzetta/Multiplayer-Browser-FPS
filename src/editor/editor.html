@@ -13,15 +13,16 @@
     <div id="editor">
 
         <!-- Game screen -->
-        <div class="game-screen" ref="gameScreen"></div>
+        <div v-if="game_running" class="game-screen" ref="gameScreen"></div>
 
         <!-- Menu -->
         <div class="menu">
 
-            <!-- Export -->
+            <!-- Actions -->
             <div class="panel">
                 <button ref="export_btn" @mousedown="exportJSON">Export</button>
-                <button @click="playLevel">Play</button>
+                <button v-if="!game_running" @click="playLevel(true)">Play</button>
+                <button v-else @click="playLevel(false)">Stop</button>
             </div>
 
             <!-- Brush panel -->
