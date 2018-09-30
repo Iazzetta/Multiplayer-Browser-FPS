@@ -19,29 +19,8 @@
             top: 0;
             left: 0;
         }
-    }
 
-    .level-object {
-        background-color: #666666;
-        border: 1px solid #ccc;
-    }
-
-    .grid-background {
-        display: flex;
-        flex-direction: column;
-        font-size: 0;
-        pointer-events: none;
-        .row {
-            display: flex;
-            flex-direction: row;
-            .col {
-                .cell {
-                    display: inline-block;
-                    width: 16px;
-                    height: 16px;
-                    border: 1px solid #333;
-                }
-            }
-        }
+        @import "level-object.scss";
+        @import "grid-background.scss";
     }
 }

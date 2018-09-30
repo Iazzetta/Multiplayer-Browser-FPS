@@ -1,0 +1,51 @@
+.level-object {
+    $active_color: orange;
+
+    background-color: #666666;
+    border: 1px solid #ccc;
+
+    &:hover {
+        border-color: $active_color;
+        cursor: move;
+    }
+
+    .control {
+        $offset: 48px;
+        $size: 16px;
+
+        width: $size;
+        height: $size;
+        background-color: #444;
+        position: absolute;
+
+        &.scale {
+            &:hover {
+                background: $active_color;
+            }
+            &.up {
+                cursor: n-resize;
+                top: -$offset;
+                left: 50%;
+                margin-left: -$size * 0.5;
+            }
+            &.down {
+                cursor: s-resize;
+                bottom: -$offset;
+                left: 50%;
+                margin-left: -$size * 0.5;
+            }
+            &.left {
+                cursor: e-resize;
+                left: -$offset;
+                top: 50%;
+                margin-top: -$size * 0.5;
+            }
+            &.right {
+                cursor: w-resize;
+                right: -$offset;
+                top: 50%;
+                margin-top: -$size * 0.5;
+            }
+        }
+    }
+}

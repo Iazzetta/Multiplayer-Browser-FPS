@@ -39,7 +39,12 @@
     </div>
 
     <template id="level-object-vue-template">
-        <div class="level-object" :style="objStyle"></div>
+        <div class="level-object" :style="objStyle">
+            <div class="control scale up"></div>
+            <div class="control scale down"></div>
+            <div class="control scale left"></div>
+            <div class="control scale right"></div>
+        </div>
     </template>
 
     <script src="js/editor.js"></script>
