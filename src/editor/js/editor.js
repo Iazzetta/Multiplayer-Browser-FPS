@@ -75,6 +75,7 @@ new Vue({
         onGridClick(ev) {
             const obj = {
                 id: Date.now().toString(16),
+                type: this.selected_brush_type,
                 x: Math.floor(ev.layerX / this.tile_size),
                 y: Math.floor(ev.layerY / this.tile_size),
                 w: 1,

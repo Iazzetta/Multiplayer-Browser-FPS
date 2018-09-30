@@ -1,5 +1,12 @@
 import Vue from "./vue.js";
 
+const typeColorMap = {
+    "player-spawn": "cornflowerblue",
+    wall: "gray",
+    "ammo-pack": "blue",
+    "health-pack": "green"
+};
+
 // @ts-ignore
 Vue.component("level-object", {
     template: "#level-object-vue-template",
@@ -11,7 +18,8 @@ Vue.component("level-object", {
                 left: this.obj.x * size + "px",
                 top: this.obj.y * size + "px",
                 width: this.obj.w * size + "px",
-                height: this.obj.h * size + "px"
+                height: this.obj.h * size + "px",
+                background: typeColorMap[this.obj.type]
             };
         }
     },
