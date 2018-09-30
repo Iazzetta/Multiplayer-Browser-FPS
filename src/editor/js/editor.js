@@ -12,7 +12,7 @@ new Vue({
         objects: [],
         selected_obj_id: null,
         action: null,
-        actionHandler: new ActionHandler({ tile_size: 0 })
+        actionHandler: ActionHandler.Empty()
     },
     computed: {
         viewportClassList() {
@@ -77,7 +77,7 @@ new Vue({
          */
         onMouseUp(ev) {
             this.actionHandler.onMouseUp(ev, this.selectedObj);
-            this.actionHandler = new ActionHandler(this);
+            this.actionHandler = ActionHandler.Empty();
             this.action = null;
         },
 
@@ -88,17 +88,16 @@ new Vue({
             this.tile_size = clamp(this.tile_size + delta, 8, 64);
             this.tile_site = Math.round(this.tile_size);
         },
-        grabObj(obj) {
+        grabObj(ev, obj) {
             this.selected_obj_id = obj.id;
             this.action = "grab";
             this.actionHandler = new GrabAction(this);
-            this.actionHandler.onMouseDown();
+            this.actionHandler.onMouseDown(ev);
         },
-        scaleObj(ev) {
-            const { obj, dir } = ev;
+        scaleObj(ev, { obj, dir }) {
             this.selected_obj_id = obj.id;
             this.action = "scale";
-            this.actionHandler = new ScaleAction(this, obj, dir);
+            this.actionHandler = new ScaleAction(this, dir);
             this.actionHandler.onMouseDown(obj, dir);
         }
     }

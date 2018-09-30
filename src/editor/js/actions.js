@@ -2,9 +2,17 @@ export class ActionHandler {
     /**
      * @param {object} config
      * @param {number} config.tile_size
+     * @param {object} config.selectedObj
      */
     constructor(config) {
+        const obj = config.selectedObj || {};
         this.tile_size = config.tile_size;
+        this.origin = {
+            x: obj.x || 0,
+            y: obj.y || 0,
+            w: obj.w || 0,
+            h: obj.h || 0
+        };
     }
 
     /**
@@ -26,14 +34,39 @@ export class ActionHandler {
     onMouseUp(ev, obj) {}
 }
 
+ActionHandler.Empty = function() {
+    return new ActionHandler({ tile_size: 0, selectedObj: null });
+};
+
 export class GrabAction extends ActionHandler {
+    constructor(config) {
+        super(config);
+        this.offset = { x: 0, y: 0 };
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     * @param {object} obj
+     */
+    onMouseDown(ev, obj) {
+        this.offset.x = ev.layerX;
+        this.offset.y = ev.layerY;
+    }
+
     /**
      * @param {MouseEvent} ev
      * @param {object} obj
      */
     onMouseMove(ev, obj) {
-        obj.x = Math.floor(ev.layerX / this.tile_size);
-        obj.y = Math.floor(ev.layerY / this.tile_size);
+        const point = {
+            x: Math.floor((ev.layerX - this.offset.x) / this.tile_size),
+            y: Math.floor((ev.layerY - this.offset.y) / this.tile_size)
+        };
+
+        console.log(point);
+
+        obj.x = point.x;
+        obj.y = point.y;
         ev.stopPropagation();
         ev.preventDefault();
     }
@@ -42,19 +75,10 @@ export class GrabAction extends ActionHandler {
 export class ScaleAction extends ActionHandler {
     /**
      * @param {object} config
-     * @param {object} obj
-     * @param {{ x:number, y:number }} obj
+     * @param {{ x:number, y:number }} dir
      */
-    constructor(config, obj, dir) {
+    constructor(config, dir) {
         super(config);
-
-        this.origin = {
-            x: obj.x,
-            y: obj.y,
-            w: obj.w,
-            h: obj.h
-        };
-
         this.dir = {
             x: dir.x,
             y: dir.y

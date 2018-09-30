@@ -17,10 +17,10 @@ Vue.component("level-object", {
     },
     methods: {
         onGrab(ev) {
-            this.$emit("grab", this.obj);
+            this.$emit("grab", ev, this.obj);
         },
         onScale(ev, x, y) {
-            this.$emit("scale", {
+            this.$emit("scale", ev, {
                 obj: this.obj,
                 dir: { x, y }
             });
