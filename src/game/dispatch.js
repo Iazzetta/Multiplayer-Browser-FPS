@@ -34,9 +34,6 @@ import {
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
-// @ts-ignore
-import LEVEL_1_JSON from "../assets/levels/level-1.json";
-
 /**
  * @param {State} state
  * @param {Action} action
@@ -225,7 +222,8 @@ export function dispatch(state, action) {
             state.time.start = Date.now();
             state.playerSpawns = [];
 
-            LEVEL_1_JSON.forEach(obj => {
+            const level = state.assets.level("level-1");
+            level.forEach(obj => {
                 const position = new THREE.Vector3();
                 position.copy(obj.position);
 

@@ -126,6 +126,14 @@ export class Assets {
         }
         return new THREE.Mesh(this.fallback.geometry, this.fallback.material);
     }
+
+    /**
+     * @param {string} name
+     * @returns {object}
+     */
+    level(name) {
+        return this.levelList.get(name)
+    }
 }
 
 export function createDefaultImage() {
