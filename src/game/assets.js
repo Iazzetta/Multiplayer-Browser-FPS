@@ -132,7 +132,15 @@ export class Assets {
      * @returns {object}
      */
     level(name) {
-        return this.levelList.get(name)
+        return this.levelList.get(name);
+    }
+
+    /**
+     * @param {string} name
+     * @param {object} data
+     */
+    setLevel(name, data) {
+        this.levelList.set(name, data);
     }
 }
 
