@@ -1,3 +1,5 @@
+import { ObjTypes } from "./object-types";
+
 export class ActionHandler {
     /**
      * @param {object} config
@@ -92,6 +94,16 @@ export class ScaleAction extends ActionHandler {
             x: Math.floor(ev.layerX / this.tile_size),
             y: Math.floor(ev.layerY / this.tile_size)
         };
+
+        if (ObjTypes[obj.type].is_point) {
+            if (this.dir.y !== 0) {
+                obj.y = point.y;
+            }
+            if (this.dir.x !== 0) {
+                obj.x = point.x;
+            }
+            return;
+        }
 
         if (this.dir.y === 1) {
             obj.h = point.y - obj.y;
