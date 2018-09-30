@@ -1,15 +1,9 @@
 import * as THREE from "three";
 import map from "lodash/map";
-import { TILE_SIZE, JUMP_SPEED } from "./consts.js";
+import sample from "lodash/sample";
+import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
-import {
-    Entity,
-    PlayerEntity,
-    WallEntity,
-    AmmoPickupEntity,
-    HpPickupEntity,
-    PlayerGhostEntity
-} from "./entities";
+import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
     INIT_GAME,
     PLAYER_JOIN,
@@ -43,6 +37,8 @@ export function dispatch(state, action) {
         case PLAYER_JOIN: {
             const { player } = action.data;
             const playerGhost = new PlayerGhostEntity(player);
+            playerGhost.object3D.position.copy(sample(state.playerSpawns));
+            playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
             return state;
         }
