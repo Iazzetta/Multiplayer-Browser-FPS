@@ -38,13 +38,12 @@ new Vue({
         /**
          * @param {MouseEvent} ev
          */
-        onViewportClick(ev) {
+        onGridClick(ev) {
             const obj = {
                 id: Date.now().toString(16),
                 x: Math.floor(ev.layerX / this.tile_size),
                 y: Math.floor(ev.layerY / this.tile_size)
             };
-            console.log(obj);
             this.objects.push(obj);
         },
 
