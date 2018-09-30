@@ -24,7 +24,7 @@ import debounce from "lodash/debounce";
 import clamp from "lodash/clamp";
 import { PlayerComponent } from "../game/components.js";
 
-class Game extends BaseGame {
+export class Game extends BaseGame {
     constructor() {
         super();
 
@@ -499,4 +499,4 @@ class Game extends BaseGame {
     }
 }
 
-new Game().run();
+
