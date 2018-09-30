@@ -178,7 +178,6 @@ new Vue({
                 }
             });
         }, 100),
-
         drawObjectBegin(ev, obj = null) {
             if (this.draw_object === null) {
                 const { x, y } = this.getMouseGridPoint(ev);

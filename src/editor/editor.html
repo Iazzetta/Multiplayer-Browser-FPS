@@ -25,6 +25,13 @@
                 <button v-else @click="playLevel(false)">Stop</button>
             </div>
 
+            <!-- Viewport -->
+            <div class="panel">
+                <input type="number" v-model="grid.cell_size">
+                <input type="number" v-model="grid.rows">
+                <input type="number" v-model="grid.cols">
+            </div>
+
             <!-- Brush panel -->
             <div class="panel">
                 <div class="brush"
@@ -57,9 +64,9 @@
                  <canvas class="grid"
                     :style="levelStyle"
                     ref="grid"
-                    @mousedown="drawObjectBegin($event)"
-                    @mousemove="drawObject($event)"
-                    @mouseup="drawObjectEnd($event)">
+                    @mousedown="drawObjectBegin"
+                    @mousemove="drawObject"
+                    @mouseup="drawObjectEnd">
                 </canvas>
 
                 <!-- Level objects -->
