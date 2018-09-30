@@ -2,6 +2,7 @@ import Vue from "./vue.js";
 import clamp from "lodash/clamp";
 import "./level-object.vue.js";
 import { ActionHandler, GrabAction, ScaleAction } from "./actions.js";
+import { PLAYER_SPAWN, WALL, AMMO_PACK, HEALTH_PACK } from "./object-types";
 
 new Vue({
     el: "#editor",
@@ -17,19 +18,19 @@ new Vue({
         brushes: [
             {
                 name: "Player spawn",
-                type: "player-spawn"
+                type: PLAYER_SPAWN
             },
             {
                 name: "Wall",
-                type: "wall"
+                type: WALL
             },
             {
                 name: "Ammo pack",
-                type: "ammo-pack"
+                type: AMMO_PACK
             },
             {
                 name: "Health pack",
-                type: "health-pack"
+                type: HEALTH_PACK
             }
         ]
     },
