@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
 import Stats from "stats.js";
-import { PORT } from "../game/consts.js";
-import { Game as BaseGame } from "../game/game.js";
+import { PORT } from "../../game/consts.js";
+import { Game as BaseGame } from "../../game/game.js";
 import {
     initGame,
     setCameraView,
@@ -18,11 +18,11 @@ import {
     HIT_PLAYER,
     PLAYER_JOIN,
     KILL_PLAYER
-} from "../game/actions.js";
-import { toRadians } from "../game/utils.js";
+} from "../../game/actions.js";
+import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
 import clamp from "lodash/clamp";
-import { PlayerComponent } from "../game/components.js";
+import { PlayerComponent } from "../../game/components.js";
 
 export class Game extends BaseGame {
     constructor() {
