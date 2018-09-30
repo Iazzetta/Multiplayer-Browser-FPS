@@ -41,7 +41,7 @@ WEAPON_TYPE.MACHINEGUN = Object.freeze(
     new WEAPON_TYPE({
         name: "machine-gun",
         damage: 1,
-        firerate: 200,
+        firerate: 50,
         reloadSpeed: 2000,
         maxLoadedAmmo: 50,
         maxReservedAmmo: 2500
