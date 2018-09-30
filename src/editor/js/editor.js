@@ -8,7 +8,8 @@ new Vue({
         tile_size: 64,
         rows: 64,
         cols: 64,
-        objects: []
+        objects: [],
+        grabbed_obj: null
     },
     computed: {
         gridSizeStyle() {
@@ -46,6 +47,29 @@ new Vue({
             };
             this.objects.push(obj);
         },
+        /**
+         * @param {MouseEvent} ev
+         */
+        onMouseDown(ev) {},
+        /**
+         * @param {MouseEvent} ev
+         */
+        onMouseMove(ev) {
+            if (this.grabbed_obj !== null) {
+                this.grabbed_obj.x = Math.floor(ev.layerX / this.tile_size);
+                this.grabbed_obj.y = Math.floor(ev.layerY / this.tile_size);
+                ev.stopPropagation();
+                ev.preventDefault();
+            }
+        },
+        /**
+         * @param {MouseEvent} ev
+         */
+        onMouseUp(ev) {
+            if (this.grabbed_obj !== null) {
+                this.grabbed_obj = null;
+            }
+        },
 
         /**
          * @param {number} delta
@@ -53,6 +77,11 @@ new Vue({
         zoom(delta) {
             this.tile_size = clamp(this.tile_size + delta, 8, 64);
             this.tile_site = Math.round(this.tile_size);
+        },
+        grabObj(obj) {
+            if (this.grabbed_obj === null) {
+                this.grabbed_obj = this.objects.find(o => o.id === obj.id);
+            }
         }
     }
 });
