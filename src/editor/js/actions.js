@@ -63,8 +63,6 @@ export class GrabAction extends ActionHandler {
             y: Math.floor((ev.layerY - this.offset.y) / this.tile_size)
         };
 
-        console.log(point);
-
         obj.x = point.x;
         obj.y = point.y;
         ev.stopPropagation();
@@ -99,17 +97,17 @@ export class ScaleAction extends ActionHandler {
             obj.h = point.y - obj.y;
         }
 
-        if (this.dir.y === -1) {
-            obj.y = point.y + 1;
-            obj.h = this.origin.y + this.origin.h - point.y - 1;
-        }
-
         if (this.dir.x === 1) {
             obj.w = point.x - obj.x;
         }
 
+        if (this.dir.y === -1) {
+            obj.y = Math.min(this.origin.y, point.y + 1);
+            obj.h = this.origin.y + this.origin.h - point.y - 1;
+        }
+
         if (this.dir.x === -1) {
-            obj.x = point.x + 1;
+            obj.x = Math.min(this.origin.x, point.x + 1);
             obj.w = this.origin.x + this.origin.w - point.x - 1;
         }
 

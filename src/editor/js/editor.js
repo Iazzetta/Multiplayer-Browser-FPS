@@ -6,7 +6,7 @@ import { ActionHandler, GrabAction, ScaleAction } from "./actions.js";
 new Vue({
     el: "#editor",
     data: {
-        tile_size: 64,
+        tile_size: 32,
         rows: 64,
         cols: 64,
         objects: [],
