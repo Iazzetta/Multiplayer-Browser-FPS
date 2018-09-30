@@ -57,7 +57,9 @@ new Vue({
             const obj = {
                 id: Date.now().toString(16),
                 x: Math.floor(ev.layerX / this.tile_size),
-                y: Math.floor(ev.layerY / this.tile_size)
+                y: Math.floor(ev.layerY / this.tile_size),
+                w: 1,
+                h: 1
             };
             this.objects.push(obj);
             this.selected_obj_id = obj.id;

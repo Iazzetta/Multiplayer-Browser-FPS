@@ -10,8 +10,8 @@ Vue.component("level-object", {
             return {
                 left: this.obj.x * size + "px",
                 top: this.obj.y * size + "px",
-                width: size + "px",
-                height: size + "px"
+                width: this.obj.w * size + "px",
+                height: this.obj.h * size + "px"
             };
         }
     },
