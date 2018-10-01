@@ -22,7 +22,10 @@ import {
     Action,
     playerLeave,
     spawnPlayer,
-    playerJoin
+    playerJoin,
+    setPlyerCamera,
+    SET_PLAYER_CAMERA,
+    SERVER_ACTION
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -32,6 +35,13 @@ import { PlayerComponent } from "./components.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
+        case SERVER_ACTION: {
+            const connected = false;
+            if (!connected) {
+                return dispatch(state,action.data);
+            }
+            return state;
+        }
         case LOAD_LEVEL: {
             const { level } = action.data;
 
@@ -69,41 +79,13 @@ export function dispatch(state, action) {
             state.addEntity(playerGhost);
 
             if (state.playerId === id) {
-                const player = playerGhost;
-                if (player !== undefined) {
-                    player.object3D.children.forEach(child => {
-                        child.visible = false;
-                    });
-
-                    player.head.add(state.camera);
-                    player.head.visible = true;
-                    player.head.children.forEach(child => {
-                        child.visible = false;
-                    });
-
-                    const weapon = state.assets.mesh("player_weapon");
-                    weapon.scale.multiplyScalar(0.5);
-                    weapon.position.x = 0.25;
-                    weapon.position.y = -0.25;
-                    weapon.position.z = -0.1;
-                    player.head.add(weapon);
-                }
+                return dispatch(state, setPlyerCamera(id));
             }
-
             return state;
         }
         case SPAWN_PLAYER: {
-            /**
-             * @type {PlayerComponent}
-             */
-            const player = action.data.player;
-
-            /**
-             * @type {THREE.Vector3}
-             */
-            const spawn = action.data.spawn;
-
-            const playerGhost = state.getEntity(player.id);
+            const { id, spawn } = action.data;
+            const playerGhost = state.getEntity(id);
             if (playerGhost && playerGhost.player) {
                 const player = new PlayerEntity(
                     playerGhost.player,
@@ -112,8 +94,36 @@ export function dispatch(state, action) {
                 player.object3D.position.copy(spawn);
                 state.addEntity(player);
             }
+
+            if (state.playerId === id) {
+                return dispatch(state, setPlyerCamera(id));
+            }
             return state;
         }
+        case SET_PLAYER_CAMERA: {
+            const { id } = action.data;
+            const player = state.getEntity(id);
+            if (player !== undefined) {
+                player.object3D.children.forEach(child => {
+                    child.visible = false;
+                });
+
+                player.head.add(state.camera);
+                player.head.visible = true;
+                player.head.children.forEach(child => {
+                    child.visible = false;
+                });
+
+                const weapon = state.assets.mesh("player_weapon");
+                weapon.scale.multiplyScalar(0.5);
+                weapon.position.x = 0.25;
+                weapon.position.y = -0.25;
+                weapon.position.z = -0.1;
+                player.head.add(weapon);
+            }
+            return state;
+        }
+
         case SYNC_PLAYER_SCORE: {
             const { id, kills, deaths } = action.data;
             const { player } = state.getEntityComponents(id);

@@ -7,6 +7,7 @@ export const [
     SERVER_ACTION,
     PLAYER_JOIN,
     PLAYER_LEAVE,
+    SET_PLAYER_CAMERA,
     SYNC_PLAYER,
     SYNC_PLAYER_SCORE,
     SYNC_ALL_PLAYERS,
@@ -30,6 +31,13 @@ export class Action {
 }
 
 /**
+ * @param {Action} action
+ */
+export function serverAction(action) {
+    return new Action(SERVER_ACTION, action);
+}
+
+/**
  * @param {object} level
  */
 export function loadLevel(level) {
@@ -45,18 +53,26 @@ export function playerJoin(id, name) {
 }
 
 /**
+ * @param {string} id
+ * @param {THREE.Vector3} spawn
+ */
+export function spawnPlayer(id, spawn) {
+    return new Action(SPAWN_PLAYER, { id, spawn });
+}
+
+/**
+ * @param {string} id
+ */
+export function setPlyerCamera(id) {
+    return new Action(SET_PLAYER_CAMERA, { id });
+}
+
+/**
  * @param {number} width
  * @param {number} height
  */
 export function setAspectRatio(width, height) {
     return new Action(SET_CAMERA_VIEW, { width, height });
-}
-
-/**
- * @param {Action} action
- */
-export function serverAction(action) {
-    return new Action(SERVER_ACTION, action);
 }
 
 export function initGame() {
@@ -68,14 +84,6 @@ export function initGame() {
  */
 export function playerLeave(id) {
     return new Action(PLAYER_LEAVE, { id });
-}
-
-/**
- * @param {PlayerComponent} player
- * @param {THREE.Vector3} spawn
- */
-export function spawnPlayer(player, spawn) {
-    return new Action(SPAWN_PLAYER, { player, spawn });
 }
 
 /**

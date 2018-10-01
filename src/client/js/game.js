@@ -111,11 +111,20 @@ export class Game extends BaseGame {
      */
     onKeyUp(ev) {}
 
-    onMouseMove() {}
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseMove(ev) {}
 
-    onMouseDown() {}
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseDown(ev) {}
 
-    onMouseUp() {}
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseUp(ev) {}
 
     destroy() {
         this.running = false;
@@ -152,7 +161,6 @@ export class Game extends BaseGame {
 
             const name = prompt("Pleas enter your name", "Player");
             this.socket.emit("join", { name });
-            this.playerId = this.socket.id;
 
             this.socket.on("dispatch", action => {
                 this.dispatch(action);
@@ -196,32 +204,33 @@ export class Game extends BaseGame {
 
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const { object3D, head } = this.myComponents();
-                if (object3D && head) {
-                    let ver = object3D.rotation.y - ev.movementX * 0.005;
-                    let hor = head.rotation.x - ev.movementY * 0.005;
-                    hor = clamp(hor, -1.6, 1.6);
-                    this.syncDispatch(setPlayerAim(playerId, ver, hor));
-                }
+                this.onMouseMove(ev);
+                // const playerId = this.playerId;
+                // const { object3D, head } = this.myComponents();
+                // if (object3D && head) {
+                //     let ver = object3D.rotation.y - ev.movementX * 0.005;
+                //     let hor = head.rotation.x - ev.movementY * 0.005;
+                //     hor = clamp(hor, -1.6, 1.6);
+                //     this.syncDispatch(setPlayerAim(playerId, ver, hor));
+                // }
             }
         });
 
-        // @ts-ignore
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, "shoot", true);
-                this.syncDispatch(action);
+                this.onMouseDown(ev);
+                // const playerId = this.playerId;
+                // const action = setPlayerInput(playerId, "shoot", true);
+                // this.syncDispatch(action);
             }
         });
 
-        // @ts-ignore
         canvas.addEventListener("mouseup", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, "shoot", false);
-                this.syncDispatch(action);
+                this.onMouseUp(ev);
+                // const playerId = this.playerId;
+                // const action = setPlayerInput(playerId, "shoot", false);
+                // this.syncDispatch(action);
             }
         });
     }

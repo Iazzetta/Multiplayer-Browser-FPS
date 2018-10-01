@@ -57,7 +57,8 @@ export function respawnSystem(entity, state, dispatch) {
             const spawn = DEBUG
                 ? state.playerSpawns[0]
                 : sample(state.playerSpawns);
-            dispatch(serverAction(spawnPlayer(player, spawn)));
+
+            dispatch(serverAction(spawnPlayer(player.id, spawn)));
         }
     }
 }
