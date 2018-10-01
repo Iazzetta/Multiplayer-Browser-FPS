@@ -4,7 +4,6 @@ import { TILE_SIZE, RESPAWN_TIME } from "./consts.js";
 import {
     ControllerComponent,
     VelocityComponent,
-    DecayComponent,
     Object3DComponent,
     HeadComponent,
     HealthComponent,
@@ -47,16 +46,6 @@ export class Entity {
          */
         this.gravity = false;
 
-        /**
-         * @type {number}
-         */
-        this.pickupAmmo = undefined;
-
-        /**
-         * @type {number}
-         */
-        this.pickupHp = undefined;
-
         // Components
         //===========================
 
@@ -74,11 +63,6 @@ export class Entity {
          * @type {HeadComponent}
          */
         this.head = undefined;
-
-        /**
-         * @type {DecayComponent}
-         */
-        this.decay = undefined;
 
         /**
          * @type {ColliderComponent}
@@ -181,41 +165,7 @@ export class WallEntity extends Entity {
         this.object3D = new Object3DComponent(radius);
 
         const mesh = assets.mesh("wall_tile");
-        mesh.scale.copy(size)
+        mesh.scale.copy(size);
         this.object3D.add(mesh);
-    }
-}
-
-export class AmmoPickupEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.pickupAmmo = 30;
-        this.gravity = true;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("bullet_pickup"));
-    }
-}
-
-export class HpPickupEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.gravity = true;
-        this.pickupHp = 10;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("hp_pickup"));
     }
 }

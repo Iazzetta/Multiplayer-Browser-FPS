@@ -26,17 +26,10 @@ export function update(state, dispatch) {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
-        decaySystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
-        pickupSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
-    });
-
-    // Animate pickups
-    state.getEntityGroup("pickup").forEach(pickup => {
-        pickup.object3D.rotation.y += 0.01;
     });
 }
 
@@ -74,66 +67,10 @@ export function respawnSystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function decaySystem(entity, state, dispatch) {
-    const { decay } = entity;
-    if (decay) {
-        decay.ttl -= state.time.delta;
-        if (decay.ttl < 0) {
-            state.deleteEntity(entity.id);
-        }
-    }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
 export function gravitySystem(entity, state, dispatch) {
     const { gravity, velocity } = entity;
     if (gravity && velocity) {
         velocity.y -= GRAVITY * state.time.delta;
-    }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function pickupSystem(entity, state, dispatch) {
-    if (entity.object3D && entity.controller) {
-        const pickups = state.getEntityGroup("pickup");
-        for (let i = 0; i < pickups.length; i++) {
-            const pickup = pickups[i];
-            const aabb1 = entity.object3D.toAABB();
-            const aabb2 = pickup.object3D.toAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                // Ammo
-                if (entity.weapon && pickup.pickupAmmo !== undefined) {
-                    if (
-                        entity.weapon.reservedAmmo <
-                        entity.weapon.type.maxReservedAmmo
-                    ) {
-                        entity.weapon.reservedAmmo = Math.min(
-                            entity.weapon.reservedAmmo + pickup.pickupAmmo,
-                            entity.weapon.type.maxReservedAmmo
-                        );
-                        state.deleteEntity(pickup.id);
-                        return;
-                    }
-                }
-
-                // HP
-                if (entity.health && pickup.pickupHp !== undefined) {
-                    if (entity.health.hp < entity.health.max) {
-                        entity.health.max += pickup.pickupHp;
-                        state.deleteEntity(pickup.id);
-                        return;
-                    }
-                }
-            }
-        }
     }
 }
 

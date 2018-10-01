@@ -2,12 +2,6 @@ import * as THREE from "three";
 import { DEBUG, WEAPON_TYPE } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
-export class DecayComponent {
-    constructor(ttl = 0) {
-        this.ttl = ttl;
-    }
-}
-
 export class PlayerComponent {
     /**
      * @param {object} data
