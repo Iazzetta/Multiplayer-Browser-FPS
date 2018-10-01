@@ -67,6 +67,29 @@ export function dispatch(state, action) {
             playerGhost.object3D.position.copy(sample(state.playerSpawns));
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
+
+            if (state.playerId === id) {
+                const player = playerGhost;
+                if (player !== undefined) {
+                    player.object3D.children.forEach(child => {
+                        child.visible = false;
+                    });
+
+                    player.head.add(state.camera);
+                    player.head.visible = true;
+                    player.head.children.forEach(child => {
+                        child.visible = false;
+                    });
+
+                    const weapon = state.assets.mesh("player_weapon");
+                    weapon.scale.multiplyScalar(0.5);
+                    weapon.position.x = 0.25;
+                    weapon.position.y = -0.25;
+                    weapon.position.z = -0.1;
+                    player.head.add(weapon);
+                }
+            }
+
             return state;
         }
         case SPAWN_PLAYER: {

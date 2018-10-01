@@ -21,6 +21,11 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
+         * @type {string}
+         */
+        this.playerId = "player-1";
+
+        /**
          * @type {THREE.Vector3[]}
          */
         this.playerSpawns = [];

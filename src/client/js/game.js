@@ -28,11 +28,6 @@ export class Game extends BaseGame {
         this.running = false;
 
         /**
-         * @type {string}
-         */
-        this.playerId = "player-1";
-
-        /**
          * @type {number}
          */
         this.bloodScreen = 0;
@@ -83,7 +78,7 @@ export class Game extends BaseGame {
 
         const level = game.state.assets.level("level-1");
         game.dispatch(loadLevel(level));
-        game.dispatch(playerJoin("player-1", "Player 1"));
+        game.dispatch(playerJoin(this.playerId, "Player 1"));
         game.initSocket();
 
         game.running = true;
@@ -96,6 +91,10 @@ export class Game extends BaseGame {
                 requestAnimationFrame(next);
             }
         });
+    }
+
+    get playerId() {
+        return this.state.playerId;
     }
 
     myComponents() {
@@ -258,30 +257,6 @@ export class Game extends BaseGame {
 
         document.addEventListener("keydown", input);
         document.addEventListener("keyup", input);
-    }
-
-    mountPlayerCamera() {
-        const playerId = this.playerId;
-        const player = this.state.getEntity(playerId);
-        if (player !== undefined) {
-            player.object3D.children.forEach(child => {
-                child.visible = false;
-            });
-
-            player.head.add(this.state.camera);
-            player.head.visible = true;
-            player.head.children.forEach(child => {
-                child.visible = false;
-            });
-
-            const weapon = this.state.assets.mesh("player_weapon");
-            weapon.scale.multiplyScalar(0.5);
-            weapon.position.x = 0.25;
-            weapon.position.y = -0.25;
-            weapon.position.z = -0.1;
-            player.head.add(weapon);
-        }
-        this.resize();
     }
 
     resize() {
