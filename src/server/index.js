@@ -6,7 +6,7 @@ import {
     SERVER_ACTION,
     playerJoin,
     playerLeave,
-    syncAllPlayers,
+    syncGameState,
     loadLevel
 } from "../game/actions";
 
@@ -41,6 +41,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
 
         socket.on("join", ({ name }) => {
             dispatch(playerJoin(socket.id, name));
+            dispatch(syncGameState(game.state));
             console.log(name + " joined");
         });
 

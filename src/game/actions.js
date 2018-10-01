@@ -1,6 +1,6 @@
 import { State } from "./state";
-import { PlayerComponent } from "./components";
 import times from "lodash/times";
+import pick from "lodash/pick";
 
 export const [
     LOAD_LEVEL,
@@ -11,7 +11,7 @@ export const [
     SET_PLAYER_CAMERA,
     SYNC_PLAYER,
     SYNC_PLAYER_SCORE,
-    SYNC_ALL_PLAYERS,
+    SYNC_GAME_STATE,
     SPAWN_PLAYER,
     SET_CAMERA_VIEW,
     SET_INPUT,
@@ -62,6 +62,13 @@ export function playerJoin(id, name) {
 
 /**
  * @param {string} id
+ */
+export function playerLeave(id) {
+    return new Action(PLAYER_LEAVE, { id });
+}
+
+/**
+ * @param {string} id
  * @param {THREE.Vector3} spawn
  */
 export function spawnPlayer(id, spawn) {
@@ -101,14 +108,29 @@ export function setPlayerMouse(id, ver, hor) {
     return new Action(SET_PLAYER_MOUSE, { id, ver, hor });
 }
 
-//===================================================
+/**
+ * @param {State} state
+ */
+export function syncGameState(state) {
+    const players = state.getEntityGroup("player").map(player => ({
+        id: player.id,
+        player: player.player,
+        health: player.health,
+        object3d: pick(player.object3D, ["position", "rotation"])
+    }));
+    return new Action(SYNC_GAME_STATE, { players });
+}
 
 /**
  * @param {string} id
+ * @param {number} kills
+ * @param {number} deaths
  */
-export function playerLeave(id) {
-    return new Action(PLAYER_LEAVE, { id });
+export function syncPlayerScore(id, kills, deaths) {
+    return new Action(SYNC_PLAYER_SCORE, { id, kills, deaths });
 }
+
+//===================================================
 
 /**
  * @param {string} id
@@ -135,26 +157,6 @@ export function syncPlayer(id, state) {
         rx,
         ry
     });
-}
-
-/**
- * @param {string} id
- * @param {number} kills
- * @param {number} deaths
- */
-export function syncPlayerScore(id, kills, deaths) {
-    return new Action(SYNC_PLAYER_SCORE, { id, kills, deaths });
-}
-
-/**
- * @param {State} state
- */
-export function syncAllPlayers(state) {
-    const players = state
-        .getEntityGroup("player")
-        .map(player => player.player)
-        .filter(player => player);
-    return new Action(SYNC_ALL_PLAYERS, { players });
 }
 
 /**

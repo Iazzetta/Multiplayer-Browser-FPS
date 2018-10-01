@@ -124,6 +124,7 @@ export class PlayerEntity extends Entity {
 
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
+
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
