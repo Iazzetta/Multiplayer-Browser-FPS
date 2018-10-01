@@ -155,50 +155,6 @@ export function dispatch(state, action) {
             }
             return state;
         }
-        case SYNC_GAME_STATE: {
-            /**
-             * @type {Entity[]}
-             */
-            const players = action.data.players;
-            const playerIds = map(players, "id");
-
-            // Remove players
-            state
-                .getEntityGroup("player")
-                .filter(player => playerIds.indexOf(player.id) === -1)
-                .forEach(player => {
-                    dispatch(state, playerLeave(player.id));
-                });
-
-            // Sync player data
-            players.forEach(playerEntityData => {
-                const { id, player, health, object3D } = playerEntityData;
-                if (state.getEntity(id) === undefined) {
-                    dispatch(state, playerJoin(player.id, player.name));
-                    if (object3D && health) {
-                        dispatch(state, spawnPlayer(id, object3D.position));
-                    }
-                }
-
-                const entity = state.getEntity(id);
-                if (entity.player && player) {
-                    entity.player.input = entity.player.input;
-                    entity.player.kills = entity.player.kills;
-                    entity.player.deaths = entity.player.deaths;
-                }
-
-                if (entity.health && health) {
-                    entity.health.hp = health.hp;
-                    entity.health.max = health.max;
-                }
-
-                if (entity.object3D && object3D) {
-                    entity.object3D.position.copy(object3D.position);
-                }
-            });
-
-            return state;
-        }
         case SYNC_PLAYER_SCORE: {
             const { id, kills, deaths } = action.data;
             const { player } = state.getEntityComponents(id);
@@ -247,22 +203,43 @@ export function dispatch(state, action) {
         // =======================================
 
         case SYNC_PLAYER: {
-            const { id, x, y, z, vx, vy, vz, rx, ry } = action.data;
-            const player = state.getEntity(id);
-            if (player !== undefined) {
-                if (player.head !== undefined) {
-                    player.head.rotation.x = rx;
-                }
+            const { id, player, health, velocity, object3D } = action.data;
 
-                if (player.object3D !== undefined) {
-                    player.object3D.position.set(x, y, z);
-                    player.object3D.rotation.y = ry;
-                }
-
-                if (player.velocity !== undefined) {
-                    player.velocity.set(vx, vy, vz);
+            if (state.getEntity(id) === undefined) {
+                dispatch(state, playerJoin(player.id, player.name));
+                if (object3D && health) {
+                    dispatch(state, spawnPlayer(id, object3D.position));
                 }
             }
+
+            const entity = state.getEntity(id);
+            if (entity.player && player) {
+                entity.player.input = entity.player.input;
+                entity.player.kills = entity.player.kills;
+                entity.player.deaths = entity.player.deaths;
+            }
+
+            if (entity.health && health) {
+                entity.health.hp = health.hp;
+                entity.health.max = health.max;
+            }
+
+            if (entity.object3D && object3D) {
+                entity.object3D.position.copy(object3D.position);
+            }
+
+            if (entity.velocity && velocity) {
+                entity.velocity.x = velocity.x;
+                entity.velocity.y = velocity.y;
+            }
+
+            return state;
+        }
+        case SYNC_GAME_STATE: {
+            const { syncPlayerActions } = action.data;
+            syncPlayerActions.forEach(syncPlayer => {
+                dispatch(state, syncPlayer);
+            });
             return state;
         }
         default:

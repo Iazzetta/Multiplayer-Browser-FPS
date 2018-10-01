@@ -10,7 +10,8 @@ import {
     setAspectRatio,
     setPlayerMouse,
     setPlayerInput,
-    serverConnection
+    serverConnection,
+    syncPlayer
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -69,6 +70,11 @@ export class Game extends BaseGame {
          * @type {CanvasRenderingContext2D}
          */
         this.ctx = null;
+
+        this.syncMe = () => {
+            this.socket.emit("dispatch", syncPlayer(this.playerId, this.state));
+        };
+        this.syncMeDebounce = debounce(this.syncMe, 500);
     }
 
     get playerId() {
@@ -115,6 +121,7 @@ export class Game extends BaseGame {
         this.dispatch(action);
         if (this.socket && this.socket.connected) {
             this.socket.emit("dispatch", action);
+            this.syncMeDebounce();
         }
     }
 

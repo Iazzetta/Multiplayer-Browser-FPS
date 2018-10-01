@@ -109,19 +109,6 @@ export function setPlayerMouse(id, ver, hor) {
 }
 
 /**
- * @param {State} state
- */
-export function syncGameState(state) {
-    const players = state.getEntityGroup("player").map(player => ({
-        id: player.id,
-        player: player.player,
-        health: player.health,
-        object3D: pick(player.object3D, ["position", "rotation"])
-    }));
-    return new Action(SYNC_GAME_STATE, { players });
-}
-
-/**
  * @param {string} id
  * @param {number} kills
  * @param {number} deaths
@@ -145,33 +132,30 @@ export function killPlayer(id) {
     return new Action(KILL_PLAYER, { id });
 }
 
-
-//===================================================
-
 /**
  * @param {string} id
  * @param {State} state
  */
 export function syncPlayer(id, state) {
-    const { head, object3D, velocity } = state.getEntityComponents(id);
-    if (object3D === undefined) return;
-    if (velocity === undefined) return;
-    if (head === undefined) return;
-
-    const { x, y, z } = object3D.position;
-    const { x: vx, y: vy, z: vz } = velocity;
-    const rx = head.rotation.x;
-    const ry = object3D.rotation.y;
+    const player = state.getEntityComponents(id);
     return new Action(SYNC_PLAYER, {
-        id,
-        x,
-        y,
-        z,
-        vx,
-        vy,
-        vz,
-        rx,
-        ry
+        id: player.id,
+        player: player.player,
+        health: player.health,
+        velocity: player.velocity,
+        object3D: player.object3D
+            ? pick(player.object3D, ["position", "rotation"])
+            : undefined
     });
 }
 
+/**
+ * @param {State} state
+ */
+export function syncGameState(state) {
+    const syncPlayerActions = state
+        .getEntityGroup("player")
+        .map(player => player.id)
+        .map(id => syncPlayer(id, state));
+    return new Action(SYNC_GAME_STATE, { syncPlayerActions });
+}
