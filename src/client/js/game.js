@@ -8,11 +8,22 @@ import {
     loadLevel,
     playerJoin,
     setAspectRatio,
-    setPlayerMouse
+    setPlayerMouse,
+    setPlayerInput
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
 import clamp from "lodash/clamp";
+
+export const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
+export const KEY_BINDS = {
+    [W]: "forward",
+    [A]: "left",
+    [S]: "back",
+    [D]: "right",
+    [R]: "reload",
+    [SPACE]: "jump"
+};
 
 export class Game extends BaseGame {
     constructor() {
@@ -57,12 +68,6 @@ export class Game extends BaseGame {
          * @type {CanvasRenderingContext2D}
          */
         this.ctx = null;
-
-        this.syncPlayerImmediately = debounce(() => {
-            const playerId = this.playerId;
-            this.socket.emit("dispatch", syncPlayer(playerId, this.state));
-        }, 500);
-        this.syncPlayer = debounce(this.syncPlayerImmediately, 500);
     }
 
     run() {
@@ -73,15 +78,18 @@ export class Game extends BaseGame {
             }
         });
 
+        // Init systems
         game.initRenderer();
         game.initMouseInput();
         game.initKeyboardInput();
 
+        // Init game world
         const level = game.state.assets.level("level-1");
         game.dispatch(loadLevel(level));
         game.dispatch(playerJoin(this.playerId, "Player 1"));
         game.initSocket();
 
+        // Run game
         game.running = true;
         requestAnimationFrame(function next() {
             game.stats.begin();
@@ -105,12 +113,24 @@ export class Game extends BaseGame {
     /**
      * @param {KeyboardEvent} ev
      */
-    onKeyDown(ev) {}
+    onKeyDown(ev) {
+        const id = this.playerId;
+        const input = KEY_BINDS[ev.keyCode];
+        if (input !== undefined) {
+            this.dispatch(setPlayerInput(id, input, true));
+        }
+    }
 
     /**
      * @param {KeyboardEvent} ev
      */
-    onKeyUp(ev) {}
+    onKeyUp(ev) {
+        const id = this.playerId;
+        const input = KEY_BINDS[ev.keyCode];
+        if (input !== undefined) {
+            this.dispatch(setPlayerInput(id, input, false));
+        }
+    }
 
     /**
      * @param {MouseEvent} ev
@@ -136,15 +156,6 @@ export class Game extends BaseGame {
     destroy() {
         this.running = false;
         this.container.innerHTML = "";
-    }
-
-    /**
-     * @param {Action} action
-     */
-    syncDispatch(action) {
-        this.dispatch(action);
-        this.socket.emit("dispatch", action);
-        this.syncPlayer();
     }
 
     loadAssets() {
@@ -212,67 +223,33 @@ export class Game extends BaseGame {
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
                 this.onMouseMove(ev);
-                // const playerId = this.playerId;
-                // const { object3D, head } = this.myComponents();
-                // if (object3D && head) {
-                //     let ver = object3D.rotation.y - ev.movementX * 0.005;
-                //     let hor = head.rotation.x - ev.movementY * 0.005;
-                //     hor = clamp(hor, -1.6, 1.6);
-                //     this.syncDispatch(setPlayerAim(playerId, ver, hor));
-                // }
             }
         });
 
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
                 this.onMouseDown(ev);
-                // const playerId = this.playerId;
-                // const action = setPlayerInput(playerId, "shoot", true);
-                // this.syncDispatch(action);
             }
         });
 
         canvas.addEventListener("mouseup", ev => {
             if (document.pointerLockElement === canvas) {
                 this.onMouseUp(ev);
-                // const playerId = this.playerId;
-                // const action = setPlayerInput(playerId, "shoot", false);
-                // this.syncDispatch(action);
             }
         });
     }
 
     initKeyboardInput() {
-        const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
-        const keyBinds = {
-            [W]: "forward",
-            [A]: "left",
-            [S]: "back",
-            [D]: "right",
-            [R]: "reload",
-            [SPACE]: "jump"
-        };
-
         const kesy = new Map();
-
-        /**
-         * @param {KeyboardEvent} ev
-         */
-        const input = ev => {
-            const input = keyBinds[ev.keyCode];
-            const value = ev.type === "keydown";
-            if (kesy.get(input) !== value && input !== undefined) {
-                kesy.set(input, value);
-                if (value) {
-                    this.onKeyDown(ev);
-                } else {
-                    this.onKeyUp(ev);
-                }
+        const input = keyEvent => ev => {
+            if (kesy.get(ev.keyCode) !== ev.type) {
+                kesy.set(input, ev.type);
+                keyEvent.call(this, ev);
             }
         };
 
-        document.addEventListener("keydown", input);
-        document.addEventListener("keyup", input);
+        document.addEventListener("keydown", input(this.onKeyDown));
+        document.addEventListener("keyup", input(this.onKeyUp));
     }
 
     resize() {
