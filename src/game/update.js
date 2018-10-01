@@ -181,24 +181,22 @@ export function shootingSystem(entity, state, dispatch) {
                 }
             }
 
-            if (DEBUG) {
-                console.log("THE THING");
-                const p1 = new THREE.Vector3(...origin);
-                const p2 = new THREE.Vector3(...hitscan.point);
+            // Bullet trace
+            const p1 = new THREE.Vector3(...origin);
+            const p2 = new THREE.Vector3(...hitscan.point);
 
-                const material = new THREE.LineBasicMaterial({
-                    color: 0x0000ff
-                });
+            const material = new THREE.LineBasicMaterial({
+                color: 0x0000ff
+            });
 
-                const geometry = new THREE.Geometry();
-                geometry.vertices.push(p1, p2);
+            const geometry = new THREE.Geometry();
+            geometry.vertices.push(p1, p2);
 
-                const line = new THREE.Line(geometry, material);
-                state.scene.add(line);
-                setTimeout(() => {
-                    state.scene.remove(line);
-                }, 1500);
-            }
+            const line = new THREE.Line(geometry, material);
+            state.scene.add(line);
+            setTimeout(() => {
+                state.scene.remove(line);
+            }, 500);
         }
     }
 }
