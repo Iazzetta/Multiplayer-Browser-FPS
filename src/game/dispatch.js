@@ -15,8 +15,6 @@ import {
     SET_CAMERA_VIEW,
     SET_INPUT,
     SET_AIM,
-    RELOAD_START,
-    RELOAD_DONE,
     HIT_PLAYER,
     KILL_PLAYER,
 
