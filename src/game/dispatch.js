@@ -58,26 +58,6 @@ export function dispatch(state, action) {
                 }
             });
 
-            // Create lights ...
-            const dirLight = (color, int) => {
-                return new THREE.DirectionalLight(new THREE.Color(color), int);
-            };
-
-            var light = new THREE.AmbientLight(0x404040);
-            state.scene.add(light);
-
-            const keyLight = dirLight("#FFE4C4", 0.74);
-            keyLight.position.set(-100, 50, 100);
-            state.scene.add(keyLight);
-
-            const fillLight = dirLight("#A6D8ED", 0.25);
-            fillLight.position.set(100, 50, 100);
-            state.scene.add(fillLight);
-
-            const backLight = dirLight("#FFFFFF", 0.5);
-            backLight.position.set(100, 0, -100).normalize();
-            state.scene.add(backLight);
-
             return state;
         }
         case PLAYER_JOIN: {

@@ -41,6 +41,26 @@ export class State {
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
+
+        // Create lights ...
+        const dirLight = (color, int) => {
+            return new THREE.DirectionalLight(new THREE.Color(color), int);
+        };
+
+        var light = new THREE.AmbientLight(0x404040);
+        this.scene.add(light);
+
+        const keyLight = dirLight("#FFE4C4", 0.74);
+        keyLight.position.set(-100, 50, 100);
+        this.scene.add(keyLight);
+
+        const fillLight = dirLight("#A6D8ED", 0.25);
+        fillLight.position.set(100, 50, 100);
+        this.scene.add(fillLight);
+
+        const backLight = dirLight("#FFFFFF", 0.5);
+        backLight.position.set(100, 0, -100).normalize();
+        this.scene.add(backLight);
     }
 
     /**
