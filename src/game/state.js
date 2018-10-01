@@ -26,6 +26,11 @@ export class State {
         this.playerId = "player-1";
 
         /**
+         * @type {boolean}
+         */
+        this.connected = false;
+
+        /**
          * @type {THREE.Vector3[]}
          */
         this.playerSpawns = [];

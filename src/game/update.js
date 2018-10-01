@@ -145,7 +145,7 @@ export function shootingSystem(entity, state, dispatch) {
             dirMatrix.extractRotation(entity.head.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.extractPosition(entity.head.matrixWorld);
+            originMatrix.copyPosition(entity.head.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)

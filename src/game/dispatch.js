@@ -5,9 +5,12 @@ import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
+    SERVER_ACTION,
+    SERVER_CONNECTION,
     LOAD_LEVEL,
     PLAYER_JOIN,
     PLAYER_LEAVE,
+    SET_PLAYER_CAMERA,
     SYNC_PLAYER,
     SYNC_PLAYER_SCORE,
     SYNC_ALL_PLAYERS,
@@ -23,9 +26,7 @@ import {
     playerLeave,
     spawnPlayer,
     playerJoin,
-    setPlyerCamera,
-    SET_PLAYER_CAMERA,
-    SERVER_ACTION
+    setPlyerCamera
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -35,9 +36,14 @@ import { PlayerComponent } from "./components.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
+        case SERVER_CONNECTION: {
+            const { id } = action.data;
+            state.playerId = id;
+            state.connected = true;
+            return dispatch(state, setPlyerCamera(id));
+        }
         case SERVER_ACTION: {
-            const connected = false;
-            if (!connected) {
+            if (!state.connected) {
                 return dispatch(state, action.data);
             }
             return state;

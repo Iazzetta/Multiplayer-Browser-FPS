@@ -5,6 +5,7 @@ import times from "lodash/times";
 export const [
     LOAD_LEVEL,
     SERVER_ACTION,
+    SERVER_CONNECTION,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SET_PLAYER_CAMERA,
@@ -35,6 +36,13 @@ export class Action {
  */
 export function serverAction(action) {
     return new Action(SERVER_ACTION, action);
+}
+
+/**
+ * @param {string} id
+ */
+export function serverConnection(id) {
+    return new Action(SERVER_CONNECTION, { id });
 }
 
 /**
@@ -94,10 +102,6 @@ export function setPlayerMouse(id, ver, hor) {
 }
 
 //===================================================
-
-export function initGame() {
-    return new Action(INIT_GAME, {});
-}
 
 /**
  * @param {string} id

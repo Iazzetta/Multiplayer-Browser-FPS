@@ -9,7 +9,8 @@ import {
     playerJoin,
     setAspectRatio,
     setPlayerMouse,
-    setPlayerInput
+    setPlayerInput,
+    serverConnection
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -184,6 +185,9 @@ export class Game extends BaseGame {
 
         this.socket.on("connect", () => {
             console.log("Connected");
+
+            const id = this.socket.id
+            this.dispatch(serverConnection(id))
 
             const name = prompt("Pleas enter your name", "Player");
             this.socket.emit("join", { name });
