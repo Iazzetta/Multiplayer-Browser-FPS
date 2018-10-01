@@ -189,28 +189,6 @@ export function dispatch(state, action) {
             }
             return state;
         }
-        case RELOAD_START: {
-            const { id } = action.data;
-            const { weapon } = state.getEntityComponents(id);
-            if (weapon) {
-                weapon.reloadTimer = weapon.type.reloadSpeed;
-            }
-            return state;
-        }
-        case RELOAD_DONE: {
-            const { id } = action.data;
-            const { weapon } = state.getEntityComponents(id);
-            if (weapon) {
-                const delta = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
-                const reload = Math.min(delta, weapon.reservedAmmo);
-                if (reload > 0) {
-                    weapon.loadedAmmo += reload;
-                    weapon.reservedAmmo -= reload;
-                }
-                weapon.reloadTimer = 0;
-            }
-            return state;
-        }
         case INIT_GAME: {
             const { level = "level-1" } = action.data;
             state = new State(state.assets);

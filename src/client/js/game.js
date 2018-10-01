@@ -44,11 +44,6 @@ export class Game extends BaseGame {
         this.playerId = "player-1";
 
         /**
-         * @type {string}
-         */
-        this.playerName = "";
-
-        /**
          * @type {number}
          */
         this.bloodScreen = 0;
@@ -136,7 +131,7 @@ export class Game extends BaseGame {
 
         const playerData = new PlayerComponent({
             id: this.playerId,
-            name: this.playerName
+            name: this.playerId
         });
         game.dispatch(initGame());
         game.dispatch(playerJoin(playerData));
@@ -215,9 +210,9 @@ export class Game extends BaseGame {
         this.socket.on("connect", () => {
             console.log("Connected");
 
+            const name = prompt("Pleas enter your name", "Player");
+            this.socket.emit("join", { name });
             this.playerId = this.socket.id;
-            this.playerName = prompt("Please enter your name", "Player");
-            this.socket.emit("join", { name: this.playerName });
 
             this.socket.on("dispatch", action => {
                 this.dispatch(action);
