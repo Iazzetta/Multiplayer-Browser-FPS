@@ -3,7 +3,7 @@ import { PlayerComponent } from "./components";
 import times from "lodash/times";
 
 export const [
-    INIT_GAME,
+    LOAD_LEVEL,
     SERVER_ACTION,
     PLAYER_JOIN,
     PLAYER_LEAVE,
@@ -30,6 +30,29 @@ export class Action {
 }
 
 /**
+ * @param {object} level
+ */
+export function loadLevel(level) {
+    return new Action(LOAD_LEVEL, { level });
+}
+
+/**
+ * @param {string} id
+ * @param {string} name
+ */
+export function playerJoin(id, name) {
+    return new Action(PLAYER_JOIN, { id, name });
+}
+
+/**
+ * @param {number} width
+ * @param {number} height
+ */
+export function setAspectRatio(width, height) {
+    return new Action(SET_CAMERA_VIEW, { width, height });
+}
+
+/**
  * @param {Action} action
  */
 export function serverAction(action) {
@@ -38,13 +61,6 @@ export function serverAction(action) {
 
 export function initGame() {
     return new Action(INIT_GAME, {});
-}
-
-/**
- * @param {PlayerComponent} player
- */
-export function playerJoin(player) {
-    return new Action(PLAYER_JOIN, { player });
 }
 
 /**
@@ -107,14 +123,6 @@ export function syncAllPlayers(state) {
         .map(player => player.player)
         .filter(player => player);
     return new Action(SYNC_ALL_PLAYERS, { players });
-}
-
-/**
- * @param {number} width
- * @param {number} height
- */
-export function setCameraView(width, height) {
-    return new Action(SET_CAMERA_VIEW, { width, height });
 }
 
 /**

@@ -4,24 +4,14 @@ import Stats from "stats.js";
 import { PORT } from "../../game/consts.js";
 import { Game as BaseGame } from "../../game/game.js";
 import {
-    initGame,
-    setCameraView,
-    setPlayerInput,
-    setPlayerAim,
     Action,
-    syncPlayer,
-    SYNC_ALL_PLAYERS,
-    SERVER_ACTION,
+    loadLevel,
     playerJoin,
-    SPAWN_PLAYER,
-    HIT_PLAYER,
-    PLAYER_JOIN,
-    KILL_PLAYER
+    setAspectRatio
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
 import clamp from "lodash/clamp";
-import { PlayerComponent } from "../../game/components.js";
 
 export class Game extends BaseGame {
     constructor() {
@@ -72,40 +62,6 @@ export class Game extends BaseGame {
          */
         this.ctx = null;
 
-        this.subscriptions.push(action => {
-            switch (action.type) {
-                case SERVER_ACTION: {
-                    if (!this.socket.connected) {
-                        this.dispatch(action.data);
-                    }
-                    break;
-                }
-                case SYNC_ALL_PLAYERS: {
-                    this.syncPlayerImmediately();
-                    break;
-                }
-                case KILL_PLAYER: {
-                    if (this.playerId === action.data.id) {
-                        this.mountPlayerCamera();
-                    }
-                    break;
-                }
-                case PLAYER_JOIN:
-                case SPAWN_PLAYER: {
-                    if (this.playerId === action.data.player.id) {
-                        this.mountPlayerCamera();
-                    }
-                    break;
-                }
-                case HIT_PLAYER: {
-                    if (this.playerId === action.data.id) {
-                        this.bloodScreen = 500;
-                    }
-                    break;
-                }
-            }
-        });
-
         this.syncPlayerImmediately = debounce(() => {
             const playerId = this.playerId;
             this.socket.emit("dispatch", syncPlayer(playerId, this.state));
@@ -116,16 +72,18 @@ export class Game extends BaseGame {
     run() {
         const game = this;
 
+        game.subscriptions.push(action => {
+            switch (action.type) {
+            }
+        });
+
         game.initRenderer();
         game.initMouseInput();
         game.initKeyboardInput();
 
-        const playerData = new PlayerComponent({
-            id: this.playerId,
-            name: this.playerId
-        });
-        game.dispatch(initGame());
-        game.dispatch(playerJoin(playerData));
+        const level = game.state.assets.level("level-1");
+        game.dispatch(loadLevel(level));
+        game.dispatch(playerJoin("player-1", "Player 1"));
         game.initSocket();
 
         game.running = true;
@@ -140,37 +98,29 @@ export class Game extends BaseGame {
         });
     }
 
+    myComponents() {
+        return this.state.getEntityComponents(this.playerId);
+    }
+
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onKeyDown(ev) {}
+
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onKeyUp(ev) {}
+
+    onMouseMove() {}
+
+    onMouseDown() {}
+
+    onMouseUp() {}
+
     destroy() {
         this.running = false;
         this.container.innerHTML = "";
-    }
-
-    mountPlayerCamera() {
-        const playerId = this.playerId;
-        const player = this.state.getEntity(playerId);
-        if (player !== undefined) {
-            player.object3D.children.forEach(child => {
-                child.visible = false;
-            });
-
-            player.head.add(this.state.camera);
-            player.head.visible = true;
-            player.head.children.forEach(child => {
-                child.visible = false;
-            });
-
-            const weapon = this.state.assets.mesh("player_weapon");
-            weapon.scale.multiplyScalar(0.5);
-            weapon.position.x = 0.25;
-            weapon.position.y = -0.25;
-            weapon.position.z = -0.1;
-            player.head.add(weapon);
-        }
-        this.resize();
-    }
-
-    myComponents() {
-        return this.state.getEntityComponents(this.playerId);
     }
 
     /**
@@ -289,18 +239,49 @@ export class Game extends BaseGame {
         };
 
         const kesy = new Map();
-        const input = (keyCode, value) => {
-            const input = keyBinds[keyCode];
+
+        /**
+         * @param {KeyboardEvent} ev
+         */
+        const input = ev => {
+            const input = keyBinds[ev.keyCode];
+            const value = ev.type === "keydown";
             if (kesy.get(input) !== value && input !== undefined) {
                 kesy.set(input, value);
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, input, value);
-                this.syncDispatch(action);
+                if (value) {
+                    this.onKeyDown(ev);
+                } else {
+                    this.onKeyUp(ev);
+                }
             }
         };
 
-        document.addEventListener("keydown", ev => input(ev.keyCode, true));
-        document.addEventListener("keyup", ev => input(ev.keyCode, false));
+        document.addEventListener("keydown", input);
+        document.addEventListener("keyup", input);
+    }
+
+    mountPlayerCamera() {
+        const playerId = this.playerId;
+        const player = this.state.getEntity(playerId);
+        if (player !== undefined) {
+            player.object3D.children.forEach(child => {
+                child.visible = false;
+            });
+
+            player.head.add(this.state.camera);
+            player.head.visible = true;
+            player.head.children.forEach(child => {
+                child.visible = false;
+            });
+
+            const weapon = this.state.assets.mesh("player_weapon");
+            weapon.scale.multiplyScalar(0.5);
+            weapon.position.x = 0.25;
+            weapon.position.y = -0.25;
+            weapon.position.z = -0.1;
+            player.head.add(weapon);
+        }
+        this.resize();
     }
 
     resize() {
@@ -315,7 +296,7 @@ export class Game extends BaseGame {
         Object.assign(this.ctx.canvas, { width, height });
         this.ctx.imageSmoothingEnabled = false;
         this.renderer.setSize(width, height);
-        this.dispatch(setCameraView(width, height));
+        this.dispatch(setAspectRatio(width, height));
     }
 
     update() {

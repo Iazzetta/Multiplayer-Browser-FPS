@@ -5,7 +5,7 @@ import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
-    INIT_GAME,
+    LOAD_LEVEL,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SYNC_PLAYER,
@@ -32,9 +32,58 @@ import { PlayerComponent } from "./components.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
+        case LOAD_LEVEL: {
+            const { level } = action.data;
+
+            state = new State(state.assets);
+            state.time.start = Date.now();
+            state.playerSpawns = [];
+
+            level.forEach(obj => {
+                const position = new THREE.Vector3();
+                position.copy(obj.position);
+
+                const size = new THREE.Vector3();
+                size.copy(obj.size);
+
+                switch (obj.type) {
+                    case "player":
+                        state.playerSpawns.push(position.clone());
+                        break;
+                    case "wall":
+                        const wall = new WallEntity(obj.id, state.assets, size);
+                        wall.object3D.position.copy(position);
+                        state.addEntity(wall);
+                        break;
+                }
+            });
+
+            // Create lights ...
+            const dirLight = (color, int) => {
+                return new THREE.DirectionalLight(new THREE.Color(color), int);
+            };
+
+            var light = new THREE.AmbientLight(0x404040);
+            state.scene.add(light);
+
+            const keyLight = dirLight("#FFE4C4", 0.74);
+            keyLight.position.set(-100, 50, 100);
+            state.scene.add(keyLight);
+
+            const fillLight = dirLight("#A6D8ED", 0.25);
+            fillLight.position.set(100, 50, 100);
+            state.scene.add(fillLight);
+
+            const backLight = dirLight("#FFFFFF", 0.5);
+            backLight.position.set(100, 0, -100).normalize();
+            state.scene.add(backLight);
+
+            return state;
+        }
         case PLAYER_JOIN: {
-            const { player } = action.data;
-            const playerGhost = new PlayerGhostEntity(player);
+            const { id, name } = action.data;
+            const playerComp = new PlayerComponent({ id, name });
+            const playerGhost = new PlayerGhostEntity(playerComp);
             playerGhost.object3D.position.copy(sample(state.playerSpawns));
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
@@ -187,54 +236,6 @@ export function dispatch(state, action) {
                 object3D.rotation.y = ver;
                 head.rotation.x = hor;
             }
-            return state;
-        }
-        case INIT_GAME: {
-            const { level = "level-1" } = action.data;
-            state = new State(state.assets);
-            state.time.start = Date.now();
-            state.playerSpawns = [];
-
-            const levelObjects = state.assets.level(level);
-            levelObjects.forEach(obj => {
-                const position = new THREE.Vector3();
-                position.copy(obj.position);
-
-                const size = new THREE.Vector3();
-                size.copy(obj.size);
-
-                switch (obj.type) {
-                    case "player":
-                        state.playerSpawns.push(position.clone());
-                        break;
-                    case "wall":
-                        const wall = new WallEntity(obj.id, state.assets, size);
-                        wall.object3D.position.copy(position);
-                        state.addEntity(wall);
-                        break;
-                }
-            });
-
-            // Create lights ...
-            const dirLight = (color, int) => {
-                return new THREE.DirectionalLight(new THREE.Color(color), int);
-            };
-
-            var light = new THREE.AmbientLight(0x404040);
-            state.scene.add(light);
-
-            const keyLight = dirLight("#FFE4C4", 0.74);
-            keyLight.position.set(-100, 50, 100);
-            state.scene.add(keyLight);
-
-            const fillLight = dirLight("#A6D8ED", 0.25);
-            fillLight.position.set(100, 50, 100);
-            state.scene.add(fillLight);
-
-            const backLight = dirLight("#FFFFFF", 0.5);
-            backLight.position.set(100, 0, -100).normalize();
-            state.scene.add(backLight);
-
             return state;
         }
         default:
