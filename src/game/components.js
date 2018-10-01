@@ -4,30 +4,25 @@ import { AABB, createDebugMesh } from "./utils";
 
 export class PlayerComponent {
     /**
-     * @param {object} data
-     * @param {string} data.id
-     * @param {string} data.name
-     * @param {number=} data.kills
-     * @param {number=} data.deaths
-     * @param {number=} data.respawnTimer
+     * @param {object} client
+     * @param {string} client.id
+     * @param {string} client.name
      */
-    constructor(data) {
-        this.id = data.id;
-        this.name = data.name;
-        this.kills = data.kills || 0;
-        this.deaths = data.deaths || 0;
-        this.respawnTimer = data.respawnTimer || 0;
-    }
-}
+    constructor(client) {
+        this.id = client.id;
+        this.name = client.name;
+        this.kills = 0;
+        this.deaths = 0;
 
-export class ControllerComponent {
-    constructor() {
         /**
-         * @type {"idle"|"running"|"shooting"|"reloading"}
+         * @type {"idle"|"running"|"shooting"|"reloading"|"dead"}
          */
-        this.state = "idle";
-        this.speed = 0.02;
+        this.state = "dead";
+        this.respawnTimer = 0;
+
         this.input = {
+            mouseX: 0,
+            mouseY: 0,
             forward: false,
             left: false,
             back: false,

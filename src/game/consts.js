@@ -14,6 +14,8 @@ export const GRAVITY = (2 * JUMP_HEIGHT) / Math.pow(JUMP_TIME * 0.5, 2);
 
 export const JUMP_SPEED = GRAVITY * JUMP_TIME * 0.5;
 
+export const RUN_SPEED = 0.02;
+
 export const ASSETS_PATH = "/assets/";
 
 export class WEAPON_TYPE {

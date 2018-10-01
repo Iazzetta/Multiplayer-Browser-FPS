@@ -10,7 +10,7 @@ import {
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED, DEBUG } from "./consts";
+import { GRAVITY, JUMP_SPEED, RUN_SPEED, DEBUG } from "./consts";
 import sample from "lodash/sample";
 import intersection from "ray-aabb-intersection";
 
@@ -25,7 +25,7 @@ export function update(state, dispatch) {
     state.forEachEntity(entity => {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
-        controllerSystem(entity, state, dispatch);
+        playerControllerSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
@@ -79,14 +79,14 @@ export function gravitySystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function controllerSystem(entity, state, dispatch) {
-    const { controller, velocity, object3D } = entity;
+export function playerControllerSystem(entity, state, dispatch) {
+    const { player, velocity, object3D } = entity;
 
-    if (controller && velocity && object3D) {
-        const input = controller.input;
+    if (player && velocity && object3D) {
+        const input = player.input;
 
         // Reset state
-        controller.state = "idle";
+        player.state = "idle";
 
         // vetical movement - jumping
         if (input.jump) {
@@ -109,11 +109,11 @@ export function controllerSystem(entity, state, dispatch) {
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
 
-            controller.state = "running";
+            player.state = "running";
         }
 
-        velocity.z *= controller.speed;
-        velocity.x *= controller.speed;
+        velocity.z *= RUN_SPEED;
+        velocity.x *= RUN_SPEED;
     }
 }
 
@@ -123,15 +123,15 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, controller } = entity;
-    if (weapon && controller) {
+    const { weapon, player } = entity;
+    if (weapon && player) {
         if (weapon.firerateTimer > 0) {
-            controller.state = "shooting";
+            player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
         }
 
         if (
-            controller.input.shoot &&
+            player.input.shoot &&
             weapon.firerateTimer <= 0 &&
             weapon.reloadTimer === 0 &&
             weapon.loadedAmmo > 0
@@ -207,20 +207,20 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, controller } = entity;
-    if (weapon && controller) {
+    const { weapon, player } = entity;
+    if (weapon && player) {
         const canReload =
             weapon.reloadTimer === 0 &&
             weapon.reservedAmmo > 0 &&
             weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
 
-        if (canReload && (controller.input.reload || weapon.loadedAmmo === 0)) {
+        if (canReload && (player.input.reload || weapon.loadedAmmo === 0)) {
             weapon.reloadTimer = weapon.type.reloadSpeed;
         }
 
         const isRelaoding = weapon.reloadTimer > 0;
         if (isRelaoding) {
-            controller.state = "reloading";
+            player.state = "reloading";
             weapon.reloadTimer -= state.time.delta;
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;

@@ -172,10 +172,10 @@ export function dispatch(state, action) {
         }
         case SET_INPUT: {
             const { id, input, value } = action.data;
-            const { controller } = state.getEntityComponents(id);
-            if (controller !== undefined) {
-                if (controller.input[input] !== undefined) {
-                    controller.input[input] = value;
+            const { player } = state.getEntityComponents(id);
+            if (player !== undefined) {
+                if (player.input[input] !== undefined) {
+                    player.input[input] = value;
                 }
             }
             return state;

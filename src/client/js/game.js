@@ -322,10 +322,10 @@ export class Game extends BaseGame {
         super.update();
 
         // POV - Animations
-        const { controller, weapon, head } = this.myComponents();
+        const { player, weapon, head } = this.myComponents();
 
         if (
-            controller !== undefined &&
+            player !== undefined &&
             weapon !== undefined &&
             head !== undefined
         ) {
@@ -335,7 +335,7 @@ export class Game extends BaseGame {
             gunMesh.position.z = -0.1;
             gunMesh.rotation.set(0, 0, 0);
 
-            switch (controller.state) {
+            switch (player.state) {
                 case "shooting": {
                     const s = weapon.firerateTimer;
                     gunMesh.position.z += 0.0005 * s;
