@@ -74,14 +74,6 @@ export class Game extends BaseGame {
 
         this.subscriptions.push(action => {
             switch (action.type) {
-                case CLIENT_ACTION: {
-                    const { id } = action.data;
-                    if (id === this.playerId) {
-                        const clientAction = action.data.action;
-                        this.dispatch(clientAction);
-                        this.socket.emit("dispatch", clientAction);
-                    }
-                }
                 case SERVER_ACTION: {
                     if (!this.socket.connected) {
                         this.dispatch(action.data);
