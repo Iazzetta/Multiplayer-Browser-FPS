@@ -146,12 +146,20 @@ export class Game extends BaseGame {
     /**
      * @param {MouseEvent} ev
      */
-    onMouseDown(ev) {}
+    onMouseDown(ev) {
+        const id = this.playerId;
+        const input = "shoot";
+        this.dispatch(setPlayerInput(id, input, true));
+    }
 
     /**
      * @param {MouseEvent} ev
      */
-    onMouseUp(ev) {}
+    onMouseUp(ev) {
+        const id = this.playerId;
+        const input = "shoot";
+        this.dispatch(setPlayerInput(id, input, false));
+    }
 
     destroy() {
         this.running = false;
