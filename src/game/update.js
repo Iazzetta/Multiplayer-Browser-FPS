@@ -139,8 +139,15 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = weapon.type.firerate;
 
+            // Hitscan
+            const dirMatrix = new THREE.Matrix4();
+            dirMatrix.extractRotation(entity.head.matrixWorld);
+
             const origin = entity.object3D.position.toArray();
-            const dir = entity.head.getFacingDirection().toArray();
+            const dir = new THREE.Vector3(0, 0, -1)
+                .applyMatrix4(dirMatrix)
+                .toArray();
+
             const hitscan = {
                 point: new Float32Array(3),
                 entity: null,

@@ -133,11 +133,4 @@ export class HeadComponent extends THREE.Object3D {
             this.add(createDebugMesh());
         }
     }
-
-    getFacingDirection() {
-        const direction = new THREE.Vector3(0, 0, -1);
-        const matrix = new THREE.Matrix4();
-        matrix.extractRotation(this.matrixWorld);
-        return direction.applyMatrix4(matrix);
-    }
 }
