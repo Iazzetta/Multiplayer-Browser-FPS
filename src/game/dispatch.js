@@ -14,7 +14,7 @@ import {
     SPAWN_PLAYER,
     SET_CAMERA_VIEW,
     SET_INPUT,
-    SET_AIM,
+    SET_PLAYER_MOUSE,
     HIT_PLAYER,
     KILL_PLAYER,
 
@@ -38,7 +38,7 @@ export function dispatch(state, action) {
         case SERVER_ACTION: {
             const connected = false;
             if (!connected) {
-                return dispatch(state,action.data);
+                return dispatch(state, action.data);
             }
             return state;
         }
@@ -123,6 +123,16 @@ export function dispatch(state, action) {
             }
             return state;
         }
+        case SET_PLAYER_MOUSE: {
+            const { id, ver, hor } = action.data;
+            const { object3D, head } = state.getEntityComponents(id);
+            if (object3D && head) {
+                object3D.rotation.y += ver;
+                head.rotation.x += hor;
+            }
+            return state;
+        }
+        // =======================================
 
         case SYNC_PLAYER_SCORE: {
             const { id, kills, deaths } = action.data;
@@ -242,15 +252,7 @@ export function dispatch(state, action) {
             }
             return state;
         }
-        case SET_AIM: {
-            const { id, ver, hor } = action.data;
-            const { object3D, head } = state.getEntityComponents(id);
-            if (object3D && head) {
-                object3D.rotation.y = ver;
-                head.rotation.x = hor;
-            }
-            return state;
-        }
+
         default:
             return state;
     }

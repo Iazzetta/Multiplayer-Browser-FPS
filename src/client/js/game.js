@@ -7,7 +7,8 @@ import {
     Action,
     loadLevel,
     playerJoin,
-    setAspectRatio
+    setAspectRatio,
+    setPlayerMouse
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -114,7 +115,13 @@ export class Game extends BaseGame {
     /**
      * @param {MouseEvent} ev
      */
-    onMouseMove(ev) {}
+    onMouseMove(ev) {
+        const id = this.playerId;
+        const speed = 0.005;
+        const ver = -ev.movementX * speed;
+        const hor = -ev.movementY * speed;
+        this.dispatch(setPlayerMouse(id, ver, hor));
+    }
 
     /**
      * @param {MouseEvent} ev

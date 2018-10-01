@@ -14,7 +14,7 @@ export const [
     SPAWN_PLAYER,
     SET_CAMERA_VIEW,
     SET_INPUT,
-    SET_AIM,
+    SET_PLAYER_MOUSE,
     HIT_PLAYER,
     KILL_PLAYER
 ] = times(100);
@@ -75,6 +75,26 @@ export function setAspectRatio(width, height) {
     return new Action(SET_CAMERA_VIEW, { width, height });
 }
 
+/**
+ * @param {string} id
+ * @param {string} input
+ * @param {boolean} value
+ */
+export function setPlayerInput(id, input, value) {
+    return new Action(SET_INPUT, { id, input, value });
+}
+
+/**
+ * @param {string} id
+ * @param {number} ver
+ * @param {number} hor
+ */
+export function setPlayerMouse(id, ver, hor) {
+    return new Action(SET_PLAYER_MOUSE, { id, ver, hor });
+}
+
+//===================================================
+
 export function initGame() {
     return new Action(INIT_GAME, {});
 }
@@ -131,24 +151,6 @@ export function syncAllPlayers(state) {
         .map(player => player.player)
         .filter(player => player);
     return new Action(SYNC_ALL_PLAYERS, { players });
-}
-
-/**
- * @param {string} id
- * @param {string} input
- * @param {boolean} value
- */
-export function setPlayerInput(id, input, value) {
-    return new Action(SET_INPUT, { id, input, value });
-}
-
-/**
- * @param {string} id
- * @param {number} ver
- * @param {number} hor
- */
-export function setPlayerAim(id, ver, hor) {
-    return new Action(SET_AIM, { id, ver, hor });
 }
 
 /**
