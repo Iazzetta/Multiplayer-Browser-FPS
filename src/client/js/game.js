@@ -12,7 +12,6 @@ import {
     syncPlayer,
     SYNC_ALL_PLAYERS,
     SERVER_ACTION,
-    CLIENT_ACTION,
     playerJoin,
     SPAWN_PLAYER,
     HIT_PLAYER,
