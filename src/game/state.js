@@ -4,26 +4,25 @@ import { Assets } from "./assets.js";
 
 export class State {
     /**
-     *
-     * @param {Assets} assets
+     * @param {State=} prev
      */
-    constructor(assets) {
-        this.time = { start: 0, elapsed: 0, delta: 0 };
+    constructor(prev) {
+        this.time = { start: Date.now(), elapsed: 0, delta: 0 };
+
+        /**
+         * @type {string}
+         */
+        this.playerId = prev ? prev.playerId : "player-1";
 
         /**
          * @type {Assets}
          */
-        this.assets = assets;
+        this.assets = prev ? prev.assets : new Assets();
 
         /**
          * @type {THREE.Scene}
          */
         this.scene = new THREE.Scene();
-
-        /**
-         * @type {string}
-         */
-        this.playerId = "player-1";
 
         /**
          * @type {boolean}

@@ -116,7 +116,7 @@ export function syncGameState(state) {
         id: player.id,
         player: player.player,
         health: player.health,
-        object3d: pick(player.object3D, ["position", "rotation"])
+        object3D: pick(player.object3D, ["position", "rotation"])
     }));
     return new Action(SYNC_GAME_STATE, { players });
 }

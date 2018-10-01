@@ -4,6 +4,7 @@ import { Game } from "../game/game";
 import { PORT } from "../game/consts";
 import {
     SERVER_ACTION,
+    Action,
     playerJoin,
     playerLeave,
     syncGameState,
@@ -31,15 +32,25 @@ app.use("/", express.static(__dirname + "/../../dist"));
     const level = require("../../dist/assets/levels/level.json");
     game.dispatch(loadLevel(level));
 
-    const dispatch = action => {
+    /**
+     *
+     * @param {Action} action
+     * @param {SocketIO.Socket=} socket
+     */
+    function dispatch(action, socket) {
         game.dispatch(action);
-        io.sockets.emit("dispatch", action);
-    };
+        if (socket === undefined) {
+            io.sockets.emit("dispatch", action);
+        } else {
+            socket.broadcast.emit("dispatch", action);
+        }
+    }
 
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
 
         socket.on("join", ({ name }) => {
+            socket.emit("dispatch", loadLevel(level));
             dispatch(playerJoin(socket.id, name));
             dispatch(syncGameState(game.state));
             console.log(name + " joined");
@@ -51,7 +62,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
         });
 
         socket.on("dispatch", action => {
-            dispatch(action);
+            dispatch(action, socket);
         });
     });
 

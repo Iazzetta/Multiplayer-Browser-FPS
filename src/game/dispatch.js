@@ -55,10 +55,7 @@ export function dispatch(state, action) {
         }
         case LOAD_LEVEL: {
             const { level } = action.data;
-
-            state = new State(state.assets);
-            state.time.start = Date.now();
-            state.playerSpawns = [];
+            state = new State(state);
 
             level.forEach(obj => {
                 const position = new THREE.Vector3();

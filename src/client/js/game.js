@@ -111,6 +111,13 @@ export class Game extends BaseGame {
         });
     }
 
+    syncDispatch(action) {
+        this.dispatch(action);
+        if (this.socket && this.socket.connected) {
+            this.socket.emit("dispatch", action);
+        }
+    }
+
     /**
      * @param {KeyboardEvent} ev
      */
@@ -118,7 +125,7 @@ export class Game extends BaseGame {
         const id = this.playerId;
         const input = KEY_BINDS[ev.keyCode];
         if (input !== undefined) {
-            this.dispatch(setPlayerInput(id, input, true));
+            this.syncDispatch(setPlayerInput(id, input, true));
         }
     }
 
@@ -129,7 +136,7 @@ export class Game extends BaseGame {
         const id = this.playerId;
         const input = KEY_BINDS[ev.keyCode];
         if (input !== undefined) {
-            this.dispatch(setPlayerInput(id, input, false));
+            this.syncDispatch(setPlayerInput(id, input, false));
         }
     }
 
@@ -141,7 +148,7 @@ export class Game extends BaseGame {
         const speed = 0.005;
         const ver = -ev.movementX * speed;
         const hor = -ev.movementY * speed;
-        this.dispatch(setPlayerMouse(id, ver, hor));
+        this.syncDispatch(setPlayerMouse(id, ver, hor));
     }
 
     /**
@@ -150,7 +157,7 @@ export class Game extends BaseGame {
     onMouseDown(ev) {
         const id = this.playerId;
         const input = "shoot";
-        this.dispatch(setPlayerInput(id, input, true));
+        this.syncDispatch(setPlayerInput(id, input, true));
     }
 
     /**
@@ -159,7 +166,7 @@ export class Game extends BaseGame {
     onMouseUp(ev) {
         const id = this.playerId;
         const input = "shoot";
-        this.dispatch(setPlayerInput(id, input, false));
+        this.syncDispatch(setPlayerInput(id, input, false));
     }
 
     destroy() {
@@ -186,8 +193,8 @@ export class Game extends BaseGame {
         this.socket.on("connect", () => {
             console.log("Connected");
 
-            const id = this.socket.id
-            this.dispatch(serverConnection(id))
+            const id = this.socket.id;
+            this.dispatch(serverConnection(id));
 
             const name = prompt("Pleas enter your name", "Player");
             this.socket.emit("join", { name });
