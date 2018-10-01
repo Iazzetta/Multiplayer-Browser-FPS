@@ -26,14 +26,16 @@ export class State {
         this.playerSpawns = [];
 
         /**
+         * @private
          * @type {Map<string,Entity>}
          */
-        this.entities = new Map();
+        this._entities = new Map();
 
         /**
+         * @private
          * @type {Map<string,Entity[]>}
          */
-        this.entityGroups = new Map();
+        this._entityGroups = new Map();
 
         /**
          * @type {THREE.PerspectiveCamera}
@@ -45,7 +47,7 @@ export class State {
      * @param {Entity} entity
      */
     addEntity(entity) {
-        if (this.entities.has(entity.id)) {
+        if (this._entities.has(entity.id)) {
             this.deleteEntity(entity.id);
         }
         if (entity.object3D) {
@@ -56,7 +58,7 @@ export class State {
             const flaggedEntities = this.getEntityGroup(flag);
             flaggedEntities.push(entity);
         }
-        this.entities.set(entity.id, entity);
+        this._entities.set(entity.id, entity);
     }
 
     /**
@@ -64,7 +66,7 @@ export class State {
      * @returns {Entity}
      */
     getEntity(id) {
-        return this.entities.get(id);
+        return this._entities.get(id);
     }
 
     /**
@@ -74,17 +76,17 @@ export class State {
      * @returns {Entity}
      */
     getEntityComponents(id) {
-        return this.entities.get(id) || Entity.empty;
+        return this._entities.get(id) || Entity.empty;
     }
 
     /**
      * @param {string} flag
      */
     getEntityGroup(flag) {
-        if (!this.entityGroups.has(flag)) {
-            this.entityGroups.set(flag, []);
+        if (!this._entityGroups.has(flag)) {
+            this._entityGroups.set(flag, []);
         }
-        return this.entityGroups.get(flag);
+        return this._entityGroups.get(flag);
     }
 
     /**
@@ -102,7 +104,14 @@ export class State {
                 const index = flaggedEntities.indexOf(entity);
                 flaggedEntities.splice(index, 1);
             }
-            this.entities.delete(id);
+            this._entities.delete(id);
         }
+    }
+
+    /**
+     * @param {(entity:Entity) => any} f
+     */
+    forEachEntity(f) {
+        this._entities.forEach(f);
     }
 }

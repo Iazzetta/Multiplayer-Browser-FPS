@@ -22,7 +22,7 @@ export function update(state, dispatch) {
     updateTime(state);
 
     // Systems
-    state.entities.forEach(entity => {
+    state.forEachEntity(entity => {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
         controllerSystem(entity, state, dispatch);
@@ -147,7 +147,7 @@ export function shootingSystem(entity, state, dispatch) {
                 dist: Infinity
             };
 
-            state.entities.forEach(target => {
+            state.forEachEntity(target => {
                 if (target.id === entity.id) return;
                 if (!target.object3D) return;
                 const aabb = target.object3D.toAABB().toArray();
