@@ -21,8 +21,8 @@ import {
     SYNC_PLAYER,
     SYNC_PLAYER_SCORE,
     SPAWN_PLAYER,
-    SET_CAMERA_VIEW,
-    SET_INPUT,
+    SET_ASPECT_RATIO,
+    SET_PLAYER_INPUT,
     HIT_PLAYER,
     KILL_PLAYER,
 
@@ -145,6 +145,16 @@ export function dispatch(state, action) {
             }
             return state;
         }
+        case SET_PLAYER_INPUT: {
+            const { id, input, value } = action.data;
+            const { player } = state.getEntityComponents(id);
+            if (player !== undefined) {
+                if (player.input[input] !== undefined) {
+                    player.input[input] = value;
+                }
+            }
+            return state;
+        }
         case SYNC_GAME_STATE: {
             /**
              * @type {Entity[]}
@@ -198,26 +208,10 @@ export function dispatch(state, action) {
             }
             return state;
         }
-
-        // =======================================
-
-        case SYNC_PLAYER: {
-            const { id, x, y, z, vx, vy, vz, rx, ry } = action.data;
-            const player = state.getEntity(id);
-            if (player !== undefined) {
-                if (player.head !== undefined) {
-                    player.head.rotation.x = rx;
-                }
-
-                if (player.object3D !== undefined) {
-                    player.object3D.position.set(x, y, z);
-                    player.object3D.rotation.y = ry;
-                }
-
-                if (player.velocity !== undefined) {
-                    player.velocity.set(vx, vy, vz);
-                }
-            }
+        case SET_ASPECT_RATIO: {
+            const { width, height } = action.data;
+            state.camera.aspect = width / height;
+            state.camera.updateProjectionMatrix();
             return state;
         }
         case HIT_PLAYER: {
@@ -249,23 +243,28 @@ export function dispatch(state, action) {
             }
             return state;
         }
-        case SET_CAMERA_VIEW: {
-            const { width, height } = action.data;
-            state.camera.aspect = width / height;
-            state.camera.updateProjectionMatrix();
-            return state;
-        }
-        case SET_INPUT: {
-            const { id, input, value } = action.data;
-            const { player } = state.getEntityComponents(id);
+
+        // =======================================
+
+        case SYNC_PLAYER: {
+            const { id, x, y, z, vx, vy, vz, rx, ry } = action.data;
+            const player = state.getEntity(id);
             if (player !== undefined) {
-                if (player.input[input] !== undefined) {
-                    player.input[input] = value;
+                if (player.head !== undefined) {
+                    player.head.rotation.x = rx;
+                }
+
+                if (player.object3D !== undefined) {
+                    player.object3D.position.set(x, y, z);
+                    player.object3D.rotation.y = ry;
+                }
+
+                if (player.velocity !== undefined) {
+                    player.velocity.set(vx, vy, vz);
                 }
             }
             return state;
         }
-
         default:
             return state;
     }

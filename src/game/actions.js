@@ -13,8 +13,8 @@ export const [
     SYNC_PLAYER_SCORE,
     SYNC_GAME_STATE,
     SPAWN_PLAYER,
-    SET_CAMERA_VIEW,
-    SET_INPUT,
+    SET_ASPECT_RATIO,
+    SET_PLAYER_INPUT,
     SET_PLAYER_MOUSE,
     HIT_PLAYER,
     KILL_PLAYER
@@ -87,7 +87,7 @@ export function setPlyerCamera(id) {
  * @param {number} height
  */
 export function setAspectRatio(width, height) {
-    return new Action(SET_CAMERA_VIEW, { width, height });
+    return new Action(SET_ASPECT_RATIO, { width, height });
 }
 
 /**
@@ -96,7 +96,7 @@ export function setAspectRatio(width, height) {
  * @param {boolean} value
  */
 export function setPlayerInput(id, input, value) {
-    return new Action(SET_INPUT, { id, input, value });
+    return new Action(SET_PLAYER_INPUT, { id, input, value });
 }
 
 /**
@@ -130,6 +130,22 @@ export function syncPlayerScore(id, kills, deaths) {
     return new Action(SYNC_PLAYER_SCORE, { id, kills, deaths });
 }
 
+/**
+ * @param {string} id
+ * @param {number} hp
+ */
+export function hitPlayer(id, hp) {
+    return new Action(HIT_PLAYER, { id, hp });
+}
+
+/**
+ * @param {string} id
+ */
+export function killPlayer(id) {
+    return new Action(KILL_PLAYER, { id });
+}
+
+
 //===================================================
 
 /**
@@ -159,17 +175,3 @@ export function syncPlayer(id, state) {
     });
 }
 
-/**
- * @param {string} id
- * @param {number} hp
- */
-export function hitPlayer(id, hp) {
-    return new Action(HIT_PLAYER, { id, hp });
-}
-
-/**
- * @param {string} id
- */
-export function killPlayer(id) {
-    return new Action(KILL_PLAYER, { id });
-}
