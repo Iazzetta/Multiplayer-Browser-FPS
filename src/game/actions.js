@@ -8,7 +8,6 @@ export const [
     SERVER_CONNECTION,
     PLAYER_JOIN,
     PLAYER_LEAVE,
-    SET_PLAYER_CAMERA,
     SYNC_PLAYER,
     SYNC_PLAYER_SCORE,
     SYNC_GAME_STATE,
@@ -76,13 +75,6 @@ export function spawnPlayer(id, spawn) {
 }
 
 /**
- * @param {string} id
- */
-export function setPlyerCamera(id) {
-    return new Action(SET_PLAYER_CAMERA, { id });
-}
-
-/**
  * @param {number} width
  * @param {number} height
  */
@@ -138,14 +130,23 @@ export function killPlayer(id) {
  */
 export function syncPlayer(id, state) {
     const player = state.getEntityComponents(id);
+
+    const getData3D = group => {
+        if (group !== undefined) {
+            return {
+                position: group.position,
+                rotation: group.rotation
+            };
+        }
+    };
+
     return new Action(SYNC_PLAYER, {
         id: player.id,
         player: player.player,
         health: player.health,
         velocity: player.velocity,
-        object3D: player.object3D
-            ? pick(player.object3D, ["position", "rotation"])
-            : undefined
+        object3D: getData3D(player.object3D),
+        head: getData3D(player.head)
     });
 }
 

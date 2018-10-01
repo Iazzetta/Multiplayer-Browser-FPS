@@ -11,7 +11,8 @@ import {
     setPlayerMouse,
     setPlayerInput,
     serverConnection,
-    syncPlayer
+    syncPlayer,
+    SERVER_ACTION
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -87,9 +88,9 @@ export class Game extends BaseGame {
 
     run() {
         const game = this;
-
         game.subscriptions.push(action => {
-            switch (action.type) {
+            if (action.type === SERVER_ACTION && !this.socket.connected) {
+                game.dispatch(action.data);
             }
         });
 

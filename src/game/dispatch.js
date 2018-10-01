@@ -10,12 +10,10 @@ import {
     Entity
 } from "./entities";
 import {
-    SERVER_ACTION,
     SERVER_CONNECTION,
     LOAD_LEVEL,
     PLAYER_JOIN,
     PLAYER_LEAVE,
-    SET_PLAYER_CAMERA,
     SET_PLAYER_MOUSE,
     SYNC_GAME_STATE,
     SYNC_PLAYER,
@@ -28,10 +26,8 @@ import {
 
     // Actions
     Action,
-    playerLeave,
     spawnPlayer,
-    playerJoin,
-    setPlyerCamera
+    playerJoin
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -44,13 +40,6 @@ export function dispatch(state, action) {
         case SERVER_CONNECTION: {
             const { id } = action.data;
             state.playerId = id;
-            state.connected = true;
-            return dispatch(state, setPlyerCamera(id));
-        }
-        case SERVER_ACTION: {
-            if (!state.connected) {
-                return dispatch(state, action.data);
-            }
             return state;
         }
         case LOAD_LEVEL: {
@@ -85,10 +74,6 @@ export function dispatch(state, action) {
             playerGhost.object3D.position.copy(sample(state.playerSpawns));
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
-
-            if (state.playerId === id) {
-                return dispatch(state, setPlyerCamera(id));
-            }
             return state;
         }
         case PLAYER_LEAVE: {
@@ -106,33 +91,6 @@ export function dispatch(state, action) {
                 );
                 player.object3D.position.copy(spawn);
                 state.addEntity(player);
-            }
-
-            if (state.playerId === id) {
-                return dispatch(state, setPlyerCamera(id));
-            }
-            return state;
-        }
-        case SET_PLAYER_CAMERA: {
-            const { id } = action.data;
-            const player = state.getEntity(id);
-            if (player !== undefined) {
-                player.object3D.children.forEach(child => {
-                    child.visible = false;
-                });
-
-                player.head.add(state.camera);
-                player.head.visible = true;
-                player.head.children.forEach(child => {
-                    child.visible = false;
-                });
-
-                const weapon = state.assets.mesh("player_weapon");
-                weapon.scale.multiplyScalar(0.5);
-                weapon.position.x = 0.25;
-                weapon.position.y = -0.25;
-                weapon.position.z = -0.1;
-                player.head.add(weapon);
             }
             return state;
         }
@@ -203,7 +161,14 @@ export function dispatch(state, action) {
         // =======================================
 
         case SYNC_PLAYER: {
-            const { id, player, health, velocity, object3D } = action.data;
+            const {
+                id,
+                player,
+                health,
+                velocity,
+                head,
+                object3D
+            } = action.data;
 
             if (state.getEntity(id) === undefined) {
                 dispatch(state, playerJoin(player.id, player.name));
@@ -226,6 +191,12 @@ export function dispatch(state, action) {
 
             if (entity.object3D && object3D) {
                 entity.object3D.position.copy(object3D.position);
+                entity.object3D.rotation.copy(object3D.rotation);
+            }
+
+            if (entity.head && head) {
+                entity.head.position.copy(head.position);
+                entity.head.rotation.copy(head.rotation);
             }
 
             if (entity.velocity && velocity) {

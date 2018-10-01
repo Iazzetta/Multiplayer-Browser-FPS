@@ -25,11 +25,6 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
-         * @type {boolean}
-         */
-        this.connected = false;
-
-        /**
          * @type {THREE.Vector3[]}
          */
         this.playerSpawns = [];
@@ -73,6 +68,31 @@ export class State {
     }
 
     /**
+     * @param {string} id
+     */
+    setPlayerCamera(id) {
+        const player = this.getEntity(id);
+        if (player !== undefined) {
+            player.object3D.children.forEach(child => {
+                child.visible = false;
+            });
+
+            player.head.add(this.camera);
+            player.head.visible = true;
+            player.head.children.forEach(child => {
+                child.visible = false;
+            });
+
+            const weapon = this.assets.mesh("player_weapon");
+            weapon.scale.multiplyScalar(0.5);
+            weapon.position.x = 0.25;
+            weapon.position.y = -0.25;
+            weapon.position.z = -0.1;
+            player.head.add(weapon);
+        }
+    }
+
+    /**
      * @param {Entity} entity
      */
     addEntity(entity) {
@@ -88,6 +108,10 @@ export class State {
             flaggedEntities.push(entity);
         }
         this._entities.set(entity.id, entity);
+
+        if (this.playerId === entity.id) {
+            this.setPlayerCamera(entity.id);
+        }
     }
 
     /**
