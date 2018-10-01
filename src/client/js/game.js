@@ -70,6 +70,14 @@ export class Game extends BaseGame {
         this.ctx = null;
     }
 
+    get playerId() {
+        return this.state.playerId;
+    }
+
+    get myComponents() {
+        return this.state.getEntityComponents(this.playerId);
+    }
+
     run() {
         const game = this;
 
@@ -100,14 +108,6 @@ export class Game extends BaseGame {
                 requestAnimationFrame(next);
             }
         });
-    }
-
-    get playerId() {
-        return this.state.playerId;
-    }
-
-    myComponents() {
-        return this.state.getEntityComponents(this.playerId);
     }
 
     /**
@@ -279,7 +279,7 @@ export class Game extends BaseGame {
         super.update();
 
         // POV - Animations
-        const { player, weapon, head } = this.myComponents();
+        const { player, weapon, head } = this.myComponents;
 
         if (
             player !== undefined &&
@@ -333,7 +333,7 @@ export class Game extends BaseGame {
     }
 
     renderHUD() {
-        const { player, weapon, health } = this.myComponents();
+        const { player, weapon, health } = this.myComponents;
 
         // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
