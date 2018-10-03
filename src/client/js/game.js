@@ -4,14 +4,15 @@ import Stats from "stats.js";
 import { PORT } from "../../game/consts.js";
 import { Game as BaseGame } from "../../game/game.js";
 import {
+    SERVER_ACTION,
+    CLIENT_ACTION,
     loadLevel,
     playerJoin,
     setAspectRatio,
     setPlayerMouse,
     setPlayerInput,
     setMyPlayerId,
-    syncPlayer,
-    SERVER_ACTION
+    syncPlayer
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -87,8 +88,17 @@ export class Game extends BaseGame {
     run() {
         const game = this;
         game.subscriptions.push(action => {
-            if (action.type === SERVER_ACTION && !this.socket.connected) {
-                game.dispatch(action.data);
+            switch (action.type) {
+                case CLIENT_ACTION:
+                    if (action.data.id === this.playerId) {
+                        this.syncDispatch(action.data.action);
+                    }
+                    break;
+                case SERVER_ACTION:
+                    if (!this.socket.connected) {
+                        game.dispatch(action.data);
+                    }
+                    break;
             }
         });
 

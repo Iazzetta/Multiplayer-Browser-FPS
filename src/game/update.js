@@ -6,7 +6,8 @@ import {
     serverAction,
     killPlayer,
     spawnPlayer,
-    syncPlayerScore
+    syncPlayerScore,
+    clientAction
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
@@ -175,11 +176,13 @@ export function shootingSystem(entity, state, dispatch) {
 
             if (hitscan.entity && hitscan.entity.health) {
                 const target = hitscan.entity;
-                const sync = a => dispatch(serverAction(a));
                 const hp = target.health.hp - 10;
                 if (hp > 0) {
+                    const sync = a => dispatch(clientAction(entity.id, a));
                     sync(hitPlayer(target.id, hp));
                 } else {
+                    const sync = a => dispatch(serverAction(a));
+
                     const killer = entity;
                     if (killer && killer.player) {
                         const { id, kills, deaths } = killer.player;

@@ -1,8 +1,9 @@
 import { State } from "./state";
 import { createActionType } from "./utils";
 
-export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
 export const SERVER_ACTION = createActionType("SERVER_ACTION");
+export const CLIENT_ACTION = createActionType("CLIENT_ACTION");
+export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
 export const SET_MY_PLAYER_ID = createActionType("SET_MY_PLAYER_ID");
 export const PLAYER_JOIN = createActionType("PLAYER_JOIN");
 export const PLAYER_LEAVE = createActionType("PLAYER_LEAVE");
@@ -32,6 +33,14 @@ export class Action {
  */
 export function serverAction(action) {
     return new Action(SERVER_ACTION, action);
+}
+
+/**
+ * @param {string} id
+ * @param {Action} action
+ */
+export function clientAction(id, action) {
+    return new Action(CLIENT_ACTION, { id, action });
 }
 
 /**
