@@ -4,7 +4,6 @@ import Stats from "stats.js";
 import { PORT } from "../../game/consts.js";
 import { Game as BaseGame } from "../../game/game.js";
 import {
-    Action,
     loadLevel,
     playerJoin,
     setAspectRatio,
@@ -16,7 +15,6 @@ import {
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
-import clamp from "lodash/clamp";
 
 export const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
 export const KEY_BINDS = {

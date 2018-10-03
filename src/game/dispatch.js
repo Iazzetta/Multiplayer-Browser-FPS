@@ -119,8 +119,7 @@ export function dispatch(state, action) {
         }
         case SET_ASPECT_RATIO: {
             const { width, height } = action.data;
-            state.camera.aspect = width / height;
-            state.camera.updateProjectionMatrix();
+            state.setCameraSize(width, height);
             return state;
         }
         case HIT_PLAYER: {

@@ -45,6 +45,9 @@ export class State {
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
+        this.screenWidth = prev ? prev.screenWidth : 1;
+        this.screenHeight = prev ? prev.screenHeight : 1;
+        this.setCameraSize(this.screenWidth, this.screenHeight);
 
         // Create lights ...
         const dirLight = (color, int) => {
@@ -90,6 +93,17 @@ export class State {
             weapon.position.z = -0.1;
             player.head.add(weapon);
         }
+    }
+
+    /**
+     * @param {number} width
+     * @param {number} height
+     */
+    setCameraSize(width, height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
     }
 
     /**
