@@ -5,7 +5,7 @@ import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
 import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
-    SERVER_CONNECTION,
+    SET_MY_PLAYER_ID,
     LOAD_LEVEL,
     PLAYER_JOIN,
     PLAYER_LEAVE,
@@ -32,7 +32,7 @@ import { PlayerComponent } from "./components.js";
  */
 export function dispatch(state, action) {
     switch (action.type) {
-        case SERVER_CONNECTION: {
+        case SET_MY_PLAYER_ID: {
             const { id } = action.data;
             state.playerId = id;
             return state;

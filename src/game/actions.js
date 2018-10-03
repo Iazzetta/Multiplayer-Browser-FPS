@@ -5,7 +5,7 @@ import pick from "lodash/pick";
 export const [
     LOAD_LEVEL,
     SERVER_ACTION,
-    SERVER_CONNECTION,
+    SET_MY_PLAYER_ID,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SYNC_PLAYER,
@@ -40,8 +40,8 @@ export function serverAction(action) {
 /**
  * @param {string} id
  */
-export function serverConnection(id) {
-    return new Action(SERVER_CONNECTION, { id });
+export function setMyPlayerId(id) {
+    return new Action(SET_MY_PLAYER_ID, { id });
 }
 
 /**

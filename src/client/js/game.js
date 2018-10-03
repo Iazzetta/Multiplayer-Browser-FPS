@@ -10,7 +10,7 @@ import {
     setAspectRatio,
     setPlayerMouse,
     setPlayerInput,
-    serverConnection,
+    setMyPlayerId,
     syncPlayer,
     SERVER_ACTION
 } from "../../game/actions.js";
@@ -101,8 +101,9 @@ export class Game extends BaseGame {
 
         // Init game world
         const level = game.state.assets.level("level-1");
+        game.dispatch(setMyPlayerId("player-1"));
         game.dispatch(loadLevel(level));
-        game.dispatch(playerJoin(this.playerId, "Player 1"));
+        game.dispatch(playerJoin("player-1", "Player"));
         game.initSocket();
 
         // Run game
@@ -202,7 +203,7 @@ export class Game extends BaseGame {
             console.log("Connected");
 
             const id = this.socket.id;
-            this.dispatch(serverConnection(id));
+            this.dispatch(setMyPlayerId(id));
 
             const name = prompt("Pleas enter your name", "Player");
             this.socket.emit("join", { name });
