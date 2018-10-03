@@ -106,7 +106,7 @@ export class Assets {
     /**
      *
      * @param {string} name
-     * @returns {HTMLImageElement}
+     * @returns {HTMLImageElement|HTMLCanvasElement}
      */
     sprite(name) {
         return this.imgList.get(name) || this.fallback.image;
