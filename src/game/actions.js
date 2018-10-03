@@ -14,7 +14,7 @@ export const SET_ASPECT_RATIO = createActionType("SET_ASPECT_RATIO");
 export const SET_PLAYER_INPUT = createActionType("SET_PLAYER_INPUT");
 export const SET_PLAYER_MOUSE = createActionType("SET_PLAYER_MOUSE");
 export const HIT_PLAYER = createActionType("HIT_PLAYER");
-export const KILL_PLAYE = createActionType("KILL_PLAYE");
+export const KILL_PLAYER = createActionType("KILL_PLAYER");
 
 export class Action {
     /**
