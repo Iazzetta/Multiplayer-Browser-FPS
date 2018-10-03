@@ -12,7 +12,7 @@ export class Game {
         /**
          * @type {State}
          */
-        this.state = new State(new Assets());
+        this.state = new State();
 
         /**
          * @type {Subscription[]}

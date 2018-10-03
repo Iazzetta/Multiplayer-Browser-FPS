@@ -1,8 +1,8 @@
-export const DEBUG = false;
+export const DEBUG = true;
 
 export const PORT = "8080";
 
-export const RESPAWN_TIME = 1500;
+export const RESPAWN_TIME = 5000;
 
 export const TILE_SIZE = 16;
 
@@ -14,8 +14,7 @@ export const GRAVITY = (2 * JUMP_HEIGHT) / Math.pow(JUMP_TIME * 0.5, 2);
 
 export const JUMP_SPEED = GRAVITY * JUMP_TIME * 0.5;
 
-export const  BULLET_SPEED = 0.075;
-
+export const RUN_SPEED = 0.02;
 
 export const ASSETS_PATH = "/assets/";
 
@@ -44,7 +43,7 @@ WEAPON_TYPE.MACHINEGUN = Object.freeze(
     new WEAPON_TYPE({
         name: "machine-gun",
         damage: 1,
-        firerate: 200,
+        firerate: 50,
         reloadSpeed: 2000,
         maxLoadedAmmo: 50,
         maxReservedAmmo: 2500

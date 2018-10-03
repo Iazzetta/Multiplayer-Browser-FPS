@@ -1,18 +1,16 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
-import { TILE_SIZE } from "./consts.js";
+import { TILE_SIZE, RESPAWN_TIME } from "./consts.js";
 import {
-    ControllerComponent,
+    PlayerComponent,
     VelocityComponent,
-    JetpackComponent,
-    DecayComponent,
     Object3DComponent,
     HeadComponent,
-    DamageComponent,
     HealthComponent,
     ColliderComponent,
     WeaponComponent
 } from "./components";
+import { toRadians } from "./utils";
 
 export class Entity {
     /**
@@ -43,27 +41,17 @@ export class Entity {
         //===========================
 
         /**
-         * @type {string}
-         */
-        this.name = undefined;
-
-        /**
          * @type {boolean}
          */
         this.gravity = false;
 
-        /**
-         * @type {number}
-         */
-        this.pickupAmmo = undefined;
-
-        /**
-         * @type {number}
-         */
-        this.pickupHp = undefined;
-
         // Components
         //===========================
+
+        /**
+         * @type {PlayerComponent}
+         */
+        this.player = undefined;
 
         /**
          * @type {Object3DComponent}
@@ -76,34 +64,14 @@ export class Entity {
         this.head = undefined;
 
         /**
-         * @type {DecayComponent}
-         */
-        this.decay = undefined;
-
-        /**
-         * @type {JetpackComponent}
-         */
-        this.jetpack = undefined;
-
-        /**
          * @type {ColliderComponent}
          */
         this.collider = undefined;
 
         /**
-         * @type {ControllerComponent}
-         */
-        this.controller = undefined;
-
-        /**
          * @type {VelocityComponent}
          */
         this.velocity = undefined;
-
-        /**
-         * @type {DamageComponent}
-         */
-        this.damage = undefined;
 
         /**
          * @type {HealthComponent}
@@ -119,18 +87,44 @@ export class Entity {
 
 Entity.empty = Object.freeze(new Entity(undefined));
 
-export class Player extends Entity {
+export class PlayerGhostEntity extends Entity {
     /**
-     * @param {string} id
+     * @param {PlayerComponent} player
+     */
+    constructor(player) {
+        super(player.id);
+        this.flags = ["player"];
+        this.gravity = false;
+
+        this.player = player;
+        this.player.respawnTimer = RESPAWN_TIME;
+
+        this.velocity = new VelocityComponent();
+        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
+        this.object3D.visible = false;
+
+        this.head = new HeadComponent();
+        this.head.rotation.x = toRadians(-80);
+        this.object3D.add(this.head);
+    }
+}
+
+export class PlayerEntity extends Entity {
+    /**
+     * @param {PlayerComponent} player
      * @param {Assets} assets
      */
-    constructor(id, assets) {
-        super(id);
+    constructor(player, assets) {
+        super(player.id);
         this.flags = ["player"];
         this.gravity = true;
+
+        this.player = player;
+        this.player.respawnTimer = 0;
+
         this.weapon = new WeaponComponent();
         this.health = new HealthComponent();
-        this.controller = new ControllerComponent();
+
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
@@ -143,91 +137,26 @@ export class Player extends Entity {
     }
 }
 
-export class Bullet extends Entity {
+export class WallEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
+     * @param {THREE.Vector3} size
      */
-    constructor(id, assets) {
-        super(id);
-        this.decay = new DecayComponent(10000);
-        this.damage = new DamageComponent();
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 0.5, 0.5));
-        this.object3D.add(assets.mesh("bullet"));
-    }
-}
-
-export class Wall extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
+    constructor(id, assets, size) {
         const radius = new THREE.Vector3(
-            TILE_SIZE * 0.5,
-            TILE_SIZE * 0.5,
-            TILE_SIZE * 0.5
+            size.x * 0.5,
+            size.y * 0.5,
+            size.z * 0.5
         );
-        const mesh = assets.mesh("wall_tile");
-        mesh.scale.set(TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
         super(id);
         this.sleep = true;
         this.flags = ["wall"];
         this.object3D = new Object3DComponent(radius);
+
+        const mesh = assets.mesh("wall_tile");
+        mesh.scale.copy(size);
         this.object3D.add(mesh);
-    }
-}
-
-export class JetpackPickup extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.gravity = true;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.jetpack = new JetpackComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("jetpack_pickup"));
-    }
-}
-
-export class AmmoPickup extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.pickupAmmo = 30;
-        this.gravity = true;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("bullet_pickup"));
-    }
-}
-
-export class HpPickup extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     */
-    constructor(id, assets) {
-        super(id);
-        this.flags = ["pickup"];
-        this.gravity = true;
-        this.pickupHp = 10;
-        this.velocity = new VelocityComponent();
-        this.collider = new ColliderComponent();
-        this.object3D = new Object3DComponent();
-        this.object3D.add(assets.mesh("hp_pickup"));
     }
 }

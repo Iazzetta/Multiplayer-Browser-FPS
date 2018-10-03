@@ -1,42 +1,25 @@
 import { State } from "./state";
-import times from "lodash/times";
+import { createActionType } from "./utils";
 
-export const [
-    // Special actions
-    INIT_GAME,
-
-    // Sync local actions
-    SERVER_ACTION,
-    CLIENT_ACTION,
-
-    // Sync players
-    PLAYER_JOIN,
-    PLAYER_LEAVE,
-    SYNC_PLAYER,
-    SYNC_PLAYER_SCORE,
-    SYNC_ALL_PLAYERS,
-
-    // Spawn
-    SPAWN_PLAYER,
-    SPAWN_BULLET_PACK,
-    SPAWN_HEALTH_PACK,
-
-    // Player inputs
-    SET_CAMERA_VIEW,
-    SET_INPUT,
-    SET_AIM,
-
-    // Gameplay actions
-    SHOOT_BULLET,
-    RELOAD_START,
-    RELOAD_DONE,
-    HIT_PLAYER,
-    KILL_PLAYER
-] = times(100);
+export const SERVER_ACTION = createActionType("SERVER_ACTION");
+export const CLIENT_ACTION = createActionType("CLIENT_ACTION");
+export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
+export const SET_MY_PLAYER_ID = createActionType("SET_MY_PLAYER_ID");
+export const PLAYER_JOIN = createActionType("PLAYER_JOIN");
+export const PLAYER_LEAVE = createActionType("PLAYER_LEAVE");
+export const SYNC_PLAYER = createActionType("SYNC_PLAYER");
+export const SYNC_PLAYER_SCORE = createActionType("SYNC_PLAYER_SCORE");
+export const SYNC_GAME_STATE = createActionType("SYNC_GAME_STATE");
+export const SPAWN_PLAYER = createActionType("SPAWN_PLAYER");
+export const SET_ASPECT_RATIO = createActionType("SET_ASPECT_RATIO");
+export const SET_PLAYER_INPUT = createActionType("SET_PLAYER_INPUT");
+export const SET_PLAYER_MOUSE = createActionType("SET_PLAYER_MOUSE");
+export const HIT_PLAYER = createActionType("HIT_PLAYER");
+export const KILL_PLAYER = createActionType("KILL_PLAYER");
 
 export class Action {
     /**
-     * @param {number} type
+     * @param {number|string} type
      * @param {object} data
      */
     constructor(type, data) {
@@ -52,17 +35,34 @@ export function serverAction(action) {
     return new Action(SERVER_ACTION, action);
 }
 
-export function initGame() {
-    return new Action(INIT_GAME, {});
+/**
+ * @param {string} id
+ * @param {Action} action
+ */
+export function clientAction(id, action) {
+    return new Action(CLIENT_ACTION, { id, action });
+}
+
+/**
+ * @param {string} id
+ */
+export function setMyPlayerId(id) {
+    return new Action(SET_MY_PLAYER_ID, { id });
+}
+
+/**
+ * @param {object} level
+ */
+export function loadLevel(level) {
+    return new Action(LOAD_LEVEL, { level });
 }
 
 /**
  * @param {string} id
  * @param {string} name
- * @param {boolean} alive
  */
-export function playerJoin(id, name, alive = false) {
-    return new Action(PLAYER_JOIN, { id, name, alive });
+export function playerJoin(id, name) {
+    return new Action(PLAYER_JOIN, { id, name });
 }
 
 /**
@@ -74,51 +74,18 @@ export function playerLeave(id) {
 
 /**
  * @param {string} id
+ * @param {THREE.Vector3} spawn
  */
-export function spawnPlayer(id) {
-    return new Action(SPAWN_PLAYER, { id });
-}
-
-/**
- * @param {string} id
- * @param {State} state
- */
-export function syncPlayer(id, state) {
-    const { head, object3D, velocity } = state.getEntityComponents(id);
-    if (object3D === undefined) return;
-    if (velocity === undefined) return;
-    if (head === undefined) return;
-
-    const { x, y, z } = object3D.position;
-    const { x: vx, y: vy, z: vz } = velocity;
-    const rx = head.rotation.x;
-    const ry = object3D.rotation.y;
-    return new Action(SYNC_PLAYER, {
-        id,
-        x,
-        y,
-        z,
-        vx,
-        vy,
-        vz,
-        rx,
-        ry
-    });
-}
-
-/**
- * @param {State} state
- */
-export function syncAllPlayers(state) {
-    return new Action(SYNC_ALL_PLAYERS, { players: state.players });
+export function spawnPlayer(id, spawn) {
+    return new Action(SPAWN_PLAYER, { id, spawn });
 }
 
 /**
  * @param {number} width
  * @param {number} height
  */
-export function setCameraView(width, height) {
-    return new Action(SET_CAMERA_VIEW, { width, height });
+export function setAspectRatio(width, height) {
+    return new Action(SET_ASPECT_RATIO, { width, height });
 }
 
 /**
@@ -127,7 +94,7 @@ export function setCameraView(width, height) {
  * @param {boolean} value
  */
 export function setPlayerInput(id, input, value) {
-    return new Action(SET_INPUT, { id, input, value });
+    return new Action(SET_PLAYER_INPUT, { id, input, value });
 }
 
 /**
@@ -135,15 +102,17 @@ export function setPlayerInput(id, input, value) {
  * @param {number} ver
  * @param {number} hor
  */
-export function setPlayerAim(id, ver, hor) {
-    return new Action(SET_AIM, { id, ver, hor });
+export function setPlayerMouse(id, ver, hor) {
+    return new Action(SET_PLAYER_MOUSE, { id, ver, hor });
 }
 
 /**
  * @param {string} id
+ * @param {number} kills
+ * @param {number} deaths
  */
-export function shootBullet(id) {
-    return new Action(SHOOT_BULLET, { id });
+export function syncPlayerScore(id, kills, deaths) {
+    return new Action(SYNC_PLAYER_SCORE, { id, kills, deaths });
 }
 
 /**
@@ -159,4 +128,41 @@ export function hitPlayer(id, hp) {
  */
 export function killPlayer(id) {
     return new Action(KILL_PLAYER, { id });
+}
+
+/**
+ * @param {string} id
+ * @param {State} state
+ */
+export function syncPlayer(id, state) {
+    const player = state.getEntityComponents(id);
+
+    const getData3D = group => {
+        if (group !== undefined) {
+            return {
+                position: group.position,
+                rotation: group.rotation
+            };
+        }
+    };
+
+    return new Action(SYNC_PLAYER, {
+        id: player.id,
+        player: player.player,
+        health: player.health,
+        velocity: player.velocity,
+        object3D: getData3D(player.object3D),
+        head: getData3D(player.head)
+    });
+}
+
+/**
+ * @param {State} state
+ */
+export function syncGameState(state) {
+    const syncPlayerActions = state
+        .getEntityGroup("player")
+        .map(player => player.id)
+        .map(id => syncPlayer(id, state));
+    return new Action(SYNC_GAME_STATE, { syncPlayerActions });
 }

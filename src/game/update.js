@@ -1,15 +1,19 @@
+import * as THREE from "three";
 import { State } from "./state";
 import {
     Action,
-    shootBullet,
     hitPlayer,
     serverAction,
     killPlayer,
-    spawnPlayer
+    spawnPlayer,
+    syncPlayerScore,
+    clientAction
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED, RESPAWN_TIME } from "./consts";
+import { GRAVITY, JUMP_SPEED, RUN_SPEED, DEBUG } from "./consts";
+import sample from "lodash/sample";
+import intersection from "ray-aabb-intersection";
 
 /**
  * @param {State} state
@@ -19,22 +23,14 @@ export function update(state, dispatch) {
     updateTime(state);
 
     // Systems
-    state.entities.forEach(entity => {
+    state.forEachEntity(entity => {
         if (entity.sleep) return;
-        controllerSystem(entity, state, dispatch);
-        decaySystem(entity, state, dispatch);
+        respawnSystem(entity, state, dispatch);
+        playerControllerSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
-        pickupSystem(entity, state, dispatch);
-        jetpackFuelSystem(entity, state, dispatch);
-        damageSystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
-    });
-
-    // Animate pickups
-    state.getEntityGroup("pickup").forEach(pickup => {
-        pickup.object3D.rotation.y += 0.01;
     });
 }
 
@@ -53,12 +49,17 @@ export function updateTime(state) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function decaySystem(entity, state, dispatch) {
-    const { decay } = entity;
-    if (decay) {
-        decay.ttl -= state.time.delta;
-        if (decay.ttl < 0) {
-            state.deleteEntity(entity.id);
+export function respawnSystem(entity, state, dispatch) {
+    const { player } = entity;
+    if (player && player.respawnTimer > 0) {
+        player.respawnTimer -= state.time.delta;
+        if (player.respawnTimer < 0) {
+            player.respawnTimer = 0;
+            const spawn = DEBUG
+                ? state.playerSpawns[0]
+                : sample(state.playerSpawns);
+
+            dispatch(serverAction(spawnPlayer(player.id, spawn)));
         }
     }
 }
@@ -80,150 +81,21 @@ export function gravitySystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function pickupSystem(entity, state, dispatch) {
-    if (entity.object3D && entity.controller) {
-        const pickups = state.getEntityGroup("pickup");
-        for (let i = 0; i < pickups.length; i++) {
-            const pickup = pickups[i];
-            const aabb1 = entity.object3D.getAABB();
-            const aabb2 = pickup.object3D.getAABB();
-            if (AABB.collision(aabb1, aabb2)) {
-                // Jetpack
-                if (!entity.jetpack && pickup.jetpack) {
-                    entity.jetpack = pickup.jetpack;
-                    state.deleteEntity(pickup.id);
-                    return;
-                }
+export function playerControllerSystem(entity, state, dispatch) {
+    const { player, velocity, object3D } = entity;
 
-                // Ammo
-                if (entity.weapon && pickup.pickupAmmo !== undefined) {
-                    if (
-                        entity.weapon.reservedAmmo <
-                        entity.weapon.type.maxReservedAmmo
-                    ) {
-                        entity.weapon.reservedAmmo = Math.min(
-                            entity.weapon.reservedAmmo + pickup.pickupAmmo,
-                            entity.weapon.type.maxReservedAmmo
-                        );
-                        state.deleteEntity(pickup.id);
-                        return;
-                    }
-                }
-
-                // HP
-                if (entity.health && pickup.pickupHp !== undefined) {
-                    if (entity.health.hp < entity.health.max) {
-                        entity.health.max += pickup.pickupHp;
-                        state.deleteEntity(pickup.id);
-                        return;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function jetpackFuelSystem(entity, state, dispatch) {
-    const { jetpack, controller } = entity;
-
-    if (jetpack && controller) {
-        const jump = controller.input.jump;
-
-        // Fly - burn fuel
-        if (!jump && jetpack.fuel < jetpack.maxFuel) {
-            jetpack.fuel = Math.min(
-                jetpack.fuel + state.time.delta,
-                jetpack.maxFuel
-            );
-        }
-
-        // Recharge
-        if (jump && jetpack.fuel > jetpack.minFuel) {
-            jetpack.fuel = Math.max(
-                jetpack.fuel - state.time.delta * 2,
-                jetpack.minFuel
-            );
-        }
-    }
-}
-
-/**
- * @param {Entity} bullet
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function damageSystem(bullet, state, dispatch) {
-    if (bullet.damage && bullet.collider && bullet.object3D) {
-        const players = state.getEntityGroup("player");
-
-        // Hit player
-        players.forEach(player => {
-            if (player.object3D && player.health) {
-                if (player === bullet) return;
-                if (player.health.hp <= 0) return;
-                if (player.id === bullet.damage.creatorId) return;
-                const playerAABB = player.object3D.getAABB();
-                const bulletAABB = bullet.object3D.getAABB();
-                if (AABB.collision(bulletAABB, playerAABB)) {
-                    const hp = player.health.hp - bullet.damage.dmg;
-                    if (hp > 0) {
-                        dispatch(serverAction(hitPlayer(player.id, hp)));
-                    } else {
-                        dispatch(serverAction(killPlayer(player.id)));
-                        setTimeout(function respawn() {
-                            const playerData = state.players.find(p => {
-                                return p.id === player.id;
-                            });
-                            console.log(playerData, player.id);
-                            if (playerData !== undefined) {
-                                dispatch(serverAction(spawnPlayer(player.id)));
-                            }
-                        }, RESPAWN_TIME);
-                    }
-
-                    bullet.collider.x = 1;
-                }
-            }
-        });
-
-        // Die on wall collision
-        if (bullet.collider.any()) {
-            state.deleteEntity(bullet.id);
-        }
-    }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function controllerSystem(entity, state, dispatch) {
-    const { controller, velocity, object3D } = entity;
-
-    if (controller && velocity && object3D) {
-        const input = controller.input;
+    if (player && velocity && object3D) {
+        const input = player.input;
 
         // Reset state
-        controller.state = "idle";
+        player.state = "idle";
 
         // vetical movement - jumping
         if (input.jump) {
-            const { jetpack } = entity;
-            if (jetpack && jetpack.fuel > 0) {
-                // Jetpacl
-                velocity.y = (velocity.y > 0 ? 0 : velocity.y) + 0.01;
-            } else {
-                // Normal jump
-                if (entity.collider && entity.collider.bottom()) {
-                    velocity.y = JUMP_SPEED;
-                    input.jump = false;
-                }
+            // Normal jump
+            if (entity.collider && entity.collider.bottom()) {
+                velocity.y = JUMP_SPEED;
+                input.jump = false;
             }
         }
 
@@ -239,11 +111,11 @@ export function controllerSystem(entity, state, dispatch) {
             velocity.z = Math.cos(angle);
             velocity.x = Math.sin(angle);
 
-            controller.state = "running";
+            player.state = "running";
         }
 
-        velocity.z *= controller.speed;
-        velocity.x *= controller.speed;
+        velocity.z *= RUN_SPEED;
+        velocity.x *= RUN_SPEED;
     }
 }
 
@@ -253,22 +125,95 @@ export function controllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, controller } = entity;
-    if (weapon && controller) {
+    const { weapon, player } = entity;
+    if (weapon && player) {
         if (weapon.firerateTimer > 0) {
-            controller.state = "shooting";
+            player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
         }
 
         if (
-            controller.input.shoot &&
+            player.input.shoot &&
             weapon.firerateTimer <= 0 &&
             weapon.reloadTimer === 0 &&
             weapon.loadedAmmo > 0
         ) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = weapon.type.firerate;
-            dispatch(shootBullet(entity.id));
+
+            // Hitscan
+            const dirMatrix = new THREE.Matrix4();
+            dirMatrix.extractRotation(entity.head.matrixWorld);
+
+            const originMatrix = new THREE.Matrix4();
+            originMatrix.copyPosition(entity.head.matrixWorld);
+
+            const origin = new THREE.Vector3(0, 0, 0)
+                .applyMatrix4(originMatrix)
+                .toArray();
+
+            const dir = new THREE.Vector3(0, 0, -1)
+                .applyMatrix4(dirMatrix)
+                .toArray();
+
+            const hitscan = {
+                point: new Float32Array(3),
+                entity: null,
+                dist: Infinity
+            };
+
+            state.forEachEntity(target => {
+                if (target.id === entity.id) return;
+                if (!target.object3D) return;
+                const aabb = target.object3D.toAABB().toArray();
+                const dist = intersection.distance(origin, dir, aabb);
+                if (dist > 0 && dist < hitscan.dist) {
+                    hitscan.entity = target;
+                    hitscan.dist = dist;
+                    intersection(hitscan.point, origin, dir, aabb);
+                }
+            });
+
+            if (hitscan.entity && hitscan.entity.health) {
+                const target = hitscan.entity;
+                const hp = target.health.hp - 10;
+                if (hp > 0) {
+                    const sync = a => dispatch(clientAction(entity.id, a));
+                    sync(hitPlayer(target.id, hp));
+                } else {
+                    const sync = a => dispatch(serverAction(a));
+
+                    const killer = entity;
+                    if (killer && killer.player) {
+                        const { id, kills, deaths } = killer.player;
+                        sync(syncPlayerScore(id, kills + 1, deaths));
+                    }
+
+                    if (target.player) {
+                        const { id, kills, deaths } = target.player;
+                        sync(syncPlayerScore(id, kills, deaths + 1));
+                    }
+
+                    sync(killPlayer(target.id));
+                }
+            }
+
+            // Bullet trace
+            const p1 = new THREE.Vector3(...origin);
+            const p2 = new THREE.Vector3(...hitscan.point);
+
+            const material = new THREE.LineBasicMaterial({
+                color: 0x0000ff
+            });
+
+            const geometry = new THREE.Geometry();
+            geometry.vertices.push(p1, p2);
+
+            const line = new THREE.Line(geometry, material);
+            state.scene.add(line);
+            setTimeout(() => {
+                state.scene.remove(line);
+            }, 500);
         }
     }
 }
@@ -279,20 +224,20 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, controller } = entity;
-    if (weapon && controller) {
+    const { weapon, player } = entity;
+    if (weapon && player) {
         const canReload =
             weapon.reloadTimer === 0 &&
             weapon.reservedAmmo > 0 &&
             weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
 
-        if (canReload && (controller.input.reload || weapon.loadedAmmo === 0)) {
+        if (canReload && (player.input.reload || weapon.loadedAmmo === 0)) {
             weapon.reloadTimer = weapon.type.reloadSpeed;
         }
 
         const isRelaoding = weapon.reloadTimer > 0;
         if (isRelaoding) {
-            controller.state = "reloading";
+            player.state = "reloading";
             weapon.reloadTimer -= state.time.delta;
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;
@@ -344,8 +289,8 @@ export function physicsSystem(entity, state, dispatch) {
             }
 
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.y = resolveCollision(
                         aabb1.min.y,
@@ -366,8 +311,8 @@ export function physicsSystem(entity, state, dispatch) {
         entity.object3D.position.x += velocity.x;
         if (entity.collider) {
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.x = resolveCollision(
                         aabb1.min.x,
@@ -388,8 +333,8 @@ export function physicsSystem(entity, state, dispatch) {
         entity.object3D.position.z += velocity.z;
         if (entity.collider) {
             walls.forEach(wall => {
-                const aabb1 = entity.object3D.getAABB();
-                const aabb2 = wall.object3D.getAABB();
+                const aabb1 = entity.object3D.toAABB();
+                const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
                     entity.object3D.position.z = resolveCollision(
                         aabb1.min.z,

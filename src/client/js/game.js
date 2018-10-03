@@ -1,40 +1,45 @@
 import * as THREE from "three";
 import SocketIO from "socket.io-client";
 import Stats from "stats.js";
-import { PORT } from "../game/consts.js";
-import { Game as BaseGame } from "../game/game.js";
+import { PORT } from "../../game/consts.js";
+import { Game as BaseGame } from "../../game/game.js";
 import {
-    initGame,
-    setCameraView,
-    setPlayerInput,
-    setPlayerAim,
-    Action,
-    syncPlayer,
-    SYNC_ALL_PLAYERS,
     SERVER_ACTION,
     CLIENT_ACTION,
-    spawnPlayer,
+    loadLevel,
     playerJoin,
-    SPAWN_PLAYER,
-    HIT_PLAYER
-} from "../game/actions.js";
-import { toRadians } from "../game/utils.js";
+    setAspectRatio,
+    setPlayerMouse,
+    setPlayerInput,
+    setMyPlayerId,
+    syncPlayer
+} from "../../game/actions.js";
+import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
-import clamp from "lodash/clamp";
 
-class Game extends BaseGame {
+export const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
+export const KEY_BINDS = {
+    [W]: "forward",
+    [A]: "left",
+    [S]: "back",
+    [D]: "right",
+    [R]: "reload",
+    [SPACE]: "jump"
+};
+
+export class Game extends BaseGame {
     constructor() {
         super();
 
         /**
-         * @type {string}
+         * @type {HTMLElement}
          */
-        this.playerId = "player-1";
+        this.container = document.body;
 
         /**
-         * @type {string}
+         * @type {boolean}
          */
-        this.playerName = "";
+        this.running = false;
 
         /**
          * @type {number}
@@ -66,108 +71,128 @@ class Game extends BaseGame {
          */
         this.ctx = null;
 
-        this.subscriptions.push(action => {
-            switch (action.type) {
-                case CLIENT_ACTION: {
-                    const { id } = action.data;
-                    if (id === this.playerId) {
-                        const clientAction = action.data.action;
-                        this.dispatch(clientAction);
-                        this.socket.emit("dispatch", clientAction);
-                    }
-                }
-                case SERVER_ACTION: {
-                    if (!this.socket.connected) {
-                        this.dispatch(action.data);
-                    }
-                    break;
-                }
-                case SYNC_ALL_PLAYERS: {
-                    this.syncPlayerImmediately();
-                    break;
-                }
-                case SPAWN_PLAYER: {
-                    if (this.playerId === action.data.id) {
-                        this.mountPlayerCamera();
-                    }
-                    break;
-                }
-                case HIT_PLAYER: {
-                    if (this.playerId === action.data.id) {
-                        this.bloodScreen = 500;
-                    }
-                    break;
-                }
-            }
-        });
+        this.syncMe = () => {
+            this.socket.emit("dispatch", syncPlayer(this.playerId, this.state));
+        };
+        this.syncMeDebounce = debounce(this.syncMe, 500);
+    }
 
-        this.syncPlayerImmediately = debounce(() => {
-            const playerId = this.playerId;
-            this.socket.emit("dispatch", syncPlayer(playerId, this.state));
-        }, 500);
-        this.syncPlayer = debounce(this.syncPlayerImmediately, 500);
+    get playerId() {
+        return this.state.playerId;
+    }
+
+    get myComponents() {
+        return this.state.getEntityComponents(this.playerId);
     }
 
     run() {
         const game = this;
-        game.loadAssets().then(() => {
-            game.initRenderer();
-            game.initMouseInput();
-            game.initKeyboardInput();
+        game.subscriptions.push(action => {
+            switch (action.type) {
+                case CLIENT_ACTION:
+                    if (action.data.id === this.playerId) {
+                        this.syncDispatch(action.data.action);
+                    }
+                    break;
+                case SERVER_ACTION:
+                    if (!this.socket.connected) {
+                        game.dispatch(action.data);
+                    }
+                    break;
+            }
+        });
 
-            game.dispatch(initGame());
-            game.dispatch(playerJoin(this.playerId, this.playerName));
-            game.dispatch(spawnPlayer(this.playerId));
-            game.initSocket();
+        // Init systems
+        game.initRenderer();
+        game.initMouseInput();
+        game.initKeyboardInput();
 
-            requestAnimationFrame(function next() {
-                game.stats.begin();
-                game.update();
-                game.render();
+        // Init game world
+        const level = game.state.assets.level("level-1");
+        game.dispatch(setMyPlayerId("player-1"));
+        game.dispatch(loadLevel(level));
+        game.dispatch(playerJoin("player-1", "Player"));
+        game.initSocket();
+
+        // Run game
+        game.running = true;
+        requestAnimationFrame(function next() {
+            game.stats.begin();
+            game.update();
+            game.render();
+            game.stats.end();
+            if (game.running) {
                 requestAnimationFrame(next);
-                game.stats.end();
-            });
+            }
         });
     }
 
-    mountPlayerCamera() {
-        const playerId = this.playerId;
-        const player = this.state.entities.get(playerId);
-        if (player !== undefined) {
-            player.object3D.children.forEach(child => {
-                child.visible = false;
-            });
-
-            player.head.add(this.state.camera);
-            player.head.visible = true;
-            player.head.children.forEach(child => {
-                child.visible = false;
-            });
-
-            const weapon = this.state.assets.mesh("player_weapon");
-            weapon.scale.multiplyScalar(0.5);
-            weapon.position.x = 0.25;
-            weapon.position.y = -0.25;
-            weapon.position.z = -0.1;
-            player.head.add(weapon);
+    syncDispatch(action) {
+        this.dispatch(action);
+        if (this.socket && this.socket.connected) {
+            this.socket.emit("dispatch", action);
+            this.syncMeDebounce();
         }
-        this.resize();
-    }
-
-    myComponents() {
-        return this.state.getEntityComponents(this.playerId);
     }
 
     /**
-     * @param {Action} action
+     * @param {KeyboardEvent} ev
      */
-    syncDispatch(action) {
-        this.dispatch(action);
-        this.socket.emit("dispatch", action);
-        this.syncPlayer();
+    onKeyDown(ev) {
+        const id = this.playerId;
+        const input = KEY_BINDS[ev.keyCode];
+        if (input !== undefined) {
+            this.syncDispatch(setPlayerInput(id, input, true));
+        }
+    }
+
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    onKeyUp(ev) {
+        const id = this.playerId;
+        const input = KEY_BINDS[ev.keyCode];
+        if (input !== undefined) {
+            this.syncDispatch(setPlayerInput(id, input, false));
+        }
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseMove(ev) {
+        const id = this.playerId;
+        const speed = 0.005;
+        const ver = -ev.movementX * speed;
+        const hor = -ev.movementY * speed;
+        this.syncDispatch(setPlayerMouse(id, ver, hor));
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseDown(ev) {
+        const id = this.playerId;
+        const input = "shoot";
+        this.syncDispatch(setPlayerInput(id, input, true));
+    }
+
+    /**
+     * @param {MouseEvent} ev
+     */
+    onMouseUp(ev) {
+        const id = this.playerId;
+        const input = "shoot";
+        this.syncDispatch(setPlayerInput(id, input, false));
+    }
+
+    destroy() {
+        this.running = false;
+        this.container.innerHTML = "";
     }
 
     loadAssets() {
+        this.state.assets.loadLevel("level-1", "levels/level.json");
         this.state.assets.loadObj("bullet", "bullet.obj");
         this.state.assets.loadObj("wall_tile", "wall_tile.obj");
         this.state.assets.loadObj("player_head", "player_head.obj");
@@ -185,9 +210,11 @@ class Game extends BaseGame {
         this.socket.on("connect", () => {
             console.log("Connected");
 
-            this.playerId = this.socket.id;
-            this.playerName = prompt("Please enter your name", "Player");
-            this.socket.emit("join", { name: this.playerName });
+            const id = this.socket.id;
+            this.dispatch(setMyPlayerId(id));
+
+            const name = prompt("Pleas enter your name", "Player");
+            this.socket.emit("join", { name });
 
             this.socket.on("dispatch", action => {
                 this.dispatch(action);
@@ -209,10 +236,10 @@ class Game extends BaseGame {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
         // Append to dom
-        document.body.innerHTML = "";
-        document.body.appendChild(this.hud);
-        document.body.appendChild(this.stats.dom);
-        document.body.appendChild(this.renderer.domElement);
+        this.container.innerHTML = "";
+        this.container.appendChild(this.hud);
+        this.container.appendChild(this.stats.dom);
+        this.container.appendChild(this.renderer.domElement);
 
         // Resize - full screen
         this.resize();
@@ -231,81 +258,59 @@ class Game extends BaseGame {
 
         canvas.addEventListener("mousemove", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const { object3D, head } = this.myComponents();
-                if (object3D && head) {
-                    let ver = object3D.rotation.y - ev.movementX * 0.005;
-                    let hor = head.rotation.x - ev.movementY * 0.005;
-                    hor = clamp(hor, -1.6, 1.6);
-                    this.syncDispatch(setPlayerAim(playerId, ver, hor));
-                }
+                this.onMouseMove(ev);
             }
         });
 
-        // @ts-ignore
         canvas.addEventListener("mousedown", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, "shoot", true);
-                this.syncDispatch(action);
+                this.onMouseDown(ev);
             }
         });
 
-        // @ts-ignore
         canvas.addEventListener("mouseup", ev => {
             if (document.pointerLockElement === canvas) {
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, "shoot", false);
-                this.syncDispatch(action);
+                this.onMouseUp(ev);
             }
         });
     }
 
     initKeyboardInput() {
-        const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
-        const keyBinds = {
-            [W]: "forward",
-            [A]: "left",
-            [S]: "back",
-            [D]: "right",
-            [R]: "reload",
-            [SPACE]: "jump"
-        };
-
         const kesy = new Map();
-        const input = (keyCode, value) => {
-            const input = keyBinds[keyCode];
-            if (kesy.get(input) !== value && input !== undefined) {
-                kesy.set(input, value);
-                const playerId = this.playerId;
-                const action = setPlayerInput(playerId, input, value);
-                this.syncDispatch(action);
+        const input = keyEvent => ev => {
+            if (kesy.get(ev.keyCode) !== ev.type) {
+                kesy.set(input, ev.type);
+                keyEvent.call(this, ev);
             }
         };
 
-        document.addEventListener("keydown", ev => input(ev.keyCode, true));
-        document.addEventListener("keyup", ev => input(ev.keyCode, false));
+        document.addEventListener("keydown", input(this.onKeyDown));
+        document.addEventListener("keyup", input(this.onKeyUp));
     }
 
     resize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        if (this.container !== document.body) {
+            width = this.container.clientWidth;
+            height = this.container.clientHeight;
+        }
 
         Object.assign(this.hud, { width, height });
         Object.assign(this.ctx.canvas, { width, height });
         this.ctx.imageSmoothingEnabled = false;
         this.renderer.setSize(width, height);
-        this.dispatch(setCameraView(width, height));
+        this.dispatch(setAspectRatio(width, height));
     }
 
     update() {
         super.update();
 
         // POV - Animations
-        const { controller, weapon, head } = this.myComponents();
+        const { player, weapon, head } = this.myComponents;
 
         if (
-            controller !== undefined &&
+            player !== undefined &&
             weapon !== undefined &&
             head !== undefined
         ) {
@@ -315,7 +320,7 @@ class Game extends BaseGame {
             gunMesh.position.z = -0.1;
             gunMesh.rotation.set(0, 0, 0);
 
-            switch (controller.state) {
+            switch (player.state) {
                 case "shooting": {
                     const s = weapon.firerateTimer;
                     gunMesh.position.z += 0.0005 * s;
@@ -356,7 +361,7 @@ class Game extends BaseGame {
     }
 
     renderHUD() {
-        const { weapon, health } = this.myComponents();
+        const { player, weapon, health } = this.myComponents;
 
         // Clear
         this.ctx.clearRect(0, 0, this.hud.width, this.hud.height);
@@ -370,6 +375,18 @@ class Game extends BaseGame {
             this.ctx.fillStyle = "red";
             this.ctx.fillRect(0, 0, this.hud.width, this.hud.height);
             this.ctx.globalAlpha = 1;
+        }
+
+        // Respawn
+        if (player && player.respawnTimer > 0) {
+            const sec = Math.ceil(player.respawnTimer / 1000);
+            this.ctx.font = "32px Impact";
+            this.ctx.fillStyle = "red";
+            this.ctx.fillText(
+                "Respawn in: " + sec,
+                this.hud.width * 0.5 - 100,
+                this.hud.height * 0.4
+            );
         }
 
         // Weapon
@@ -410,11 +427,24 @@ class Game extends BaseGame {
 
             // Players
             this.ctx.font = "26px Impact";
-            this.state.players.forEach((player, index) => {
-                this.ctx.fillStyle = "black";
-                this.ctx.fillText(player.name, 16, 130 + 32 * index);
-                this.ctx.fillStyle = player.alive ? "white" : "red";
-                this.ctx.fillText(player.name, 16, 128 + 32 * index);
+            this.state.getEntityGroup("player").forEach((player, index) => {
+                if (player.player) {
+                    const { name, kills, deaths } = player.player;
+                    const { health } = player;
+
+                    // SCORE
+                    const score = kills.toString() + " | " + deaths.toString();
+                    this.ctx.fillStyle = "black";
+                    this.ctx.fillText(score, 16, 130 + 32 * index);
+                    this.ctx.fillStyle = "white";
+                    this.ctx.fillText(score, 16, 128 + 32 * index);
+
+                    // Name
+                    this.ctx.fillStyle = "black";
+                    this.ctx.fillText(name, 80, 130 + 32 * index);
+                    this.ctx.fillStyle = health ? "white" : "red";
+                    this.ctx.fillText(name, 80, 128 + 32 * index);
+                }
             });
         }
 
@@ -460,5 +490,3 @@ class Game extends BaseGame {
         }
     }
 }
-
-new Game().run();

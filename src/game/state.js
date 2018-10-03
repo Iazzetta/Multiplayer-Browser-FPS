@@ -1,19 +1,23 @@
 import * as THREE from "three";
-import { Player, Entity, Wall } from "./entities.js";
+import { Entity } from "./entities.js";
 import { Assets } from "./assets.js";
 
 export class State {
     /**
-     *
-     * @param {Assets} assets
+     * @param {State=} prev
      */
-    constructor(assets) {
-        this.time = { start: 0, elapsed: 0, delta: 0 };
+    constructor(prev) {
+        this.time = { start: Date.now(), elapsed: 0, delta: 0 };
+
+        /**
+         * @type {string}
+         */
+        this.playerId = prev ? prev.playerId : "player-1";
 
         /**
          * @type {Assets}
          */
-        this.assets = assets;
+        this.assets = prev ? prev.assets : new Assets();
 
         /**
          * @type {THREE.Scene}
@@ -21,37 +25,92 @@ export class State {
         this.scene = new THREE.Scene();
 
         /**
-         * @typedef {{ id:string, name:string, alive:boolean }} PlayerData
-         * @type {PlayerData[]}
-         */
-        this.players = [];
-
-        /**
          * @type {THREE.Vector3[]}
          */
         this.playerSpawns = [];
 
         /**
+         * @private
          * @type {Map<string,Entity>}
          */
-        this.entities = new Map();
+        this._entities = new Map();
 
         /**
+         * @private
          * @type {Map<string,Entity[]>}
          */
-        this.entityGroups = new Map();
+        this._entityGroups = new Map();
 
         /**
          * @type {THREE.PerspectiveCamera}
          */
         this.camera = new THREE.PerspectiveCamera(90, 1);
+        this.screenWidth = prev ? prev.screenWidth : 1;
+        this.screenHeight = prev ? prev.screenHeight : 1;
+        this.setCameraSize(this.screenWidth, this.screenHeight);
+
+        // Create lights ...
+        const dirLight = (color, int) => {
+            return new THREE.DirectionalLight(new THREE.Color(color), int);
+        };
+
+        var light = new THREE.AmbientLight(0x404040);
+        this.scene.add(light);
+
+        const keyLight = dirLight("#FFE4C4", 0.74);
+        keyLight.position.set(-100, 50, 100);
+        this.scene.add(keyLight);
+
+        const fillLight = dirLight("#A6D8ED", 0.25);
+        fillLight.position.set(100, 50, 100);
+        this.scene.add(fillLight);
+
+        const backLight = dirLight("#FFFFFF", 0.5);
+        backLight.position.set(100, 0, -100).normalize();
+        this.scene.add(backLight);
+    }
+
+    /**
+     * @param {string} id
+     */
+    setPlayerCamera(id) {
+        const player = this.getEntity(id);
+        if (player !== undefined) {
+            player.object3D.children.forEach(child => {
+                child.visible = false;
+            });
+
+            player.head.add(this.camera);
+            player.head.visible = true;
+            player.head.children.forEach(child => {
+                child.visible = false;
+            });
+
+            const weapon = this.assets.mesh("player_weapon");
+            weapon.scale.multiplyScalar(0.5);
+            weapon.position.x = 0.25;
+            weapon.position.y = -0.25;
+            weapon.position.z = -0.1;
+            player.head.add(weapon);
+        }
+    }
+
+    /**
+     * @param {number} width
+     * @param {number} height
+     */
+    setCameraSize(width, height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
     }
 
     /**
      * @param {Entity} entity
      */
     addEntity(entity) {
-        if (this.entities.has(entity.id)) {
+        if (this._entities.has(entity.id)) {
             this.deleteEntity(entity.id);
         }
         if (entity.object3D) {
@@ -62,7 +121,11 @@ export class State {
             const flaggedEntities = this.getEntityGroup(flag);
             flaggedEntities.push(entity);
         }
-        this.entities.set(entity.id, entity);
+        this._entities.set(entity.id, entity);
+
+        if (this.playerId === entity.id) {
+            this.setPlayerCamera(entity.id);
+        }
     }
 
     /**
@@ -70,7 +133,7 @@ export class State {
      * @returns {Entity}
      */
     getEntity(id) {
-        return this.entities.get(id);
+        return this._entities.get(id);
     }
 
     /**
@@ -80,17 +143,17 @@ export class State {
      * @returns {Entity}
      */
     getEntityComponents(id) {
-        return this.entities.get(id) || Entity.empty;
+        return this._entities.get(id) || Entity.empty;
     }
 
     /**
      * @param {string} flag
      */
     getEntityGroup(flag) {
-        if (!this.entityGroups.has(flag)) {
-            this.entityGroups.set(flag, []);
+        if (!this._entityGroups.has(flag)) {
+            this._entityGroups.set(flag, []);
         }
-        return this.entityGroups.get(flag);
+        return this._entityGroups.get(flag);
     }
 
     /**
@@ -108,7 +171,14 @@ export class State {
                 const index = flaggedEntities.indexOf(entity);
                 flaggedEntities.splice(index, 1);
             }
-            this.entities.delete(id);
+            this._entities.delete(id);
         }
+    }
+
+    /**
+     * @param {(entity:Entity) => any} f
+     */
+    forEachEntity(f) {
+        this._entities.forEach(f);
     }
 }

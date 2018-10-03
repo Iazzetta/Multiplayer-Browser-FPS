@@ -1,0 +1,56 @@
+#editor {
+    $rows: 3;
+    $cols: 6;
+
+    height: 100%;
+    display: grid;
+    grid-gap: 8px;
+    grid-template-rows: 64px 1fr 64px;
+    grid-template-columns: 16px repeat($cols - 2, 1fr) 16px;
+
+    .header {
+        grid-row: 1;
+        grid-column-start: 1;
+        grid-column-end: $cols + 1;
+    }
+    .footer {
+        grid-row: $rows;
+        grid-column-start: 1;
+        grid-column-end: $cols + 1;
+    }
+
+    .menu {
+        grid-row-start: 2;
+        grid-row-end: $rows;
+        grid-column-start: 2;
+        grid-column-end: 3;
+    }
+
+    .viewport {
+        grid-row-start: 2;
+        grid-row-end: $rows;
+        grid-column-start: 3;
+        grid-column-end: $cols;
+    }
+
+    .game-screen {
+        grid-row-start: 2;
+        grid-row-end: $rows;
+        grid-column-start: 3;
+        grid-column-end: $cols;
+        position: relative;
+        background-color: black;
+
+        canvas {
+            z-index: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        canvas.hud {
+            z-index: 10;
+            pointer-events: none;
+        }
+    }
+}

@@ -2,14 +2,13 @@ import express from "express";
 import SocketIO from "socket.io";
 import { Game } from "../game/game";
 import { PORT } from "../game/consts";
-import debounce from "lodash/debounce";
 import {
-    initGame,
     SERVER_ACTION,
+    Action,
     playerJoin,
     playerLeave,
-    spawnPlayer,
-    syncAllPlayers
+    syncGameState,
+    loadLevel
 } from "../game/actions";
 
 // HTTP Server
@@ -23,37 +22,48 @@ app.use("/", express.static(__dirname + "/../../dist"));
     //================================================================
     const io = SocketIO.listen(srv);
     const game = new Game();
-    game.dispatch(initGame());
     game.subscriptions.push(action => {
         if (action.type === SERVER_ACTION) {
+            console.log(action.data.type);
             dispatch(action.data);
         }
     });
 
-    const dispatch = action => {
+    // @ts-ignore
+    const level = require("../../dist/assets/levels/level.json");
+    game.dispatch(loadLevel(level));
+
+    /**
+     *
+     * @param {Action} action
+     * @param {SocketIO.Socket=} socket
+     */
+    function dispatch(action, socket) {
         game.dispatch(action);
-        io.sockets.emit("dispatch", action);
-    };
+        if (socket === undefined) {
+            io.sockets.emit("dispatch", action);
+        } else {
+            socket.broadcast.emit("dispatch", action);
+        }
+    }
 
     io.sockets.on("connection", socket => {
         console.log("Connection", socket.id);
 
-        socket.on("join", data => {
-            console.log(data.name + " joined");
-            game.dispatch(playerJoin(socket.id, data.name));
-            dispatch(syncAllPlayers(game.state));
-            setTimeout(() => {
-                dispatch(spawnPlayer(socket.id));
-            }, 1000);
-        });
-
-        socket.on("dispatch", action => {
-            dispatch(action);
+        socket.on("join", ({ name }) => {
+            socket.emit("dispatch", loadLevel(level));
+            dispatch(playerJoin(socket.id, name));
+            dispatch(syncGameState(game.state));
+            console.log(name + " joined");
         });
 
         socket.on("disconnect", () => {
             dispatch(playerLeave(socket.id));
             console.log("Disconnect", socket.id);
+        });
+
+        socket.on("dispatch", action => {
+            dispatch(action, socket);
         });
     });
 

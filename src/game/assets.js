@@ -24,6 +24,16 @@ export class Assets {
          */
         this.objPromiseList = [];
 
+        /**
+         * @type {Map<string,object>}
+         */
+        this.levelList = new Map();
+
+        /**
+         * @type {Promise<object>[]}
+         */
+        this.levelPromiseList = [];
+
         this.fallback = {
             image: createDefaultImage(),
             geometry: new THREE.BoxGeometry(1, 1, 1),
@@ -72,17 +82,31 @@ export class Assets {
         );
     }
 
+    /**
+     * @param {string} name
+     * @param {string} src
+     */
+    loadLevel(name, src) {
+        this.levelPromiseList.push(
+            fetch(ASSETS_PATH + src)
+                .then(rsp => rsp.json())
+                .then(level => this.levelList.set(name, level))
+                .then(() => this.levelList.get(name))
+        );
+    }
+
     done() {
         return Promise.all([
             Promise.all(this.imgPromiseList),
-            Promise.all(this.objPromiseList)
+            Promise.all(this.objPromiseList),
+            Promise.all(this.levelPromiseList)
         ]);
     }
 
     /**
      *
      * @param {string} name
-     * @returns {HTMLImageElement}
+     * @returns {HTMLImageElement|HTMLCanvasElement}
      */
     sprite(name) {
         return this.imgList.get(name) || this.fallback.image;
@@ -101,6 +125,22 @@ export class Assets {
             }
         }
         return new THREE.Mesh(this.fallback.geometry, this.fallback.material);
+    }
+
+    /**
+     * @param {string} name
+     * @returns {object}
+     */
+    level(name) {
+        return this.levelList.get(name);
+    }
+
+    /**
+     * @param {string} name
+     * @param {object} data
+     */
+    setLevel(name, data) {
+        this.levelList.set(name, data);
     }
 }
 

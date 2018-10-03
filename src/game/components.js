@@ -2,20 +2,27 @@ import * as THREE from "three";
 import { DEBUG, WEAPON_TYPE } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
-export class DecayComponent {
-    constructor(ttl = 0) {
-        this.ttl = ttl;
-    }
-}
+export class PlayerComponent {
+    /**
+     * @param {object} client
+     * @param {string} client.id
+     * @param {string} client.name
+     */
+    constructor(client) {
+        this.id = client.id;
+        this.name = client.name;
+        this.kills = 0;
+        this.deaths = 0;
 
-export class ControllerComponent {
-    constructor() {
         /**
-         * @type {"idle"|"running"|"shooting"|"reloading"}
+         * @type {"idle"|"running"|"shooting"|"reloading"|"dead"}
          */
-        this.state = "idle";
-        this.speed = 0.02;
+        this.state = "dead";
+        this.respawnTimer = 0;
+
         this.input = {
+            mouseX: 0,
+            mouseY: 0,
             forward: false,
             left: false,
             back: false,
@@ -82,24 +89,9 @@ export class ColliderComponent extends THREE.Vector3 {
     }
 }
 
-export class JetpackComponent {
-    constructor() {
-        this.maxFuel = 2000;
-        this.minFuel = -1000;
-        this.fuel = this.maxFuel;
-    }
-}
-
 export class HealthComponent {
     constructor() {
         this.hp = this.max = 100;
-    }
-}
-
-export class DamageComponent {
-    constructor() {
-        this.creatorId = "";
-        this.dmg = 5;
     }
 }
 
@@ -115,7 +107,7 @@ export class Object3DComponent extends THREE.Object3D {
         }
     }
 
-    getAABB() {
+    toAABB() {
         return new AABB(
             new THREE.Vector3(
                 this.position.x - this.radius.x,
@@ -140,12 +132,5 @@ export class HeadComponent extends THREE.Object3D {
         if (DEBUG) {
             this.add(createDebugMesh());
         }
-    }
-
-    getFacingDirection() {
-        const direction = new THREE.Vector3(0, 0, -1);
-        const matrix = new THREE.Matrix4();
-        matrix.extractRotation(this.matrixWorld);
-        return direction.applyMatrix4(matrix);
     }
 }
