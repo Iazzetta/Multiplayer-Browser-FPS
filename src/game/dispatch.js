@@ -144,7 +144,7 @@ export function dispatch(state, action) {
                 if (player.object3D) {
                     playerGhost.object3D.position.set(
                         player.object3D.position.x,
-                        playerGhost.object3D.position.y,
+                        player.object3D.position.y + 30,
                         player.object3D.position.z
                     );
                 }
