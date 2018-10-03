@@ -102,7 +102,7 @@ export class PlayerGhostEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
         this.object3D.visible = false;
-        this.object3D.position.y = 4.5 * TILE_SIZE;
+
         this.head = new HeadComponent();
         this.head.rotation.x = toRadians(-80);
         this.object3D.add(this.head);

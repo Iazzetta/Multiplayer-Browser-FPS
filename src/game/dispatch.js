@@ -152,9 +152,6 @@ export function dispatch(state, action) {
             }
             return state;
         }
-
-        // =======================================
-
         case SYNC_PLAYER: {
             const {
                 id,
