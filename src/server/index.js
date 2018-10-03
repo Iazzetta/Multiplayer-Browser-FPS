@@ -24,6 +24,7 @@ app.use("/", express.static(__dirname + "/../../dist"));
     const game = new Game();
     game.subscriptions.push(action => {
         if (action.type === SERVER_ACTION) {
+            console.log(action.data.type);
             dispatch(action.data);
         }
     });

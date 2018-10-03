@@ -96,7 +96,7 @@ export class PlayerGhostEntity extends Entity {
         this.flags = ["player"];
         this.gravity = false;
 
-        this.player = new PlayerComponent(player);
+        this.player = player;
         this.player.respawnTimer = RESPAWN_TIME;
 
         this.velocity = new VelocityComponent();
@@ -119,7 +119,7 @@ export class PlayerEntity extends Entity {
         this.flags = ["player"];
         this.gravity = true;
 
-        this.player = new PlayerComponent(player);
+        this.player = player;
         this.player.respawnTimer = 0;
 
         this.weapon = new WeaponComponent();

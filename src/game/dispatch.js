@@ -174,9 +174,11 @@ export function dispatch(state, action) {
 
             const entity = state.getEntity(id);
             if (entity.player && player) {
-                entity.player.input = entity.player.input;
-                entity.player.kills = entity.player.kills;
-                entity.player.deaths = entity.player.deaths;
+                entity.player.input = player.input;
+                entity.player.kills = player.kills;
+                entity.player.deaths = player.deaths;
+                entity.player.state = player.state;
+                entity.player.respawnTimer = player.respawnTimer;
             }
 
             if (entity.health && health) {
