@@ -58,3 +58,15 @@ export function toRadians(degrees) {
 export function toDegrees(radians) {
     return (radians * 180) / Math.PI;
 }
+
+/**
+ * @param {string} name
+ */
+export function createActionType(name) {
+    if (true) {
+        return name;
+    }
+    createActionType.prototype.count = createActionType.prototype.count || 1;
+    createActionType.prototype.count++;
+    return createActionType.prototype.count;
+}

@@ -1,27 +1,24 @@
 import { State } from "./state";
-import times from "lodash/times";
-import pick from "lodash/pick";
+import { createActionType } from "./utils";
 
-export const [
-    LOAD_LEVEL,
-    SERVER_ACTION,
-    SET_MY_PLAYER_ID,
-    PLAYER_JOIN,
-    PLAYER_LEAVE,
-    SYNC_PLAYER,
-    SYNC_PLAYER_SCORE,
-    SYNC_GAME_STATE,
-    SPAWN_PLAYER,
-    SET_ASPECT_RATIO,
-    SET_PLAYER_INPUT,
-    SET_PLAYER_MOUSE,
-    HIT_PLAYER,
-    KILL_PLAYER
-] = times(100);
+export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
+export const SERVER_ACTION = createActionType("SERVER_ACTION");
+export const SET_MY_PLAYER_ID = createActionType("SET_MY_PLAYER_ID");
+export const PLAYER_JOIN = createActionType("PLAYER_JOIN");
+export const PLAYER_LEAVE = createActionType("PLAYER_LEAVE");
+export const SYNC_PLAYER = createActionType("SYNC_PLAYER");
+export const SYNC_PLAYER_SCORE = createActionType("SYNC_PLAYER_SCORE");
+export const SYNC_GAME_STATE = createActionType("SYNC_GAME_STATE");
+export const SPAWN_PLAYER = createActionType("SPAWN_PLAYER");
+export const SET_ASPECT_RATIO = createActionType("SET_ASPECT_RATIO");
+export const SET_PLAYER_INPUT = createActionType("SET_PLAYER_INPUT");
+export const SET_PLAYER_MOUSE = createActionType("SET_PLAYER_MOUSE");
+export const HIT_PLAYER = createActionType("HIT_PLAYER");
+export const KILL_PLAYE = createActionType("KILL_PLAYE");
 
 export class Action {
     /**
-     * @param {number} type
+     * @param {number|string} type
      * @param {object} data
      */
     constructor(type, data) {
