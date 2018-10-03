@@ -3,12 +3,7 @@ import map from "lodash/map";
 import sample from "lodash/sample";
 import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
-import {
-    PlayerEntity,
-    WallEntity,
-    PlayerGhostEntity,
-    Entity
-} from "./entities";
+import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
     SERVER_CONNECTION,
     LOAD_LEVEL,
