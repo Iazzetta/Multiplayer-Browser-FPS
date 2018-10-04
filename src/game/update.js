@@ -53,7 +53,7 @@ export function respawnSystem(entity, state, dispatch) {
     const { player } = entity;
     if (player && player.respawnTimer > 0) {
         player.respawnTimer -= state.time.delta;
-        if (player.respawnTimer < 0) {
+        if (player.respawnTimer <= 0) {
             player.respawnTimer = 0;
             const spawn = DEBUG
                 ? state.playerSpawns[0]
