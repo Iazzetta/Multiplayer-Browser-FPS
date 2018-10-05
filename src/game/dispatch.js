@@ -1,14 +1,8 @@
 import * as THREE from "three";
-import map from "lodash/map";
 import sample from "lodash/sample";
-import { JUMP_SPEED } from "./consts.js";
+import clamp from "lodash/clamp";
 import { State } from "./state.js";
-import {
-    PlayerEntity,
-    WallEntity,
-    PlayerGhostEntity,
-    Entity
-} from "./entities";
+import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
@@ -100,6 +94,7 @@ export function dispatch(state, action) {
             if (object3D && head) {
                 object3D.rotation.y += ver;
                 head.rotation.x += hor;
+                head.rotation.x = clamp(head.rotation.x, -1.6, 1.6);
             }
             return state;
         }
