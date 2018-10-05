@@ -1,14 +1,14 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
-import { TILE_SIZE, RESPAWN_TIME } from "./consts.js";
+import {  RESPAWN_TIME } from "./consts.js";
 import {
     PlayerComponent,
     VelocityComponent,
     Object3DComponent,
-    HeadComponent,
     ColliderComponent,
     WeaponComponent,
-    StatsComponent
+    StatsComponent,
+    HeroModelComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -59,6 +59,11 @@ export class Entity {
         this.player = undefined;
 
         /**
+         * @type {HeroModelComponent}
+         */
+        this.heroModel = undefined;
+
+        /**
          * @type {StatsComponent}
          */
         this.stats = undefined;
@@ -68,10 +73,6 @@ export class Entity {
          */
         this.object3D = undefined;
 
-        /**
-         * @type {HeadComponent}
-         */
-        this.head = undefined;
 
         /**
          * @type {ColliderComponent}
@@ -109,9 +110,9 @@ export class PlayerGhostEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
         this.object3D.visible = false;
 
-        this.head = new HeadComponent();
-        this.head.rotation.x = toRadians(-80);
-        this.object3D.add(this.head);
+        this.heroModel = new HeroModelComponent();
+        this.heroModel.head.rotation.x = toRadians(-80);
+        this.object3D.add(this.heroModel);
     }
 }
 
@@ -137,12 +138,13 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.head = new HeadComponent();
-        this.head.add(assets.mesh("player_head"));
+        this.heroModel = new HeroModelComponent({
+            headMesh: assets.mesh("player_head"),
+            bodyMesh: assets.mesh("player_body")
+        });
 
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.add(assets.mesh("player_body"));
-        this.object3D.add(this.head);
+        this.object3D.add(this.heroModel);
     }
 }
 

@@ -127,8 +127,8 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, player, stats, head } = entity;
-    if (weapon && player && stats && head) {
+    const { weapon, player, stats, heroModel } = entity;
+    if (weapon && player && stats && heroModel) {
         if (weapon.firerateTimer > 0) {
             player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
@@ -143,15 +143,12 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = stats.firerate;
 
-            // Camera shake
-            head.cameraShake = 1000;
-
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(head.matrixWorld);
+            dirMatrix.extractRotation(heroModel.head.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(head.matrixWorld);
+            originMatrix.copyPosition(heroModel.head.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)
@@ -366,18 +363,17 @@ export function physicsSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function cameraShakeSystem(entity, state, dispatch) {
-    const { head } = entity;
-    if (head && head.cameraShake > 0) {
-        head.cameraShake *= 0.9;
-        head.position.x = 0;
-        head.position.y = 1.5;
-        head.position.z = 0;
-
-        if (head.cameraShake > 0) {
-            const scalar = 0.0001;
-            const shake = head.cameraShake;
-            head.position.x = random(-shake, shake) * scalar;
-            head.position.y = random(-shake, shake) * scalar;
-        }
-    }
+    // const { head } = entity;
+    // if (head && head.cameraShake > 0) {
+    //     head.cameraShake *= 0.9;
+    //     head.position.x = 0;
+    //     head.position.y = 1.5;
+    //     head.position.z = 0;
+    //     if (head.cameraShake > 0) {
+    //         const scalar = 0.0001;
+    //         const shake = head.cameraShake;
+    //         head.position.x = random(-shake, shake) * scalar;
+    //         head.position.y = random(-shake, shake) * scalar;
+    //     }
+    // }
 }

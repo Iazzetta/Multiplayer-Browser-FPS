@@ -76,19 +76,13 @@ export class State {
     setPlayerCamera(id) {
         const player = this.getEntity(id);
         if (player !== undefined) {
-            player.object3D.children.forEach(child => {
-                child.visible = false;
-            });
-
-            player.head.add(this.camera);
-            player.head.visible = true;
-            player.head.children.forEach(child => {
-                child.visible = false;
-            });
+            player.heroModel.headMesh.visible = false;
+            player.heroModel.bodyMesh.visible = false;
 
             const weapon = this.assets.mesh("player_weapon");
             weapon.scale.multiplyScalar(0.5);
-            player.head.add(weapon);
+            player.heroModel.head.add(weapon);
+            player.heroModel.head.add(this.camera);
         }
     }
 

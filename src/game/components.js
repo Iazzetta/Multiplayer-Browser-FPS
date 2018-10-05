@@ -132,15 +132,29 @@ export class Object3DComponent extends THREE.Object3D {
     }
 }
 
-export class HeadComponent extends THREE.Object3D {
-    constructor() {
+export class HeroModelComponent extends THREE.Object3D {
+    /**
+     * @param {object} config
+     * @param {THREE.Mesh=} config.headMesh
+     * @param {THREE.Mesh=} config.bodyMesh
+     */
+    constructor(config = {}) {
         super();
-        this.position.y = 1.5;
-        this.position.z = 0;
-        this.cameraShake = 0;
 
-        if (DEBUG) {
-            this.add(createDebugMesh());
-        }
+        this.headMesh = config.headMesh || new THREE.Mesh();
+        this.bodyMesh = config.bodyMesh || new THREE.Mesh();
+
+        this.head = new THREE.Object3D();
+        this.head.add(this.headMesh);
+
+        this.body = new THREE.Object3D();
+        this.body.add(this.bodyMesh);
+
+        this.headOrigin = new THREE.Object3D();
+        this.headOrigin.position.set(0, 1.5, 0);
+
+        this.headOrigin.add(this.head);
+        this.body.add(this.headOrigin);
+        this.add(this.body);
     }
 }

@@ -152,7 +152,7 @@ export function syncPlayer(id, state) {
         health: player.health,
         velocity: player.velocity,
         object3D: getData3D(player.object3D),
-        head: getData3D(player.head)
+        heroModelHead: getData3D(player.heroModel.head)
     });
 }
 

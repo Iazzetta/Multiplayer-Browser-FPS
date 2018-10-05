@@ -90,11 +90,15 @@ export function dispatch(state, action) {
         }
         case SET_PLAYER_MOUSE: {
             const { id, ver, hor } = action.data;
-            const { object3D, head } = state.getEntityComponents(id);
-            if (object3D && head) {
+            const { object3D, heroModel } = state.getEntityComponents(id);
+            if (object3D && heroModel) {
                 object3D.rotation.y += ver;
-                head.rotation.x += hor;
-                head.rotation.x = clamp(head.rotation.x, -1.6, 1.6);
+                heroModel.head.rotation.x += hor;
+                heroModel.head.rotation.x = clamp(
+                    heroModel.head.rotation.x,
+                    -1.6,
+                    1.6
+                );
             }
             return state;
         }
@@ -152,8 +156,8 @@ export function dispatch(state, action) {
                 player,
                 health,
                 velocity,
-                head,
-                object3D
+                object3D,
+                heroModelHead
             } = action.data;
 
             if (state.getEntity(id) === undefined) {
@@ -181,9 +185,9 @@ export function dispatch(state, action) {
                 entity.object3D.rotation.copy(object3D.rotation);
             }
 
-            if (entity.head && head) {
-                entity.head.position.copy(head.position);
-                entity.head.rotation.copy(head.rotation);
+            if (entity.heroModel && heroModelHead) {
+                entity.heroModel.head.position.copy(heroModelHead.position);
+                entity.heroModel.head.rotation.copy(heroModelHead.rotation);
             }
 
             if (entity.velocity && velocity) {
