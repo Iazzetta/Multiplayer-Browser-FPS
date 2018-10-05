@@ -12,7 +12,8 @@ import {
     setPlayerMouse,
     setPlayerInput,
     setMyPlayerId,
-    syncPlayer
+    syncPlayer,
+    HIT_PLAYER
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -99,6 +100,12 @@ export class Game extends BaseGame {
                         game.dispatch(action.data);
                     }
                     break;
+                case HIT_PLAYER: {
+                    if (action.data.id === this.playerId) {
+                        this.bloodScreen = 500;
+                    }
+                    break;
+                }
             }
         });
 
