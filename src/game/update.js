@@ -12,8 +12,9 @@ import {
 import { Entity } from "./entities";
 import { AABB } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
-import sample from "lodash/sample";
 import intersection from "ray-aabb-intersection";
+import sample from "lodash/sample";
+import random from "lodash/random";
 
 /**
  * @param {State} state
@@ -29,6 +30,7 @@ export function update(state, dispatch) {
         playerControllerSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
+        cameraShakeSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
@@ -125,8 +127,8 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, player, stats } = entity;
-    if (weapon && player && stats) {
+    const { weapon, player, stats, head } = entity;
+    if (weapon && player && stats && head) {
         if (weapon.firerateTimer > 0) {
             player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
@@ -141,12 +143,15 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = stats.firerate;
 
+            // Camera shake
+            head.cameraShake = 1000;
+
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(entity.head.matrixWorld);
+            dirMatrix.extractRotation(head.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(entity.head.matrixWorld);
+            originMatrix.copyPosition(head.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)
@@ -198,22 +203,24 @@ export function shootingSystem(entity, state, dispatch) {
                 }
             }
 
-            // Bullet trace
-            const p1 = new THREE.Vector3(...origin);
-            const p2 = new THREE.Vector3(...hitscan.point);
+            if (false) {
+                // Bullet trace
+                const p1 = new THREE.Vector3(...origin);
+                const p2 = new THREE.Vector3(...hitscan.point);
 
-            const material = new THREE.LineBasicMaterial({
-                color: 0x0000ff
-            });
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x0000ff
+                });
 
-            const geometry = new THREE.Geometry();
-            geometry.vertices.push(p1, p2);
+                const geometry = new THREE.Geometry();
+                geometry.vertices.push(p1, p2);
 
-            const line = new THREE.Line(geometry, material);
-            state.scene.add(line);
-            setTimeout(() => {
-                state.scene.remove(line);
-            }, 500);
+                const line = new THREE.Line(geometry, material);
+                state.scene.add(line);
+                setTimeout(() => {
+                    state.scene.remove(line);
+                }, 500);
+            }
         }
     }
 }
@@ -349,6 +356,28 @@ export function physicsSystem(entity, state, dispatch) {
                             : 1;
                 }
             });
+        }
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function cameraShakeSystem(entity, state, dispatch) {
+    const { head } = entity;
+    if (head && head.cameraShake > 0) {
+        head.cameraShake *= 0.9;
+        head.position.x = 0;
+        head.position.y = 1.5;
+        head.position.z = 0;
+
+        if (head.cameraShake > 0) {
+            const scalar = 0.0001;
+            const shake = head.cameraShake;
+            head.position.x = random(-shake, shake) * scalar;
+            head.position.y = random(-shake, shake) * scalar;
         }
     }
 }

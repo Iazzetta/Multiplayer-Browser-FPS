@@ -137,6 +137,7 @@ export class HeadComponent extends THREE.Object3D {
         super();
         this.position.y = 1.5;
         this.position.z = 0;
+        this.cameraShake = 0;
 
         if (DEBUG) {
             this.add(createDebugMesh());
