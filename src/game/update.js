@@ -176,10 +176,10 @@ export function shootingSystem(entity, state, dispatch) {
 
             if (hitscan.entity && hitscan.entity.health) {
                 const target = hitscan.entity;
-                const hp = target.health.hp - 10;
-                if (hp > 0) {
+                const health = target.health - 10;
+                if (health > 0) {
                     const sync = a => dispatch(clientAction(entity.id, a));
-                    sync(hitPlayer(target.id, hp));
+                    sync(hitPlayer(target.id, health));
                 } else {
                     const sync = a => dispatch(serverAction(a));
 

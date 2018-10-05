@@ -3,7 +3,12 @@ import map from "lodash/map";
 import sample from "lodash/sample";
 import { JUMP_SPEED } from "./consts.js";
 import { State } from "./state.js";
-import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
+import {
+    PlayerEntity,
+    WallEntity,
+    PlayerGhostEntity,
+    Entity
+} from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
@@ -124,14 +129,9 @@ export function dispatch(state, action) {
         }
         case HIT_PLAYER: {
             const { id, hp } = action.data;
-            const { health, velocity, collider } = state.getEntityComponents(
-                id
-            );
-            if (health) {
-                health.hp = hp;
-            }
-            if (velocity && collider && collider.bottom()) {
-                velocity.y = JUMP_SPEED * 0.5;
+            const entity = state.getEntity(id);
+            if (entity && entity.health !== undefined) {
+                entity.health = hp;
             }
             return state;
         }
@@ -177,9 +177,8 @@ export function dispatch(state, action) {
                 entity.player.respawnTimer = player.respawnTimer;
             }
 
-            if (entity.health && health) {
-                entity.health.hp = health.hp;
-                entity.health.max = health.max;
+            if (entity.health && health !== undefined) {
+                entity.health = health;
             }
 
             if (entity.object3D && object3D) {

@@ -6,7 +6,6 @@ import {
     VelocityComponent,
     Object3DComponent,
     HeadComponent,
-    HealthComponent,
     ColliderComponent,
     WeaponComponent
 } from "./components";
@@ -45,6 +44,11 @@ export class Entity {
          */
         this.gravity = false;
 
+        /**
+         * @type {number}
+         */
+        this.health = undefined;
+
         // Components
         //===========================
 
@@ -72,11 +76,6 @@ export class Entity {
          * @type {VelocityComponent}
          */
         this.velocity = undefined;
-
-        /**
-         * @type {HealthComponent}
-         */
-        this.health = undefined;
 
         /**
          * @type {WeaponComponent}
@@ -122,8 +121,8 @@ export class PlayerEntity extends Entity {
         this.player = player;
         this.player.respawnTimer = 0;
 
+        this.health = 100;
         this.weapon = new WeaponComponent();
-        this.health = new HealthComponent();
 
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();

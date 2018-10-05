@@ -89,12 +89,6 @@ export class ColliderComponent extends THREE.Vector3 {
     }
 }
 
-export class HealthComponent {
-    constructor() {
-        this.hp = this.max = 100;
-    }
-}
-
 export class Object3DComponent extends THREE.Object3D {
     /**
      * @param {THREE.Vector3} radius

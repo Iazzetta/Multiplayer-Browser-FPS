@@ -406,13 +406,13 @@ export class Game extends BaseGame {
         }
 
         // Health
-        if (health) {
+        if (health !== undefined) {
             this.renderInfo({
                 text: "HP",
                 info: null,
                 color: "limegreen",
-                value: health.hp,
-                max: health.max,
+                value: health,
+                max: 100,
                 x: this.hud.width * 0.5,
                 y: this.hud.height - 50
             });
