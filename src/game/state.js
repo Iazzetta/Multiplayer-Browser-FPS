@@ -88,9 +88,6 @@ export class State {
 
             const weapon = this.assets.mesh("player_weapon");
             weapon.scale.multiplyScalar(0.5);
-            weapon.position.x = 0.25;
-            weapon.position.y = -0.25;
-            weapon.position.z = -0.1;
             player.head.add(weapon);
         }
     }
