@@ -7,7 +7,8 @@ import {
     Object3DComponent,
     HeadComponent,
     ColliderComponent,
-    WeaponComponent
+    WeaponComponent,
+    StatsComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -58,6 +59,11 @@ export class Entity {
         this.player = undefined;
 
         /**
+         * @type {StatsComponent}
+         */
+        this.stats = undefined;
+
+        /**
          * @type {Object3DComponent}
          */
         this.object3D = undefined;
@@ -97,6 +103,7 @@ export class PlayerGhostEntity extends Entity {
 
         this.player = player;
         this.player.respawnTimer = RESPAWN_TIME;
+        this.stats = new StatsComponent();
 
         this.velocity = new VelocityComponent();
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
@@ -120,9 +127,12 @@ export class PlayerEntity extends Entity {
 
         this.player = player;
         this.player.respawnTimer = 0;
+        this.stats = new StatsComponent();
 
         this.health = 100;
         this.weapon = new WeaponComponent();
+        this.weapon.loadedAmmo = this.stats.maxLoadedAmmo;
+        this.weapon.reservedAmmo = this.stats.maxReservedAmmo;
 
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();

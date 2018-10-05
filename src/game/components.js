@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { DEBUG, WEAPON_TYPE } from "./consts.js";
+import { DEBUG, RUN_SPEED, JUMP_SPEED } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
 export class PlayerComponent {
@@ -34,11 +34,26 @@ export class PlayerComponent {
     }
 }
 
+export class StatsComponent {
+    constructor() {
+        // General stats
+        this.maxHealth = 100;
+        this.runSpeed = RUN_SPEED;
+        this.jumpSpeed = JUMP_SPEED;
+
+        // Weapon stats
+        this.damage = 1;
+        this.firerate = 100;
+        this.reloadSpeed = 2000;
+        this.maxLoadedAmmo = 50;
+        this.maxReservedAmmo = 2500;
+    }
+}
+
 export class WeaponComponent {
     constructor() {
-        this.type = WEAPON_TYPE.MACHINEGUN;
-        this.loadedAmmo = this.type.maxLoadedAmmo;
-        this.reservedAmmo = this.type.maxReservedAmmo;
+        this.loadedAmmo = 0;
+        this.reservedAmmo = 0;
         this.firerateTimer = 0;
         this.reloadTimer = 0;
     }

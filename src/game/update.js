@@ -11,7 +11,7 @@ import {
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED, RUN_SPEED, DEBUG } from "./consts";
+import { GRAVITY, DEBUG } from "./consts";
 import sample from "lodash/sample";
 import intersection from "ray-aabb-intersection";
 
@@ -82,9 +82,9 @@ export function gravitySystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function playerControllerSystem(entity, state, dispatch) {
-    const { player, velocity, object3D } = entity;
+    const { player, stats, velocity, object3D } = entity;
 
-    if (player && velocity && object3D) {
+    if (player && stats && velocity && object3D) {
         const input = player.input;
 
         // Reset state
@@ -94,7 +94,7 @@ export function playerControllerSystem(entity, state, dispatch) {
         if (input.jump) {
             // Normal jump
             if (entity.collider && entity.collider.bottom()) {
-                velocity.y = JUMP_SPEED;
+                velocity.y = stats.jumpSpeed;
                 input.jump = false;
             }
         }
@@ -114,8 +114,8 @@ export function playerControllerSystem(entity, state, dispatch) {
             player.state = "running";
         }
 
-        velocity.z *= RUN_SPEED;
-        velocity.x *= RUN_SPEED;
+        velocity.z *= stats.runSpeed;
+        velocity.x *= stats.runSpeed;
     }
 }
 
@@ -125,8 +125,8 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, player } = entity;
-    if (weapon && player) {
+    const { weapon, player, stats } = entity;
+    if (weapon && player && stats) {
         if (weapon.firerateTimer > 0) {
             player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
@@ -139,7 +139,7 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo > 0
         ) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
-            weapon.firerateTimer = weapon.type.firerate;
+            weapon.firerateTimer = stats.firerate;
 
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
@@ -224,15 +224,15 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, player } = entity;
-    if (weapon && player) {
+    const { weapon, player, stats } = entity;
+    if (weapon && player && stats) {
         const canReload =
             weapon.reloadTimer === 0 &&
             weapon.reservedAmmo > 0 &&
-            weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
+            weapon.loadedAmmo < stats.maxLoadedAmmo;
 
         if (canReload && (player.input.reload || weapon.loadedAmmo === 0)) {
-            weapon.reloadTimer = weapon.type.reloadSpeed;
+            weapon.reloadTimer = stats.reloadSpeed;
         }
 
         const isRelaoding = weapon.reloadTimer > 0;
@@ -242,7 +242,7 @@ export function reloadingSystem(entity, state, dispatch) {
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;
 
-                const delta = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
+                const delta = stats.maxLoadedAmmo - weapon.loadedAmmo;
                 const loadedAmmo = Math.min(weapon.reservedAmmo, delta);
                 if (loadedAmmo > 0) {
                     weapon.loadedAmmo += loadedAmmo;
