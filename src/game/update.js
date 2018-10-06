@@ -28,10 +28,16 @@ export function update(state, dispatch) {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
         playerControllerSystem(entity, state, dispatch);
+        playerCameraSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
+
+        // Update input
+        if (entity.player) {
+            Object.assign(entity.player.prevInput, entity.player.input);
+        }
     });
 }
 
@@ -117,6 +123,26 @@ export function playerControllerSystem(entity, state, dispatch) {
 
         velocity.z *= stats.runSpeed;
         velocity.x *= stats.runSpeed;
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function playerCameraSystem(entity, state, dispatch) {
+    const { player, health } = entity;
+    if (entity.id === state.playerId && player && health === undefined) {
+        if (player.pressed("jump")) {
+            const alivePlayers = state
+                .getEntityGroup("player")
+                .filter(p => p.health);
+            const enemyPlayer = sample(alivePlayers);
+            if (enemyPlayer) {
+                state.setPovEntity(enemyPlayer.id);
+            }
+        }
     }
 }
 

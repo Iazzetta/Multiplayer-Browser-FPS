@@ -87,6 +87,7 @@ export class State {
         const povEntity = this.getEntity(id);
         if (povEntity && povEntity.playerModel) {
             povEntity.playerModel.setMode("first-perosn");
+            this.povEntity = povEntity.id;
             this.camera = povEntity.playerModel.camera;
             this.setCameraSize(this.screenWidth, this.screenHeight);
         }

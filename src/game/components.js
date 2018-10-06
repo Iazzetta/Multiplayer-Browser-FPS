@@ -31,6 +31,16 @@ export class PlayerComponent {
             shoot: false,
             reload: false
         };
+
+        this.prevInput = Object.assign({}, this.input);
+    }
+
+    pressed(input) {
+        return this.input[input] && !this.prevInput[input];
+    }
+
+    released(input) {
+        return !this.input[input] && this.prevInput[input];
     }
 }
 
