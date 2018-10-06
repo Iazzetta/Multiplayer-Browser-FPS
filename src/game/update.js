@@ -10,11 +10,10 @@ import {
     clientAction
 } from "./actions";
 import { Entity } from "./entities";
-import { AABB } from "./utils";
+import { AABB, toRadians } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
 import intersection from "ray-aabb-intersection";
 import sample from "lodash/sample";
-import random from "lodash/random";
 
 /**
  * @param {State} state
@@ -33,6 +32,7 @@ export function update(state, dispatch) {
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
+        povAnimationSystem(entity, state, dispatch);
 
         // Update input
         if (entity.player) {
@@ -277,6 +277,54 @@ export function reloadingSystem(entity, state, dispatch) {
                     weapon.loadedAmmo += loadedAmmo;
                     weapon.reservedAmmo -= loadedAmmo;
                 }
+            }
+        }
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function povAnimationSystem(entity, state, dispatch) {
+    if (entity.id !== state.povEntity) return;
+    const { player, playerModel, weapon } = entity;
+    if (player && playerModel && weapon) {
+        const gunModel = playerModel.povWeaponModel;
+        gunModel.position.set(0, 0, 0);
+        gunModel.rotation.set(0, 0, 0);
+
+        switch (player.state) {
+            case "shooting": {
+                const s = weapon.firerateTimer;
+                gunModel.position.z += 0.0005 * s;
+                gunModel.position.x += Math.random() * 0.0001 * s;
+                gunModel.position.y += Math.random() * 0.0001 * s;
+                gunModel.position.z += Math.random() * 0.0002 * s;
+                break;
+            }
+            case "reloading": {
+                const elapsed = state.time.elapsed * 0.01;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.03;
+                gunModel.position.z -= 0.5;
+                gunModel.rotation.x = toRadians(-69);
+                gunModel.rotation.y = toRadians(50);
+                gunModel.rotation.z = toRadians(25);
+                break;
+            }
+            case "running": {
+                const elapsed = state.time.elapsed * 0.01;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.03;
+                gunModel.position.x -= Math.cos(elapsed) * 0.03;
+                break;
+            }
+            default:
+            case "idle": {
+                const elapsed = state.time.elapsed * 0.005;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.0025;
+                gunModel.position.x -= Math.cos(elapsed) * 0.0025;
+                break;
             }
         }
     }

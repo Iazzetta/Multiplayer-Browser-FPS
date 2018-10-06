@@ -311,56 +311,6 @@ export class Game extends BaseGame {
         this.dispatch(setAspectRatio(width, height));
     }
 
-    update() {
-        super.update();
-
-        // POV - Animations
-        const { player, weapon, head } = this.myComponents;
-
-        if (
-            player !== undefined &&
-            weapon !== undefined &&
-            head !== undefined
-        ) {
-            const gunMesh = head.children[head.children.length - 1];
-            gunMesh.position.set(0, 0, 0);
-            gunMesh.rotation.set(0, 0, 0);
-
-            switch (player.state) {
-                case "shooting": {
-                    const s = weapon.firerateTimer;
-                    gunMesh.position.z += 0.0005 * s;
-                    gunMesh.position.x += Math.random() * 0.0001 * s;
-                    gunMesh.position.y += Math.random() * 0.0001 * s;
-                    gunMesh.position.z += Math.random() * 0.0001 * s;
-                    break;
-                }
-                case "reloading": {
-                    const elapsed = this.state.time.elapsed * 0.01;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.03;
-                    gunMesh.position.z -= 0.5;
-                    gunMesh.rotation.x = toRadians(-69);
-                    gunMesh.rotation.y = toRadians(50);
-                    gunMesh.rotation.z = toRadians(25);
-                    break;
-                }
-                case "running": {
-                    const elapsed = this.state.time.elapsed * 0.01;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.03;
-                    gunMesh.position.x -= Math.cos(elapsed) * 0.03;
-                    break;
-                }
-                default:
-                case "idle": {
-                    const elapsed = this.state.time.elapsed * 0.005;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.0025;
-                    gunMesh.position.x -= Math.cos(elapsed) * 0.0025;
-                    break;
-                }
-            }
-        }
-    }
-
     render() {
         this.renderer.render(this.state.scene, this.state.camera);
         this.renderHUD();
