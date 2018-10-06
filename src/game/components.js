@@ -154,3 +154,21 @@ export class PlayerModelComponent extends THREE.Object3D {
         this.root.add(this.head);
     }
 }
+
+export class PovComponent extends THREE.Object3D {
+    /**
+     * @param {PlayerModelComponent} playerModel
+     */
+    constructor(playerModel) {
+        super();
+        this.visible = false;
+
+        this.camera = new THREE.PerspectiveCamera(90, 1);
+        this.add(this.camera);
+
+        this.weapon = new THREE.Object3D();
+        this.add(this.weapon);
+
+        playerModel.head.add(this);
+    }
+}

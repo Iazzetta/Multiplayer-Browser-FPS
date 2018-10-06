@@ -8,7 +8,8 @@ import {
     ColliderComponent,
     WeaponComponent,
     StatsComponent,
-    PlayerModelComponent
+    PlayerModelComponent,
+    PovComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -64,6 +65,11 @@ export class Entity {
         this.playerModel = undefined;
 
         /**
+         * @type {PovComponent}
+         */
+        this.pov = undefined;
+
+        /**
          * @type {StatsComponent}
          */
         this.stats = undefined;
@@ -110,6 +116,8 @@ export class PlayerGhostEntity extends Entity {
 
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.head.rotation.x = toRadians(-80);
+
+        this.pov = new PovComponent(this.playerModel);
     }
 }
 
@@ -139,6 +147,8 @@ export class PlayerEntity extends Entity {
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.head.add(assets.mesh("player_head"));
         this.playerModel.body.add(assets.mesh("player_body"));
+
+        this.pov = new PovComponent(this.playerModel);
     }
 }
 
