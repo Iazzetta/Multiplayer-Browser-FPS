@@ -28,7 +28,7 @@ export function update(state, dispatch) {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
         playerControllerSystem(entity, state, dispatch);
-        playerCameraSystem(entity, state, dispatch);
+        activeCameraSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
@@ -131,7 +131,7 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {State} state
  * @param {(action:Action)=>any} dispatch
  */
-export function playerCameraSystem(entity, state, dispatch) {
+export function activeCameraSystem(entity, state, dispatch) {
     const { player, health } = entity;
     if (entity.id === state.playerId && player && health === undefined) {
         if (player.pressed("jump")) {
