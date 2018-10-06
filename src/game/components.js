@@ -152,23 +152,38 @@ export class PlayerModelComponent extends THREE.Object3D {
         this.head = new THREE.Object3D();
         this.head.position.y = 5;
         this.root.add(this.head);
-    }
-}
 
-export class PovComponent extends THREE.Object3D {
-    /**
-     * @param {PlayerModelComponent} playerModel
-     */
-    constructor(playerModel) {
-        super();
-        this.visible = false;
+        this.bodyModel = new THREE.Object3D();
+        this.body.add(this.bodyModel);
+
+        this.headModel = new THREE.Object3D();
+        this.head.add(this.headModel);
 
         this.camera = new THREE.PerspectiveCamera(90, 1);
-        this.add(this.camera);
+        this.head.add(this.camera);
 
-        this.weapon = new THREE.Object3D();
-        this.add(this.weapon);
+        this.povWeaponModel = new THREE.Object3D();
+        this.head.add(this.povWeaponModel);
+    }
 
-        playerModel.head.add(this);
+    /**
+     *
+     * @param {"third-person"|"first-perosn"} mode
+     */
+    setMode(mode) {
+        switch (mode) {
+            case "first-perosn": {
+                this.povWeaponModel.visible = true;
+                this.headModel.visible = false;
+                this.bodyModel.visible = false;
+                return;
+            }
+            case "third-person": {
+                this.povWeaponModel.visible = false;
+                this.headModel.visible = true;
+                this.bodyModel.visible = true;
+                return;
+            }
+        }
     }
 }

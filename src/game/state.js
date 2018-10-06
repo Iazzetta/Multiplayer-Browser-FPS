@@ -79,41 +79,16 @@ export class State {
      * @param {string} id
      */
     setPovEntity(id) {
-        const povEntity = this.getEntity(id);
         const prevPovEntity = this.getEntity(this.povEntity);
-
-        const show = obj => (obj.visible = true);
-        const hide = obj => (obj.visible = false);
-
-        if (prevPovEntity) {
-            const { pov, playerModel } = prevPovEntity;
-            if (playerModel) {
-                playerModel.head.children.forEach(show);
-                playerModel.body.children.forEach(show);
-            }
-
-            if (pov) {
-                pov.visible = false;
-                pov.weapon.remove(...pov.weapon.children);
-            }
+        if (prevPovEntity && prevPovEntity.playerModel) {
+            prevPovEntity.playerModel.setMode("third-person");
         }
 
-        if (povEntity) {
-            const { pov, playerModel, weapon } = povEntity;
-            if (playerModel) {
-                playerModel.head.children.forEach(hide);
-                playerModel.body.children.forEach(hide);
-            }
-
-            if (pov) {
-                pov.visible = true;
-                if (weapon) {
-                    pov.weapon.add(this.assets.mesh("player_weapon"));
-                }
-
-                this.camera = pov.camera;
-                this.setCameraSize(this.screenWidth, this.screenHeight);
-            }
+        const povEntity = this.getEntity(id);
+        if (povEntity && povEntity.playerModel) {
+            povEntity.playerModel.setMode("first-perosn");
+            this.camera = povEntity.playerModel.camera;
+            this.setCameraSize(this.screenWidth, this.screenHeight);
         }
     }
 
