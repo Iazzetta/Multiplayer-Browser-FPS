@@ -30,7 +30,6 @@ export function update(state, dispatch) {
         playerControllerSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
-        cameraShakeSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
     });
@@ -355,25 +354,4 @@ export function physicsSystem(entity, state, dispatch) {
             });
         }
     }
-}
-
-/**
- * @param {Entity} entity
- * @param {State} state
- * @param {(action:Action)=>any} dispatch
- */
-export function cameraShakeSystem(entity, state, dispatch) {
-    // const { head } = entity;
-    // if (head && head.cameraShake > 0) {
-    //     head.cameraShake *= 0.9;
-    //     head.position.x = 0;
-    //     head.position.y = 1.5;
-    //     head.position.z = 0;
-    //     if (head.cameraShake > 0) {
-    //         const scalar = 0.0001;
-    //         const shake = head.cameraShake;
-    //         head.position.x = random(-shake, shake) * scalar;
-    //         head.position.y = random(-shake, shake) * scalar;
-    //     }
-    // }
 }
