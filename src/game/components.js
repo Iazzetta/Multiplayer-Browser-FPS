@@ -134,27 +134,23 @@ export class Object3DComponent extends THREE.Object3D {
 
 export class PlayerModelComponent extends THREE.Object3D {
     /**
-     * @param {object} config
-     * @param {THREE.Mesh=} config.headMesh
-     * @param {THREE.Mesh=} config.bodyMesh
+     * @param {Object3DComponent} object3D
      */
-    constructor(config = {}) {
+    constructor(object3D) {
         super();
 
-        this.headMesh = config.headMesh || new THREE.Mesh();
-        this.bodyMesh = config.bodyMesh || new THREE.Mesh();
+        const size = object3D.toAABB().size();
 
-        this.head = new THREE.Object3D();
-        this.head.add(this.headMesh);
+        this.root = new THREE.Object3D();
+        this.root.position.y = -size.y * 0.5;
+        object3D.add(this.root);
 
         this.body = new THREE.Object3D();
-        this.body.add(this.bodyMesh);
+        this.body.position.y = 2;
+        this.root.add(this.body);
 
-        this.headOrigin = new THREE.Object3D();
-        this.headOrigin.position.set(0, 1.5, 0);
-
-        this.headOrigin.add(this.head);
-        this.body.add(this.headOrigin);
-        this.add(this.body);
+        this.head = new THREE.Object3D();
+        this.head.position.y = 5;
+        this.root.add(this.head);
     }
 }

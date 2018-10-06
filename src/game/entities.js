@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
-import {  RESPAWN_TIME } from "./consts.js";
+import { RESPAWN_TIME } from "./consts.js";
 import {
     PlayerComponent,
     VelocityComponent,
@@ -73,7 +73,6 @@ export class Entity {
          */
         this.object3D = undefined;
 
-
         /**
          * @type {ColliderComponent}
          */
@@ -107,12 +106,10 @@ export class PlayerGhostEntity extends Entity {
         this.stats = new StatsComponent();
 
         this.velocity = new VelocityComponent();
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.visible = false;
+        this.object3D = new Object3DComponent(new THREE.Vector3(1, 3, 1));
 
-        this.playerModel = new PlayerModelComponent();
+        this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.head.rotation.x = toRadians(-80);
-        this.object3D.add(this.playerModel);
     }
 }
 
@@ -138,13 +135,10 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.playerModel = new PlayerModelComponent({
-            headMesh: assets.mesh("player_head"),
-            bodyMesh: assets.mesh("player_body")
-        });
-
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.add(this.playerModel);
+        this.object3D = new Object3DComponent(new THREE.Vector3(1, 3, 1));
+        this.playerModel = new PlayerModelComponent(this.object3D);
+        this.playerModel.head.add(assets.mesh("player_head"));
+        this.playerModel.body.add(assets.mesh("player_body"));
     }
 }
 

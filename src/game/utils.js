@@ -6,6 +6,10 @@ export class AABB {
         this.max = max;
     }
 
+    size() {
+        return this.max.clone().sub(this.min);
+    }
+
     toArray() {
         return [this.min.toArray(), this.max.toArray()];
     }
