@@ -119,6 +119,7 @@ export class Game extends BaseGame {
         game.dispatch(setMyPlayerId("player-1"));
         game.dispatch(loadLevel(level));
         game.dispatch(playerJoin("player-1", "Player"));
+        game.dispatch(playerJoin("player-2", "Enemy player"));
         game.initSocket();
 
         // Run game
