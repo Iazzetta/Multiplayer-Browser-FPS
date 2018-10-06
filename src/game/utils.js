@@ -64,6 +64,17 @@ export function toDegrees(radians) {
 }
 
 /**
+ * @param {string} group
+ * @returns {number}
+ */
+export function counter(group) {
+    counter.prototype.counters = counter.prototype.counters || {};
+    counter.prototype.counters[group] = counter.prototype.counters[group] || 1;
+    counter.prototype.counters[group]++;
+    return counter.prototype.counters[group];
+}
+
+/**
  * @param {string} name
  */
 export function createActionType(name) {
@@ -72,5 +83,5 @@ export function createActionType(name) {
     }
     createActionType.prototype.count = createActionType.prototype.count || 1;
     createActionType.prototype.count++;
-    return createActionType.prototype.count;
+    return counter("action-types");
 }
