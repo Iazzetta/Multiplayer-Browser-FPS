@@ -127,8 +127,8 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, player, stats, heroModel } = entity;
-    if (weapon && player && stats && heroModel) {
+    const { weapon, player, stats, playerModel } = entity;
+    if (weapon && player && stats && playerModel) {
         if (weapon.firerateTimer > 0) {
             player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
@@ -145,10 +145,10 @@ export function shootingSystem(entity, state, dispatch) {
 
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(heroModel.head.matrixWorld);
+            dirMatrix.extractRotation(playerModel.head.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(heroModel.head.matrixWorld);
+            originMatrix.copyPosition(playerModel.head.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)

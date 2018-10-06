@@ -132,7 +132,7 @@ export class Object3DComponent extends THREE.Object3D {
     }
 }
 
-export class HeroModelComponent extends THREE.Object3D {
+export class PlayerModelComponent extends THREE.Object3D {
     /**
      * @param {object} config
      * @param {THREE.Mesh=} config.headMesh

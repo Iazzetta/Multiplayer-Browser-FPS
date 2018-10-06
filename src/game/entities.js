@@ -8,7 +8,7 @@ import {
     ColliderComponent,
     WeaponComponent,
     StatsComponent,
-    HeroModelComponent
+    PlayerModelComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -59,9 +59,9 @@ export class Entity {
         this.player = undefined;
 
         /**
-         * @type {HeroModelComponent}
+         * @type {PlayerModelComponent}
          */
-        this.heroModel = undefined;
+        this.playerModel = undefined;
 
         /**
          * @type {StatsComponent}
@@ -110,9 +110,9 @@ export class PlayerGhostEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
         this.object3D.visible = false;
 
-        this.heroModel = new HeroModelComponent();
-        this.heroModel.head.rotation.x = toRadians(-80);
-        this.object3D.add(this.heroModel);
+        this.playerModel = new PlayerModelComponent();
+        this.playerModel.head.rotation.x = toRadians(-80);
+        this.object3D.add(this.playerModel);
     }
 }
 
@@ -138,13 +138,13 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.heroModel = new HeroModelComponent({
+        this.playerModel = new PlayerModelComponent({
             headMesh: assets.mesh("player_head"),
             bodyMesh: assets.mesh("player_body")
         });
 
         this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.add(this.heroModel);
+        this.object3D.add(this.playerModel);
     }
 }
 
