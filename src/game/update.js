@@ -10,7 +10,7 @@ import {
     clientAction
 } from "./actions";
 import { Entity } from "./entities";
-import { AABB, toRadians } from "./utils";
+import { AABB } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
 import intersection from "ray-aabb-intersection";
 import sample from "lodash/sample";
@@ -21,6 +21,7 @@ import sample from "lodash/sample";
  */
 export function update(state, dispatch) {
     updateTime(state);
+    state.particles.update(state.time.delta);
 
     // Systems
     state.forEachEntity(entity => {
@@ -223,6 +224,12 @@ export function shootingSystem(entity, state, dispatch) {
 
                     sync(killPlayer(target.id));
                 }
+            }
+
+            // Particles
+            if (hitscan.entity) {
+                const point = new THREE.Vector3(...hitscan.point);
+                state.particles.emit(point);
             }
 
             if (false) {

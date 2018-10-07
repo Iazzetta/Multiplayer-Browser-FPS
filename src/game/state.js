@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Entity } from "./entities.js";
 import { Assets } from "./assets.js";
+import { ParticleSystem } from "./particles.js";
 
 export class State {
     /**
@@ -33,6 +34,12 @@ export class State {
          * @type {THREE.Vector3[]}
          */
         this.playerSpawns = [];
+
+        /**
+         * @type {ParticleSystem}
+         */
+        this.particles = new ParticleSystem();
+        this.scene.add(this.particles);
 
         /**
          * @private
