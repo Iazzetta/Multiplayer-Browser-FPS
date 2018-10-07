@@ -307,10 +307,8 @@ export function povAnimationSystem(entity, state, dispatch) {
             case "reloading": {
                 const elapsed = state.time.elapsed * 0.01;
                 gunModel.position.y += Math.cos(elapsed * 2) * 0.03;
-                gunModel.position.z -= 0.5;
-                gunModel.rotation.x = toRadians(-69);
-                gunModel.rotation.y = toRadians(50);
-                gunModel.rotation.z = toRadians(25);
+                gunModel.position.y -= 0.5;
+                gunModel.rotation.x = 1.25;
                 break;
             }
             case "running": {
