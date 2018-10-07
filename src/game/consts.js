@@ -1,8 +1,8 @@
-export const DEBUG = true;
+export const DEBUG = false;
 
 export const PORT = "8080";
 
-export const RESPAWN_TIME = 5000;
+export const RESPAWN_TIME = 3000;
 
 export const TILE_SIZE = 16;
 
