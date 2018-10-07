@@ -10,10 +10,10 @@ import {
     clientAction
 } from "./actions";
 import { Entity } from "./entities";
-import { AABB } from "./utils";
-import { GRAVITY, JUMP_SPEED, RUN_SPEED, DEBUG } from "./consts";
-import sample from "lodash/sample";
+import { AABB, toRadians } from "./utils";
+import { GRAVITY, DEBUG } from "./consts";
 import intersection from "ray-aabb-intersection";
+import sample from "lodash/sample";
 
 /**
  * @param {State} state
@@ -27,10 +27,17 @@ export function update(state, dispatch) {
         if (entity.sleep) return;
         respawnSystem(entity, state, dispatch);
         playerControllerSystem(entity, state, dispatch);
+        activeCameraSystem(entity, state, dispatch);
         gravitySystem(entity, state, dispatch);
         shootingSystem(entity, state, dispatch);
         reloadingSystem(entity, state, dispatch);
         physicsSystem(entity, state, dispatch);
+        povAnimationSystem(entity, state, dispatch);
+
+        // Update input
+        if (entity.player) {
+            Object.assign(entity.player.prevInput, entity.player.input);
+        }
     });
 }
 
@@ -53,7 +60,7 @@ export function respawnSystem(entity, state, dispatch) {
     const { player } = entity;
     if (player && player.respawnTimer > 0) {
         player.respawnTimer -= state.time.delta;
-        if (player.respawnTimer < 0) {
+        if (player.respawnTimer <= 0) {
             player.respawnTimer = 0;
             const spawn = DEBUG
                 ? state.playerSpawns[0]
@@ -82,9 +89,9 @@ export function gravitySystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function playerControllerSystem(entity, state, dispatch) {
-    const { player, velocity, object3D } = entity;
+    const { player, stats, velocity, object3D } = entity;
 
-    if (player && velocity && object3D) {
+    if (player && stats && velocity && object3D) {
         const input = player.input;
 
         // Reset state
@@ -94,7 +101,7 @@ export function playerControllerSystem(entity, state, dispatch) {
         if (input.jump) {
             // Normal jump
             if (entity.collider && entity.collider.bottom()) {
-                velocity.y = JUMP_SPEED;
+                velocity.y = stats.jumpSpeed;
                 input.jump = false;
             }
         }
@@ -114,8 +121,28 @@ export function playerControllerSystem(entity, state, dispatch) {
             player.state = "running";
         }
 
-        velocity.z *= RUN_SPEED;
-        velocity.x *= RUN_SPEED;
+        velocity.z *= stats.runSpeed;
+        velocity.x *= stats.runSpeed;
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function activeCameraSystem(entity, state, dispatch) {
+    const { player, health } = entity;
+    if (entity.id === state.playerId && player && health === undefined) {
+        if (player.pressed("jump")) {
+            const alivePlayers = state
+                .getEntityGroup("player")
+                .filter(p => p.health);
+            const enemyPlayer = sample(alivePlayers);
+            if (enemyPlayer) {
+                state.setPovEntity(enemyPlayer.id);
+            }
+        }
     }
 }
 
@@ -125,8 +152,8 @@ export function playerControllerSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function shootingSystem(entity, state, dispatch) {
-    const { weapon, player } = entity;
-    if (weapon && player) {
+    const { weapon, player, stats, playerModel } = entity;
+    if (weapon && player && stats && playerModel) {
         if (weapon.firerateTimer > 0) {
             player.state = "shooting";
             weapon.firerateTimer -= state.time.delta;
@@ -139,14 +166,14 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo > 0
         ) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
-            weapon.firerateTimer = weapon.type.firerate;
+            weapon.firerateTimer = stats.firerate;
 
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(entity.head.matrixWorld);
+            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(entity.head.matrixWorld);
+            originMatrix.copyPosition(playerModel.camera.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)
@@ -176,10 +203,10 @@ export function shootingSystem(entity, state, dispatch) {
 
             if (hitscan.entity && hitscan.entity.health) {
                 const target = hitscan.entity;
-                const hp = target.health.hp - 10;
-                if (hp > 0) {
+                const health = target.health - 10;
+                if (health > 0) {
                     const sync = a => dispatch(clientAction(entity.id, a));
-                    sync(hitPlayer(target.id, hp));
+                    sync(hitPlayer(target.id, health));
                 } else {
                     const sync = a => dispatch(serverAction(a));
 
@@ -198,22 +225,24 @@ export function shootingSystem(entity, state, dispatch) {
                 }
             }
 
-            // Bullet trace
-            const p1 = new THREE.Vector3(...origin);
-            const p2 = new THREE.Vector3(...hitscan.point);
+            if (false) {
+                // Bullet trace
+                const p1 = new THREE.Vector3(...origin);
+                const p2 = new THREE.Vector3(...hitscan.point);
 
-            const material = new THREE.LineBasicMaterial({
-                color: 0x0000ff
-            });
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x0000ff
+                });
 
-            const geometry = new THREE.Geometry();
-            geometry.vertices.push(p1, p2);
+                const geometry = new THREE.Geometry();
+                geometry.vertices.push(p1, p2);
 
-            const line = new THREE.Line(geometry, material);
-            state.scene.add(line);
-            setTimeout(() => {
-                state.scene.remove(line);
-            }, 500);
+                const line = new THREE.Line(geometry, material);
+                state.scene.add(line);
+                setTimeout(() => {
+                    state.scene.remove(line);
+                }, 500);
+            }
         }
     }
 }
@@ -224,15 +253,15 @@ export function shootingSystem(entity, state, dispatch) {
  * @param {(action:Action)=>any} dispatch
  */
 export function reloadingSystem(entity, state, dispatch) {
-    const { weapon, player } = entity;
-    if (weapon && player) {
+    const { weapon, player, stats } = entity;
+    if (weapon && player && stats) {
         const canReload =
             weapon.reloadTimer === 0 &&
             weapon.reservedAmmo > 0 &&
-            weapon.loadedAmmo < weapon.type.maxLoadedAmmo;
+            weapon.loadedAmmo < stats.maxLoadedAmmo;
 
         if (canReload && (player.input.reload || weapon.loadedAmmo === 0)) {
-            weapon.reloadTimer = weapon.type.reloadSpeed;
+            weapon.reloadTimer = stats.reloadSpeed;
         }
 
         const isRelaoding = weapon.reloadTimer > 0;
@@ -242,12 +271,58 @@ export function reloadingSystem(entity, state, dispatch) {
             if (weapon.reloadTimer <= 0) {
                 weapon.reloadTimer = 0;
 
-                const delta = weapon.type.maxLoadedAmmo - weapon.loadedAmmo;
+                const delta = stats.maxLoadedAmmo - weapon.loadedAmmo;
                 const loadedAmmo = Math.min(weapon.reservedAmmo, delta);
                 if (loadedAmmo > 0) {
                     weapon.loadedAmmo += loadedAmmo;
                     weapon.reservedAmmo -= loadedAmmo;
                 }
+            }
+        }
+    }
+}
+
+/**
+ * @param {Entity} entity
+ * @param {State} state
+ * @param {(action:Action)=>any} dispatch
+ */
+export function povAnimationSystem(entity, state, dispatch) {
+    if (entity.id !== state.povEntity) return;
+    const { player, playerModel, weapon } = entity;
+    if (player && playerModel && weapon) {
+        const gunModel = playerModel.povWeaponModel;
+        gunModel.position.set(0, 0, 0);
+        gunModel.rotation.set(0, 0, 0);
+
+        switch (player.state) {
+            case "shooting": {
+                const s = weapon.firerateTimer;
+                gunModel.position.z += 0.0005 * s;
+                gunModel.position.x += Math.random() * 0.0001 * s;
+                gunModel.position.y += Math.random() * 0.0001 * s;
+                gunModel.position.z += Math.random() * 0.0002 * s;
+                break;
+            }
+            case "reloading": {
+                const elapsed = state.time.elapsed * 0.01;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.03;
+                gunModel.position.y -= 0.5;
+                gunModel.rotation.x = 1.25;
+                break;
+            }
+            case "running": {
+                const elapsed = state.time.elapsed * 0.01;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.03;
+                gunModel.position.x -= Math.cos(elapsed) * 0.03;
+                break;
+            }
+            default:
+            case "idle": {
+                const elapsed = state.time.elapsed * 0.005;
+                gunModel.position.y += Math.cos(elapsed * 2) * 0.0025;
+                gunModel.position.x -= Math.cos(elapsed) * 0.0025;
+                break;
             }
         }
     }

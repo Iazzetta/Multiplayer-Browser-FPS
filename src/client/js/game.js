@@ -12,7 +12,8 @@ import {
     setPlayerMouse,
     setPlayerInput,
     setMyPlayerId,
-    syncPlayer
+    syncPlayer,
+    HIT_PLAYER
 } from "../../game/actions.js";
 import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
@@ -99,6 +100,12 @@ export class Game extends BaseGame {
                         game.dispatch(action.data);
                     }
                     break;
+                case HIT_PLAYER: {
+                    if (action.data.id === this.playerId) {
+                        this.bloodScreen = 500;
+                    }
+                    break;
+                }
             }
         });
 
@@ -112,6 +119,7 @@ export class Game extends BaseGame {
         game.dispatch(setMyPlayerId("player-1"));
         game.dispatch(loadLevel(level));
         game.dispatch(playerJoin("player-1", "Player"));
+        game.dispatch(playerJoin("player-2", "Enemy player"));
         game.initSocket();
 
         // Run game
@@ -193,13 +201,11 @@ export class Game extends BaseGame {
 
     loadAssets() {
         this.state.assets.loadLevel("level-1", "levels/level.json");
-        this.state.assets.loadObj("bullet", "bullet.obj");
         this.state.assets.loadObj("wall_tile", "wall_tile.obj");
         this.state.assets.loadObj("player_head", "player_head.obj");
         this.state.assets.loadObj("player_body", "player_body.obj");
+        this.state.assets.loadObj("player_pilot", "player_pilot.obj");
         this.state.assets.loadObj("player_weapon", "player_weapon.obj");
-        this.state.assets.loadObj("bullet_pickup", "bullet_pickup.obj");
-        this.state.assets.loadObj("jetpack_pickup", "jetpack_pickup.obj");
         return this.state.assets.done();
     }
 
@@ -303,58 +309,6 @@ export class Game extends BaseGame {
         this.dispatch(setAspectRatio(width, height));
     }
 
-    update() {
-        super.update();
-
-        // POV - Animations
-        const { player, weapon, head } = this.myComponents;
-
-        if (
-            player !== undefined &&
-            weapon !== undefined &&
-            head !== undefined
-        ) {
-            const gunMesh = head.children[head.children.length - 1];
-            gunMesh.position.x = 0.05;
-            gunMesh.position.y = -0.25;
-            gunMesh.position.z = -0.1;
-            gunMesh.rotation.set(0, 0, 0);
-
-            switch (player.state) {
-                case "shooting": {
-                    const s = weapon.firerateTimer;
-                    gunMesh.position.z += 0.0005 * s;
-                    gunMesh.position.x += Math.random() * 0.0001 * s;
-                    gunMesh.position.y += Math.random() * 0.0001 * s;
-                    gunMesh.position.z += Math.random() * 0.0001 * s;
-                    break;
-                }
-                case "reloading": {
-                    const elapsed = this.state.time.elapsed * 0.01;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.03;
-                    gunMesh.position.z -= 0.5;
-                    gunMesh.rotation.x = toRadians(-69);
-                    gunMesh.rotation.y = toRadians(50);
-                    gunMesh.rotation.z = toRadians(25);
-                    break;
-                }
-                case "running": {
-                    const elapsed = this.state.time.elapsed * 0.01;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.03;
-                    gunMesh.position.x -= Math.cos(elapsed) * 0.03;
-                    break;
-                }
-                default:
-                case "idle": {
-                    const elapsed = this.state.time.elapsed * 0.005;
-                    gunMesh.position.y += Math.cos(elapsed * 2) * 0.0025;
-                    gunMesh.position.x -= Math.cos(elapsed) * 0.0025;
-                    break;
-                }
-            }
-        }
-    }
-
     render() {
         this.renderer.render(this.state.scene, this.state.camera);
         this.renderHUD();
@@ -406,13 +360,13 @@ export class Game extends BaseGame {
         }
 
         // Health
-        if (health) {
+        if (health !== undefined) {
             this.renderInfo({
                 text: "HP",
                 info: null,
                 color: "limegreen",
-                value: health.hp,
-                max: health.max,
+                value: health,
+                max: 100,
                 x: this.hud.width * 0.5,
                 y: this.hud.height - 50
             });

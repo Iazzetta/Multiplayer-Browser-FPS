@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { DEBUG, WEAPON_TYPE } from "./consts.js";
+import { DEBUG, RUN_SPEED, JUMP_SPEED } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
 
 export class PlayerComponent {
@@ -31,14 +31,39 @@ export class PlayerComponent {
             shoot: false,
             reload: false
         };
+
+        this.prevInput = Object.assign({}, this.input);
+    }
+
+    pressed(input) {
+        return this.input[input] && !this.prevInput[input];
+    }
+
+    released(input) {
+        return !this.input[input] && this.prevInput[input];
+    }
+}
+
+export class StatsComponent {
+    constructor() {
+        // General stats
+        this.maxHealth = 100;
+        this.runSpeed = RUN_SPEED;
+        this.jumpSpeed = JUMP_SPEED;
+
+        // Weapon stats
+        this.damage = 1;
+        this.firerate = 100;
+        this.reloadSpeed = 2000;
+        this.maxLoadedAmmo = 50;
+        this.maxReservedAmmo = 2500;
     }
 }
 
 export class WeaponComponent {
     constructor() {
-        this.type = WEAPON_TYPE.MACHINEGUN;
-        this.loadedAmmo = this.type.maxLoadedAmmo;
-        this.reservedAmmo = this.type.maxReservedAmmo;
+        this.loadedAmmo = 0;
+        this.reservedAmmo = 0;
         this.firerateTimer = 0;
         this.reloadTimer = 0;
     }
@@ -89,12 +114,6 @@ export class ColliderComponent extends THREE.Vector3 {
     }
 }
 
-export class HealthComponent {
-    constructor() {
-        this.hp = this.max = 100;
-    }
-}
-
 export class Object3DComponent extends THREE.Object3D {
     /**
      * @param {THREE.Vector3} radius
@@ -123,14 +142,60 @@ export class Object3DComponent extends THREE.Object3D {
     }
 }
 
-export class HeadComponent extends THREE.Object3D {
-    constructor() {
+export class PlayerModelComponent extends THREE.Object3D {
+    /**
+     * @param {Object3DComponent} object3D
+     */
+    constructor(object3D) {
         super();
-        this.position.y = 1.5;
-        this.position.z = 0;
 
-        if (DEBUG) {
-            this.add(createDebugMesh());
+        const size = object3D.toAABB().size();
+
+        this.root = new THREE.Object3D();
+        this.root.position.y = -size.y * 0.5;
+        this.root.position.z = 1
+        object3D.add(this.root);
+
+        this.body = new THREE.Object3D();
+        this.body.position.y = size.y * 0.5;
+        this.root.add(this.body);
+
+        this.head = new THREE.Object3D();
+        this.head.position.y = size.y * 0.5;
+        this.root.add(this.head);
+
+        this.bodyModel = new THREE.Object3D();
+        this.body.add(this.bodyModel);
+
+        this.headModel = new THREE.Object3D();
+        this.head.add(this.headModel);
+
+        this.camera = new THREE.PerspectiveCamera(90, 1);
+        this.camera.position.y = 1;
+        this.head.add(this.camera);
+
+        this.povWeaponModel = new THREE.Object3D();
+        this.camera.add(this.povWeaponModel);
+    }
+
+    /**
+     *
+     * @param {"third-person"|"first-perosn"} mode
+     */
+    setMode(mode) {
+        switch (mode) {
+            case "first-perosn": {
+                this.povWeaponModel.visible = true;
+                this.headModel.visible = false;
+                this.bodyModel.visible = false;
+                return;
+            }
+            case "third-person": {
+                this.povWeaponModel.visible = false;
+                this.headModel.visible = true;
+                this.bodyModel.visible = true;
+                return;
+            }
         }
     }
 }

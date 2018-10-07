@@ -15,6 +15,11 @@ export class State {
         this.playerId = prev ? prev.playerId : "player-1";
 
         /**
+         * @type {string}
+         */
+        this.povEntity = null;
+
+        /**
          * @type {Assets}
          */
         this.assets = prev ? prev.assets : new Assets();
@@ -73,25 +78,18 @@ export class State {
     /**
      * @param {string} id
      */
-    setPlayerCamera(id) {
-        const player = this.getEntity(id);
-        if (player !== undefined) {
-            player.object3D.children.forEach(child => {
-                child.visible = false;
-            });
+    setPovEntity(id) {
+        const prevPovEntity = this.getEntity(this.povEntity);
+        if (prevPovEntity && prevPovEntity.playerModel) {
+            prevPovEntity.playerModel.setMode("third-person");
+        }
 
-            player.head.add(this.camera);
-            player.head.visible = true;
-            player.head.children.forEach(child => {
-                child.visible = false;
-            });
-
-            const weapon = this.assets.mesh("player_weapon");
-            weapon.scale.multiplyScalar(0.5);
-            weapon.position.x = 0.25;
-            weapon.position.y = -0.25;
-            weapon.position.z = -0.1;
-            player.head.add(weapon);
+        const povEntity = this.getEntity(id);
+        if (povEntity && povEntity.playerModel) {
+            povEntity.playerModel.setMode("first-perosn");
+            this.povEntity = povEntity.id;
+            this.camera = povEntity.playerModel.camera;
+            this.setCameraSize(this.screenWidth, this.screenHeight);
         }
     }
 
@@ -124,7 +122,7 @@ export class State {
         this._entities.set(entity.id, entity);
 
         if (this.playerId === entity.id) {
-            this.setPlayerCamera(entity.id);
+            this.setPovEntity(entity.id);
         }
     }
 

@@ -1,14 +1,14 @@
 import * as THREE from "three";
 import { Assets } from "./assets";
-import { TILE_SIZE, RESPAWN_TIME } from "./consts.js";
+import { RESPAWN_TIME } from "./consts.js";
 import {
     PlayerComponent,
     VelocityComponent,
     Object3DComponent,
-    HeadComponent,
-    HealthComponent,
     ColliderComponent,
-    WeaponComponent
+    WeaponComponent,
+    StatsComponent,
+    PlayerModelComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -45,6 +45,11 @@ export class Entity {
          */
         this.gravity = false;
 
+        /**
+         * @type {number}
+         */
+        this.health = undefined;
+
         // Components
         //===========================
 
@@ -54,14 +59,19 @@ export class Entity {
         this.player = undefined;
 
         /**
+         * @type {PlayerModelComponent}
+         */
+        this.playerModel = undefined;
+
+        /**
+         * @type {StatsComponent}
+         */
+        this.stats = undefined;
+
+        /**
          * @type {Object3DComponent}
          */
         this.object3D = undefined;
-
-        /**
-         * @type {HeadComponent}
-         */
-        this.head = undefined;
 
         /**
          * @type {ColliderComponent}
@@ -72,11 +82,6 @@ export class Entity {
          * @type {VelocityComponent}
          */
         this.velocity = undefined;
-
-        /**
-         * @type {HealthComponent}
-         */
-        this.health = undefined;
 
         /**
          * @type {WeaponComponent}
@@ -98,14 +103,13 @@ export class PlayerGhostEntity extends Entity {
 
         this.player = player;
         this.player.respawnTimer = RESPAWN_TIME;
+        this.stats = new StatsComponent();
 
         this.velocity = new VelocityComponent();
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.visible = false;
+        this.object3D = new Object3DComponent();
 
-        this.head = new HeadComponent();
-        this.head.rotation.x = toRadians(-80);
-        this.object3D.add(this.head);
+        this.playerModel = new PlayerModelComponent(this.object3D);
+        this.playerModel.head.rotation.x = toRadians(-80);
     }
 }
 
@@ -121,19 +125,23 @@ export class PlayerEntity extends Entity {
 
         this.player = player;
         this.player.respawnTimer = 0;
+        this.stats = new StatsComponent();
 
+        this.health = 100;
         this.weapon = new WeaponComponent();
-        this.health = new HealthComponent();
+        this.weapon.loadedAmmo = this.stats.maxLoadedAmmo;
+        this.weapon.reservedAmmo = this.stats.maxReservedAmmo;
 
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.head = new HeadComponent();
-        this.head.add(assets.mesh("player_head"));
-
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 2, 1));
-        this.object3D.add(assets.mesh("player_body"));
-        this.object3D.add(this.head);
+        this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1.5));
+        this.playerModel = new PlayerModelComponent(this.object3D);
+        this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
+        this.playerModel.headModel.add(assets.mesh("player_pilot"));
+        this.playerModel.headModel.add(assets.mesh("player_head"));
+        this.playerModel.bodyModel.add(assets.mesh("player_body"));
+        this.playerModel.setMode("third-person");
     }
 }
 

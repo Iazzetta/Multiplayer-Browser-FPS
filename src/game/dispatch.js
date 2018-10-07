@@ -1,7 +1,6 @@
 import * as THREE from "three";
-import map from "lodash/map";
 import sample from "lodash/sample";
-import { JUMP_SPEED } from "./consts.js";
+import clamp from "lodash/clamp";
 import { State } from "./state.js";
 import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
 import {
@@ -91,10 +90,15 @@ export function dispatch(state, action) {
         }
         case SET_PLAYER_MOUSE: {
             const { id, ver, hor } = action.data;
-            const { object3D, head } = state.getEntityComponents(id);
-            if (object3D && head) {
+            const { object3D, playerModel } = state.getEntityComponents(id);
+            if (object3D && playerModel) {
                 object3D.rotation.y += ver;
-                head.rotation.x += hor;
+                playerModel.head.rotation.x += hor;
+                playerModel.head.rotation.x = clamp(
+                    playerModel.head.rotation.x,
+                    -1.6,
+                    1.6
+                );
             }
             return state;
         }
@@ -124,14 +128,9 @@ export function dispatch(state, action) {
         }
         case HIT_PLAYER: {
             const { id, hp } = action.data;
-            const { health, velocity, collider } = state.getEntityComponents(
-                id
-            );
-            if (health) {
-                health.hp = hp;
-            }
-            if (velocity && collider && collider.bottom()) {
-                velocity.y = JUMP_SPEED * 0.5;
+            const entity = state.getEntity(id);
+            if (entity && entity.health !== undefined) {
+                entity.health = hp;
             }
             return state;
         }
@@ -157,8 +156,8 @@ export function dispatch(state, action) {
                 player,
                 health,
                 velocity,
-                head,
-                object3D
+                object3D,
+                playerModelHead
             } = action.data;
 
             if (state.getEntity(id) === undefined) {
@@ -177,9 +176,8 @@ export function dispatch(state, action) {
                 entity.player.respawnTimer = player.respawnTimer;
             }
 
-            if (entity.health && health) {
-                entity.health.hp = health.hp;
-                entity.health.max = health.max;
+            if (entity.health && health !== undefined) {
+                entity.health = health;
             }
 
             if (entity.object3D && object3D) {
@@ -187,9 +185,9 @@ export function dispatch(state, action) {
                 entity.object3D.rotation.copy(object3D.rotation);
             }
 
-            if (entity.head && head) {
-                entity.head.position.copy(head.position);
-                entity.head.rotation.copy(head.rotation);
+            if (entity.playerModel && playerModelHead) {
+                entity.playerModel.head.position.copy(playerModelHead.position);
+                entity.playerModel.head.rotation.copy(playerModelHead.rotation);
             }
 
             if (entity.velocity && velocity) {
