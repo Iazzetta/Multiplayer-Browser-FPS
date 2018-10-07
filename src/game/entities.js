@@ -138,6 +138,7 @@ export class PlayerEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1));
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
+        this.playerModel.headModel.add(assets.mesh("player_pilot"));
         this.playerModel.headModel.add(assets.mesh("player_head"));
         this.playerModel.bodyModel.add(assets.mesh("player_body"));
         this.playerModel.setMode("third-person");

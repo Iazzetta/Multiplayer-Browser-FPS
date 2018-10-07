@@ -201,13 +201,11 @@ export class Game extends BaseGame {
 
     loadAssets() {
         this.state.assets.loadLevel("level-1", "levels/level.json");
-        this.state.assets.loadObj("bullet", "bullet.obj");
         this.state.assets.loadObj("wall_tile", "wall_tile.obj");
         this.state.assets.loadObj("player_head", "player_head.obj");
         this.state.assets.loadObj("player_body", "player_body.obj");
+        this.state.assets.loadObj("player_pilot", "player_pilot.obj");
         this.state.assets.loadObj("player_weapon", "player_weapon.obj");
-        this.state.assets.loadObj("bullet_pickup", "bullet_pickup.obj");
-        this.state.assets.loadObj("jetpack_pickup", "jetpack_pickup.obj");
         return this.state.assets.done();
     }
 
