@@ -135,7 +135,7 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.object3D = new Object3DComponent(new THREE.Vector3(1, 3, 1));
+        this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1));
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
         this.playerModel.headModel.add(assets.mesh("player_head"));

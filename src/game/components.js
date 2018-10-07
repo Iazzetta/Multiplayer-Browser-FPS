@@ -156,11 +156,11 @@ export class PlayerModelComponent extends THREE.Object3D {
         object3D.add(this.root);
 
         this.body = new THREE.Object3D();
-        this.body.position.y = 2;
+        this.body.position.y = size.y * 0.5;
         this.root.add(this.body);
 
         this.head = new THREE.Object3D();
-        this.head.position.y = 5;
+        this.head.position.y = size.y * 0.5;
         this.root.add(this.head);
 
         this.bodyModel = new THREE.Object3D();
@@ -170,10 +170,11 @@ export class PlayerModelComponent extends THREE.Object3D {
         this.head.add(this.headModel);
 
         this.camera = new THREE.PerspectiveCamera(90, 1);
+        this.camera.position.y = 1;
         this.head.add(this.camera);
 
         this.povWeaponModel = new THREE.Object3D();
-        this.head.add(this.povWeaponModel);
+        this.camera.add(this.povWeaponModel);
     }
 
     /**

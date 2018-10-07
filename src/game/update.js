@@ -170,10 +170,10 @@ export function shootingSystem(entity, state, dispatch) {
 
             // Hitscan
             const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(playerModel.head.matrixWorld);
+            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
 
             const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(playerModel.head.matrixWorld);
+            originMatrix.copyPosition(playerModel.camera.matrixWorld);
 
             const origin = new THREE.Vector3(0, 0, 0)
                 .applyMatrix4(originMatrix)
