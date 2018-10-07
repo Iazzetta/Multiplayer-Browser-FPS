@@ -153,6 +153,7 @@ export class PlayerModelComponent extends THREE.Object3D {
 
         this.root = new THREE.Object3D();
         this.root.position.y = -size.y * 0.5;
+        this.root.position.z = 1
         object3D.add(this.root);
 
         this.body = new THREE.Object3D();
