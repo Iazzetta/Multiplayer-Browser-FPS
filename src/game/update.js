@@ -228,8 +228,10 @@ export function shootingSystem(entity, state, dispatch) {
 
             // Particles
             if (hitscan.entity) {
-                const point = new THREE.Vector3(...hitscan.point);
-                state.particles.emit(point);
+                state.particles.bulletImpact(
+                    new THREE.Vector3(...origin),
+                    new THREE.Vector3(...hitscan.point)
+                );
             }
 
             if (false) {
