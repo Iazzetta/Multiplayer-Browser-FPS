@@ -79,7 +79,7 @@ export class ParticleSystem extends THREE.Object3D {
 export class Particle extends THREE.Mesh {
     constructor(geometry = GEOMETRY, material = MATERIAL_DUST) {
         super(geometry, material);
-        this.ttl = random(10000, 50000);
+        this.ttl = random(1000, 5000);
         this.velocity = new THREE.Vector3();
     }
 }
