@@ -241,6 +241,7 @@ export class Game extends BaseGame {
 
         // Init THREE Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setClearColor(0x63a9db, 1);
 
         // Append to dom
         this.container.innerHTML = "";

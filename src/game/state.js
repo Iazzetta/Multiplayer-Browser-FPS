@@ -69,11 +69,11 @@ export class State {
         var light = new THREE.AmbientLight(0x404040);
         this.scene.add(light);
 
-        const keyLight = dirLight("#FFE4C4", 0.74);
+        const keyLight = dirLight("#FFE4C4", 1);
         keyLight.position.set(-100, 50, 100);
         this.scene.add(keyLight);
 
-        const fillLight = dirLight("#A6D8ED", 0.25);
+        const fillLight = dirLight("#A6D8ED", 0.6);
         fillLight.position.set(100, 50, 100);
         this.scene.add(fillLight);
 
