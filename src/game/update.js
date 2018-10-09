@@ -14,6 +14,7 @@ import { AABB } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
 import intersection from "ray-aabb-intersection";
 import sample from "lodash/sample";
+import random from "lodash/random";
 
 /**
  * @param {State} state
@@ -169,10 +170,7 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = stats.firerate;
 
-            // Hitscan
-            const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
-
+            // Bullet origin point
             const originMatrix = new THREE.Matrix4();
             originMatrix.copyPosition(playerModel.camera.matrixWorld);
 
@@ -180,8 +178,20 @@ export function shootingSystem(entity, state, dispatch) {
                 .applyMatrix4(originMatrix)
                 .toArray();
 
+            // Bullet direction
+            const dirMatrix = new THREE.Matrix4();
+            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
+
+            const offset = 1 - stats.accuracy;
+            const spread = new THREE.Vector3(
+                random(-offset, offset),
+                random(-offset, offset),
+                random(-offset, offset)
+            );
             const dir = new THREE.Vector3(0, 0, -1)
                 .applyMatrix4(dirMatrix)
+                .add(spread)
+                .normalize()
                 .toArray();
 
             const hitscan = {
@@ -235,9 +245,9 @@ export function shootingSystem(entity, state, dispatch) {
                     );
                 } else {
                     state.particles.bulletImpactWall(
-                    new THREE.Vector3(...origin),
-                    new THREE.Vector3(...hitscan.point)
-                );
+                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.point)
+                    );
                 }
             }
 
