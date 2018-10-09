@@ -228,10 +228,17 @@ export function shootingSystem(entity, state, dispatch) {
 
             // Particles
             if (hitscan.entity) {
-                state.particles.bulletImpact(
+                if (hitscan.entity.health) {
+                    state.particles.bulletImpactPlayer(
+                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.point)
+                    );
+                } else {
+                    state.particles.bulletImpactWall(
                     new THREE.Vector3(...origin),
                     new THREE.Vector3(...hitscan.point)
                 );
+                }
             }
 
             if (false) {
