@@ -295,6 +295,8 @@ export function povAnimationSystem(entity, state, dispatch) {
         gunModel.position.set(0, 0, 0);
         gunModel.rotation.set(0, 0, 0);
 
+        playerModel.povMuzzleflash.visible = false;
+
         switch (player.state) {
             case "shooting": {
                 const s = weapon.firerateTimer;
@@ -302,6 +304,8 @@ export function povAnimationSystem(entity, state, dispatch) {
                 gunModel.position.x += Math.random() * 0.0001 * s;
                 gunModel.position.y += Math.random() * 0.0001 * s;
                 gunModel.position.z += Math.random() * 0.0002 * s;
+
+                playerModel.povMuzzleflash.visible = Math.random() > 0.5;
                 break;
             }
             case "reloading": {

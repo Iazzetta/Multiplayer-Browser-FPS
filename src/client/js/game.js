@@ -206,6 +206,7 @@ export class Game extends BaseGame {
         this.state.assets.loadObj("player_body", "player_body.obj");
         this.state.assets.loadObj("player_pilot", "player_pilot.obj");
         this.state.assets.loadObj("player_weapon", "player_weapon.obj");
+        this.state.assets.loadObj("muzzle_flash", "muzzle_flash.obj");
         return this.state.assets.done();
     }
 
