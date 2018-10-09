@@ -1,0 +1,12 @@
+# Blender MTL File: 'player_weapon.blend'
+# Material Count: 1
+
+newmtl muzzle_flash
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 0.833780 0.522483
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
