@@ -28,6 +28,7 @@ export class PlayerComponent {
             back: false,
             right: false,
             jump: false,
+            down: false,
             shoot: false,
             reload: false
         };

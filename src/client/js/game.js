@@ -15,17 +15,17 @@ import {
     syncPlayer,
     HIT_PLAYER
 } from "../../game/actions.js";
-import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
 
-export const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
+export const [W, A, S, D, R, SPACE, SHIFT] = [87, 65, 83, 68, 82, 32, 16];
 export const KEY_BINDS = {
     [W]: "forward",
     [A]: "left",
     [S]: "back",
     [D]: "right",
     [R]: "reload",
-    [SPACE]: "jump"
+    [SPACE]: "jump",
+    [SHIFT]: "down"
 };
 
 export class Game extends BaseGame {

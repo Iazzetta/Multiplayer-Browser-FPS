@@ -99,12 +99,18 @@ export function playerControllerSystem(entity, state, dispatch) {
         // Reset state
         player.state = "idle";
 
-        // vetical movement - jumping
-        if (input.jump) {
-            // Normal jump
-            if (entity.collider && entity.collider.bottom()) {
+        if (entity.collider) {
+            if (input.jump && entity.collider.bottom()) {
                 velocity.y = stats.jumpSpeed;
                 input.jump = false;
+            }
+        } else {
+            if (input.down) {
+                velocity.y = -stats.runSpeed;
+            } else if (input.jump) {
+                velocity.y = stats.runSpeed;
+            } else {
+                velocity.y = 0;
             }
         }
 
