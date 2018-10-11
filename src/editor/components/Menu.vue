@@ -2,7 +2,10 @@
     <div class="menu">
         <div class="tileset">
             <ul>
-                <li v-for="tile in tileset" :key="tile.name">
+                <li v-for="tile in tileset"
+                    :key="tile.name"
+                    :class="{ selected: tile.name === selected_tile }"
+                    @click="$store.commit('SELECT_TILE', tile.name)">
                     {{ tile.name }}
                 </li>
             </ul>
@@ -15,6 +18,9 @@ export default {
     computed: {
         tileset() {
             return this.$store.state.tileset;
+        },
+        selected_tile(){
+            return this.$store.state.selected_tile;
         }
     }
 };
@@ -30,6 +36,11 @@ ul {
         cursor: pointer;
 
         &:hover {
+            opacity: 1;
+        }
+
+        &.selected {
+            color: orange;
             opacity: 1;
         }
     }

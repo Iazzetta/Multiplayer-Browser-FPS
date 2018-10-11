@@ -1,6 +1,6 @@
 <template>
     <div class="world-container" ref="screen">
-        <div class="world" ref="world">
+        <div class="world" ref="world" @click="addEntity">
             <div class="axis-x"></div>
             <div class="axis-y"></div>
         </div>
@@ -10,6 +10,18 @@
 <script>
 export default {
     methods: {
+        /**
+         * @param {MouseEvent} ev
+         */
+        addEntity(ev) {
+            const { world } = this.$refs;
+            const x = Math.round(ev.layerX - world.clientWidth * 0.5);
+            const z = Math.round(ev.layerY - world.clientHeight * 0.5);
+            const y = 0;
+            this.$store.dispatch("addEntity", { x, y, z }).then(entity => {
+                console.log({ entity });
+            });
+        },
         centerWorld() {
             const { screen, world } = this.$refs;
             screen.scrollLeft = world.scrollWidth - screen.clientWidth;
