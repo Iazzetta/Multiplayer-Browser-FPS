@@ -65,7 +65,8 @@ export function dispatch(state, action) {
             const { id, name } = action.data;
             const playerComp = new PlayerComponent({ id, name });
             const playerGhost = new PlayerGhostEntity(playerComp);
-            playerGhost.object3D.position.copy(sample(state.playerSpawns));
+            const spawn = sample(state.playerSpawns) || new THREE.Vector3();
+            playerGhost.object3D.position.copy(spawn);
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
             return state;
