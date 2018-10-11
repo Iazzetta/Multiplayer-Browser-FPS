@@ -90,9 +90,7 @@ export default {
                 y: Math.round(ev.layerY - world.height * 0.5)
             });
 
-            this.$store.dispatch("addEntity", { x, y, z }).then(entity => {
-                console.log({ entity });
-            });
+            this.$store.dispatch("addEntity", { x, y, z });
         },
 
         /**
