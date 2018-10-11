@@ -47,7 +47,7 @@ export default {
                 return function({ x, y }) {
                     return {
                         x: Math.round(x / scale),
-                        y: Math.round(y / scale)
+                        y: -Math.round(y / scale)
                     };
                 };
             }
@@ -56,7 +56,7 @@ export default {
                 return function({ x, y }) {
                     return {
                         z: Math.round(x / scale),
-                        y: Math.round(y / scale)
+                        y: -Math.round(y / scale)
                     };
                 };
             }
@@ -77,7 +77,7 @@ export default {
                 return function({ x, y }) {
                     return {
                         x: x * scale,
-                        y: y * scale
+                        y: -y * scale
                     };
                 };
             }
@@ -86,7 +86,7 @@ export default {
                 return function({ z, y }) {
                     return {
                         x: z * scale,
-                        y: y * scale
+                        y: -y * scale
                     };
                 };
             }
@@ -119,6 +119,8 @@ export default {
             return entities.map(entity => {
                 const position = screenSpace(entity.position);
                 const size = screenSpace(entity.tile.size);
+                size.x = Math.abs(size.x);
+                size.y = Math.abs(size.y);
                 const style = {
                     top: position.y - size.y * 0.5 + "px",
                     left: position.x - size.x * 0.5 + "px",
