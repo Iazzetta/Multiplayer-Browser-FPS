@@ -23,11 +23,15 @@
     "stats-js": "^1.0.0-alpha1",
     "stats.js": "^0.17.0",
     "three": "^0.96.0",
-    "three-obj-mtl-loader": "^1.0.3"
+    "three-obj-mtl-loader": "^1.0.3",
+    "vue": "^2.5.17",
+    "vue-hot-reload-api": "^2.3.1"
   },
   "devDependencies": {
+    "@vue/component-compiler-utils": "^2.2.0",
     "babel-core": "^6.26.3",
     "cssnano": "^4.1.0",
-    "node-sass": "^4.9.3"
+    "node-sass": "^4.9.3",
+    "vue-template-compiler": "^2.5.17"
   }
 }
