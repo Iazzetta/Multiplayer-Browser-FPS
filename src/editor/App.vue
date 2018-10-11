@@ -7,19 +7,27 @@
             <Menu></Menu>
         </div>
         <div class="screen">
-            <Screen></Screen>
+            <GameScreen v-if="gameRunning"></GameScreen>
+            <Screen v-else></Screen>
         </div>
         <div class="footer"></div>
     </div>
 </template>
 
 <script>
+import GameScreen from "./components/GameScreen";
 import Screen from "./components/Screen.vue";
 import Menu from "./components/Menu.vue";
 export default {
     components: {
+        GameScreen,
         Screen,
         Menu
+    },
+    computed: {
+        gameRunning() {
+            return this.$store.state.game_running;
+        }
     },
     mounted() {
         this.$store.dispatch("init");

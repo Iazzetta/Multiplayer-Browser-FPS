@@ -13,9 +13,13 @@ export default new Vuex.Store({
             entities: []
         },
         tileset: [],
-        selected_tile: null
+        selected_tile: null,
+        game_running: true
     },
     mutations: {
+        TOGGLE_GAME(state, payload) {
+            state.game_running = payload;
+        },
         ADD_TILE(state, payload) {
             const { name, size } = payload;
             state.tileset.push({ name, size });
