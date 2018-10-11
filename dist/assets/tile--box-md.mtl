@@ -1,0 +1,13 @@
+# Blender MTL File: 'tile--box-md.blend'
+# Material Count: 1
+
+newmtl Material
+Ns 37.254902
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.050000 0.050000 0.050000
+Ke 0.080000 0.080000 0.080000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd wall_tile_texture.png
