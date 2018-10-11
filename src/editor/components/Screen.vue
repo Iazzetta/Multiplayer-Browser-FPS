@@ -1,9 +1,7 @@
 <template>
     <div>
-        <div class="menubar">
-            <button @click="setView('top')">TOP</button>
-            <button @click="setView('front')">FRONT</button>
-            <button @click="setView('side')">SIDE</button>
+        <div class="header">
+            {{ view }}
         </div>
         <div class="world-container" ref="screen" @mousewheel="onScroll">
             <div class="world" ref="world"
@@ -32,9 +30,9 @@
 <script>
 import clamp from "lodash/clamp";
 export default {
+    props: ["view"],
     data() {
         return {
-            view: "top",
             worldScale: 10,
             worldScaleAnalog: 10,
             grabbedEntity: null
@@ -132,9 +130,6 @@ export default {
         }
     },
     methods: {
-        setView(view) {
-            this.view = view;
-        },
         /**
          * @param {WheelEvent} ev
          */
@@ -213,13 +208,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.menubar {
+.header {
     position: absolute;
     top: 0;
     right: 0;
     z-index: 2;
     padding: 8px;
     padding-right: 48px;
+    opacity: 0.5;
+    pointer-events: none;
 }
 .world-container {
     position: absolute;
