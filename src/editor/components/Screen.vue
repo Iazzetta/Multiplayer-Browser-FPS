@@ -4,6 +4,7 @@
             {{ view }}
         </div>
         <div class="world-container" ref="screen" @mousewheel="onScroll">
+
             <div class="world" ref="world"
                 :style="worldSizeStyle"
                 :class="{ 'grabbed-entity': grabbedEntity !== null }"
@@ -149,6 +150,19 @@ export default {
                 this.worldScale = Math.round(this.worldScaleAnalog);
             }
         },
+
+        /**
+         * @param {KeyboardEvent} ev
+         */
+        onKeydown(ev) {
+            const [DEL] = [46];
+            if (ev.keyCode === DEL) {
+                this.$store.commit("DELETE_ENTITY", {
+                    id: this.selectedEntityId
+                });
+            }
+        },
+
         /**
          * @param {MouseEvent} ev
          */
@@ -212,6 +226,9 @@ export default {
     },
     mounted() {
         this.$nextTick(this.centerWorld);
+        document.addEventListener("keydown", ev => {
+            this.onKeydown(ev);
+        });
     }
 };
 </script>

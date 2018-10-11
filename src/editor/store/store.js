@@ -44,6 +44,12 @@ export default new Vuex.Store({
         SELECT_ENTITY(state, payload) {
             const { id } = payload;
             state.selected_entity = id;
+        },
+        DELETE_ENTITY(state, payload) {
+            const { id } = payload;
+            state.world.entities = state.world.entities.filter(e => {
+                return e.id !== id;
+            });
         }
     },
     getters: {
