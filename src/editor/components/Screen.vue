@@ -33,8 +33,8 @@ export default {
     props: ["view"],
     data() {
         return {
-            worldScale: 10,
-            worldScaleAnalog: 10,
+            worldScale: 4,
+            worldScaleAnalog: 4,
             grabbedEntity: null
         };
     },
@@ -140,7 +140,7 @@ export default {
                 ev.preventDefault();
                 ev.stopPropagation();
 
-                this.worldScaleAnalog += ev.deltaY * 0.01;
+                this.worldScaleAnalog -= ev.deltaY * 0.01;
                 this.worldScaleAnalog = clamp(this.worldScaleAnalog, 2, 128);
                 this.worldScale = Math.round(this.worldScaleAnalog);
             }
