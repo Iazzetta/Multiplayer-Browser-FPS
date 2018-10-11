@@ -1,22 +1,29 @@
 <template>
-    <div class="world-container" ref="screen" @mousewheel="onScroll">
-        <div class="world" ref="world"
-            :style="worldSizeStyle"
-            :class="{ 'grabbed-entity': grabbedEntity !== null }"
-            @mousemove="moveEntity"
-            @mouseup="dropEntity">
+    <div>
+        <div class="menubar">
+            <button @click="setView('top')">TOP</button>
+            <button @click="setView('front')">FRONT</button>
+            <button @click="setView('side')">SIDE</button>
+        </div>
+        <div class="world-container" ref="screen" @mousewheel="onScroll">
+            <div class="world" ref="world"
+                :style="worldSizeStyle"
+                :class="{ 'grabbed-entity': grabbedEntity !== null }"
+                @mousemove="moveEntity"
+                @mouseup="dropEntity">
 
-            <div class="background" :style="worldSizeStyle" @click="addEntity"></div>
+                <div class="background" :style="worldSizeStyle" @click="addEntity"></div>
 
-            <div class="axis-x"></div>
-            <div class="axis-y"></div>
+                <div class="axis-x"></div>
+                <div class="axis-y"></div>
 
-            <div class="world-offset">
-                <div class="entity"
-                    v-for="el in entities"
-                    :key="el.entity.id"
-                    :style="el.style"
-                    @mousedown="grabEntity($event, el.entity)"></div>
+                <div class="world-offset">
+                    <div class="entity"
+                        v-for="el in entities"
+                        :key="el.entity.id"
+                        :style="el.style"
+                        @mousedown="grabEntity($event, el.entity)"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -27,6 +34,7 @@ import clamp from "lodash/clamp";
 export default {
     data() {
         return {
+            view: "top",
             worldScale: 10,
             worldScaleAnalog: 10,
             grabbedEntity: null
@@ -34,7 +42,28 @@ export default {
     },
     computed: {
         screenToWorldSpace(point) {
+            const view = this.view;
             const scale = this.worldScale;
+
+            if (view === "front") {
+                return function({ x, y }) {
+                    return {
+                        x: Math.round(x / scale),
+                        y: Math.round(y / scale)
+                    };
+                };
+            }
+
+            if (view === "side") {
+                return function({ x, y }) {
+                    return {
+                        z: Math.round(x / scale),
+                        y: Math.round(y / scale)
+                    };
+                };
+            }
+
+            // Top
             return function({ x, y }) {
                 return {
                     x: Math.round(x / scale),
@@ -43,7 +72,28 @@ export default {
             };
         },
         worldToScreenSpace() {
+            const view = this.view;
             const scale = this.worldScale;
+
+            if (view === "front") {
+                return function({ x, y }) {
+                    return {
+                        x: x * scale,
+                        y: y * scale
+                    };
+                };
+            }
+
+            if (view === "side") {
+                return function({ z, y }) {
+                    return {
+                        x: z * scale,
+                        y: y * scale
+                    };
+                };
+            }
+
+            // Top
             return function({ x, z }) {
                 return {
                     x: x * scale,
@@ -82,6 +132,9 @@ export default {
         }
     },
     methods: {
+        setView(view) {
+            this.view = view;
+        },
         /**
          * @param {WheelEvent} ev
          */
@@ -100,12 +153,12 @@ export default {
          */
         addEntity(ev) {
             const world = this.worldSize;
-            const { x, z } = this.screenToWorldSpace({
+            const { x, z, y } = this.screenToWorldSpace({
                 x: Math.round(ev.layerX - world.width * 0.5),
                 y: Math.round(ev.layerY - world.height * 0.5)
             });
 
-            this.$store.dispatch("addEntity", { x, z });
+            this.$store.dispatch("addEntity", { x, z, y });
         },
 
         /**
@@ -125,12 +178,12 @@ export default {
             if (this.grabbedEntity !== null) {
                 const world = this.worldSize;
                 const { id } = this.grabbedEntity;
-                const { x, z } = this.screenToWorldSpace({
+                const { x, z, y } = this.screenToWorldSpace({
                     x: Math.round(ev.layerX - world.width * 0.5),
                     y: Math.round(ev.layerY - world.height * 0.5)
                 });
 
-                this.$store.commit("MOVE_ENTITY", { id, x, z });
+                this.$store.commit("MOVE_ENTITY", { id, x, z, y });
             }
         },
 
@@ -160,8 +213,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.menubar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 8px;
+    padding-right: 48px;
+}
 .world-container {
     position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
     overflow: auto;
