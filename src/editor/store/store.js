@@ -26,6 +26,19 @@ export default new Vuex.Store({
         ADD_ENTITY(state, payload) {
             const { id, position, tile } = payload;
             state.world.entities.push({ id, position, tile });
+        },
+        MOVE_ENTITY(state, payload) {
+            const { id, x, y, z } = payload;
+            const entity = state.world.entities.find(e => e.id === id);
+            if (entity) {
+                const offset = { x, y, z };
+                const position = Object.assign(
+                    new Vector3(),
+                    entity.position,
+                    offset
+                );
+                entity.position.copy(position);
+            }
         }
     },
     getters: {

@@ -1,6 +1,13 @@
 <template>
     <div class="world-container" ref="screen">
-        <div class="world" ref="world" :style="worldSizeStyle" @click="addEntity">
+        <div class="world" ref="world"
+            :style="worldSizeStyle"
+            :class="{ 'grabbed-entity': grabbedEntity !== null }"
+            @mousemove="moveEntity"
+            @mouseup="dropEntity">
+
+            <div class="background" :style="worldSizeStyle" @click="addEntity"></div>
+
             <div class="axis-x"></div>
             <div class="axis-y"></div>
 
@@ -8,7 +15,8 @@
                 <div class="entity"
                     v-for="el in entities"
                     :key="el.entity.id"
-                    :style="el.style"></div>
+                    :style="el.style"
+                    @mousedown="grabEntity($event, el.entity)"></div>
             </div>
         </div>
     </div>
@@ -18,7 +26,8 @@
 export default {
     data() {
         return {
-            worldScale: 10
+            worldScale: 10,
+            grabbedEntity: null
         };
     },
     computed: {
@@ -61,8 +70,8 @@ export default {
                 const position = screenSpace(entity.position);
                 const size = screenSpace(entity.tile.size);
                 const style = {
-                    top: position.y + "px",
-                    left: position.x + "px",
+                    top: position.y - size.y * 0.5 + "px",
+                    left: position.x - size.x * 0.5 + "px",
                     width: size.x + "px",
                     height: size.y + "px"
                 };
@@ -85,6 +94,44 @@ export default {
                 console.log({ entity });
             });
         },
+
+        /**
+         * @param {MouseEvent} ev
+         * @param {object} entity
+         */
+        grabEntity(ev, entity) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.grabbedEntity = entity;
+        },
+
+        /**
+         * @param {MouseEvent} ev
+         */
+        moveEntity(ev) {
+            if (this.grabbedEntity !== null) {
+                const world = this.worldSize;
+                const { id } = this.grabbedEntity;
+                const { x, z } = this.screenToWorldSpace({
+                    x: Math.round(ev.layerX - world.width * 0.5),
+                    y: Math.round(ev.layerY - world.height * 0.5)
+                });
+
+                this.$store.commit("MOVE_ENTITY", { id, x, z });
+            }
+        },
+
+        /**
+         * @param {MouseEvent} ev
+         */
+        dropEntity(ev) {
+            if (this.grabbedEntity) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.grabbedEntity = null;
+            }
+        },
+
         centerWorld() {
             const { screen, world } = this.$refs;
             screen.scrollLeft = world.scrollWidth - screen.clientWidth;
@@ -138,6 +185,12 @@ export default {
 
         .entity {
             border: 1px solid white;
+        }
+
+        &.grabbed-entity {
+            * {
+                pointer-events: none;
+            }
         }
     }
 }
