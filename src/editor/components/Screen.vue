@@ -1,5 +1,5 @@
 <template>
-    <div class="world-container" ref="screen">
+    <div class="world-container" ref="screen" @mousewheel="onScroll">
         <div class="world" ref="world"
             :style="worldSizeStyle"
             :class="{ 'grabbed-entity': grabbedEntity !== null }"
@@ -23,10 +23,12 @@
 </template>
 
 <script>
+import clamp from "lodash/clamp";
 export default {
     data() {
         return {
             worldScale: 10,
+            worldScaleAnalog: 10,
             grabbedEntity: null
         };
     },
@@ -80,6 +82,19 @@ export default {
         }
     },
     methods: {
+        /**
+         * @param {WheelEvent} ev
+         */
+        onScroll(ev) {
+            if (ev.altKey) {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                this.worldScaleAnalog += ev.deltaY * 0.01;
+                this.worldScaleAnalog = clamp(this.worldScaleAnalog, 2, 128);
+                this.worldScale = Math.round(this.worldScaleAnalog);
+            }
+        },
         /**
          * @param {MouseEvent} ev
          */
