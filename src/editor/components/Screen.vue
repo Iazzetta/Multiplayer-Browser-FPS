@@ -9,15 +9,17 @@
 
 <script>
 export default {
-    mounted() {
-        this.$nextTick(() => {
+    methods: {
+        centerWorld() {
             const { screen, world } = this.$refs;
             screen.scrollLeft = world.scrollWidth - screen.clientWidth;
-            screen.scrollTop = world.scrollHeight - screen.clientHeight;
-
             screen.scrollLeft = screen.scrollLeft * 0.5;
+            screen.scrollTop = world.scrollHeight - screen.clientHeight;
             screen.scrollTop = screen.scrollTop * 0.5;
-        });
+        }
+    },
+    mounted() {
+        this.$nextTick(this.centerWorld);
     }
 };
 </script>
