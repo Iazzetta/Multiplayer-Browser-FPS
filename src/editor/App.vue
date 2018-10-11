@@ -20,6 +20,9 @@ export default {
     components: {
         Screen,
         Menu
+    },
+    mounted() {
+        this.$store.dispatch("init");
     }
 };
 </script>
