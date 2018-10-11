@@ -29,7 +29,7 @@ export default {
     display: grid;
     grid-gap: 4px;
     grid-template-rows: 64px 1fr 64px;
-    grid-template-columns: 8px repeat(8, 1fr) 8px;
+    grid-template-columns: 32px repeat(8, 1fr) 32px;
 
     .header {
         grid-row: 1/2;
