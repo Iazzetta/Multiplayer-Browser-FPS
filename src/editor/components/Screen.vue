@@ -15,6 +15,24 @@
 <script>
 export default {
     computed: {
+        screenToWorldSpace(point) {
+            const worldSize = this.worldSize;
+            return function({ x, y }) {
+                return {
+                    x: x - worldSize.width * 0.5,
+                    z: y - worldSize.height * 0.5
+                };
+            };
+        },
+        worldToScreenSpace() {
+            const worldSize = this.worldSize;
+            return function({ x, z }) {
+                return {
+                    x: x + worldSize.width * 0.5,
+                    y: z + worldSize.height * 0.5
+                };
+            };
+        },
         worldSize() {
             return {
                 width: "2048",
@@ -30,12 +48,13 @@ export default {
         entities() {
             const world = this.worldSize;
             const entities = this.$store.state.world.entities;
+            const screenSpace = this.worldToScreenSpace;
 
             return entities.map(entity => {
-                const position = entity.position;
+                const position = screenSpace(entity.position);
                 const size = entity.tile.size;
                 const style = {
-                    top: position.z + "px",
+                    top: position.y + "px",
                     left: position.x + "px",
                     width: size.x + "px",
                     height: size.z + "px"
@@ -50,9 +69,11 @@ export default {
          */
         addEntity(ev) {
             const world = this.worldSize;
-            const x = Math.round(ev.layerX);
-            const z = Math.round(ev.layerY);
-            const y = 0;
+            const { x, z, y = 0 } = this.screenToWorldSpace({
+                x: Math.round(ev.layerX),
+                y: Math.round(ev.layerY)
+            });
+
             this.$store.dispatch("addEntity", { x, y, z }).then(entity => {
                 console.log({ entity });
             });
@@ -84,6 +105,11 @@ export default {
 
         * {
             position: absolute;
+        }
+
+        .axis-x,
+        .axis-y {
+            pointer-events: none;
         }
 
         .axis-x {
