@@ -3,14 +3,25 @@
         <div class="header">
             Level editor
         </div>
-        <div class="menu"></div>
-        <div class="screen"></div>
+        <div class="menu">
+            <Menu></Menu>
+        </div>
+        <div class="screen">
+            <Screen></Screen>
+        </div>
         <div class="footer"></div>
     </div>
 </template>
 
 <script>
-export default {};
+import Screen from "./components/Screen.vue";
+import Menu from "./components/Menu.vue";
+export default {
+    components: {
+        Screen,
+        Menu,
+    }
+};
 </script>
 
 <style lang="scss">
