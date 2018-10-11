@@ -73,7 +73,6 @@ export function dispatch(state, action) {
 
             const assets = state.assets;
             level.tiles.forEach(tile => {
-                console.log(tile.id);
                 const entity = new TileEntity(tile.id, assets, {
                     mesh: tile.mesh,
                     size: new THREE.Vector3().copy(tile.size)
