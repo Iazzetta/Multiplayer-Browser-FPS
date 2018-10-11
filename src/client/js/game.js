@@ -209,6 +209,16 @@ export class Game extends BaseGame {
         this.state.assets.loadObj("player_weapon");
         this.state.assets.loadObj("muzzle_flash");
 
+        // Tiles
+        [
+            "tile--box-lg",
+            "tile--box-md",
+            "tile--wall-x",
+            "tile--wall-y"
+        ].forEach(tile => {
+            this.state.assets.loadObj(tile);
+        });
+
         return this.state.assets.done();
     }
 
