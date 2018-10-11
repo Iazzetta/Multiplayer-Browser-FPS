@@ -60,20 +60,19 @@ export class Assets {
 
     /**
      * @param {string} name
-     * @param {string} src
      */
-    loadObj(name, src) {
+    loadObj(name) {
         this.objPromiseList.push(
             new Promise(resolve => {
                 const mtlLoader = new MTLLoader();
                 mtlLoader.setTexturePath(ASSETS_PATH);
                 mtlLoader.setPath(ASSETS_PATH);
-                mtlLoader.load(src.replace(".obj", ".mtl"), materials => {
+                mtlLoader.load(name + ".mtl", materials => {
                     const objLoader = new OBJLoader();
                     materials.preload();
                     objLoader.setPath(ASSETS_PATH);
                     objLoader.setMaterials(materials);
-                    objLoader.load(src, obj => {
+                    objLoader.load(name + ".obj", obj => {
                         this.objList.set(name, obj);
                         resolve(obj);
                     });
