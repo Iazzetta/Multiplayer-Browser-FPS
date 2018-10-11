@@ -85,12 +85,12 @@ export default {
          */
         addEntity(ev) {
             const world = this.worldSize;
-            const { x, z, y = 0 } = this.screenToWorldSpace({
+            const { x, z } = this.screenToWorldSpace({
                 x: Math.round(ev.layerX - world.width * 0.5),
                 y: Math.round(ev.layerY - world.height * 0.5)
             });
 
-            this.$store.dispatch("addEntity", { x, y, z });
+            this.$store.dispatch("addEntity", { x, z });
         },
 
         /**

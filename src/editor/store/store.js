@@ -35,13 +35,9 @@ export default new Vuex.Store({
             const { id, x, y, z } = payload;
             const entity = state.world.entities.find(e => e.id === id);
             if (entity) {
-                const offset = { x, y, z };
-                const position = Object.assign(
-                    new Vector3(),
-                    entity.position,
-                    offset
-                );
-                entity.position.copy(position);
+                entity.position.x = x !== undefined ? x : entity.position.x;
+                entity.position.y = y !== undefined ? y : entity.position.y;
+                entity.position.z = z !== undefined ? z : entity.position.z;
             }
         }
     },
@@ -90,7 +86,7 @@ export default new Vuex.Store({
                 return Promise.reject();
             }
 
-            const { x, y, z } = payload;
+            const { x, z, y = tile.size.y * 0.5 } = payload;
             const id = counter("editor-enteties").toString(16);
             const position = new Vector3(x, y, z);
             store.commit("ADD_ENTITY", { id, position, tile });
