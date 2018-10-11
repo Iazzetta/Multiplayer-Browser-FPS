@@ -4,32 +4,39 @@
             <div class="axis-x"></div>
             <div class="axis-y"></div>
 
-            <div class="entity"
-                v-for="el in entities"
-                :key="el.entity.id"
-                :style="el.style"></div>
+            <div class="world-offset">
+                <div class="entity"
+                    v-for="el in entities"
+                    :key="el.entity.id"
+                    :style="el.style"></div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    data() {
+        return {
+            worldScale: 10
+        };
+    },
     computed: {
         screenToWorldSpace(point) {
-            const worldSize = this.worldSize;
+            const scale = this.worldScale;
             return function({ x, y }) {
                 return {
-                    x: x - worldSize.width * 0.5,
-                    z: y - worldSize.height * 0.5
+                    x: Math.round(x / scale),
+                    z: Math.round(y / scale)
                 };
             };
         },
         worldToScreenSpace() {
-            const worldSize = this.worldSize;
+            const scale = this.worldScale;
             return function({ x, z }) {
                 return {
-                    x: x + worldSize.width * 0.5,
-                    y: z + worldSize.height * 0.5
+                    x: x * scale,
+                    y: z * scale
                 };
             };
         },
@@ -52,12 +59,12 @@ export default {
 
             return entities.map(entity => {
                 const position = screenSpace(entity.position);
-                const size = entity.tile.size;
+                const size = screenSpace(entity.tile.size);
                 const style = {
                     top: position.y + "px",
                     left: position.x + "px",
                     width: size.x + "px",
-                    height: size.z + "px"
+                    height: size.y + "px"
                 };
                 return { entity, style };
             });
@@ -70,8 +77,8 @@ export default {
         addEntity(ev) {
             const world = this.worldSize;
             const { x, z, y = 0 } = this.screenToWorldSpace({
-                x: Math.round(ev.layerX),
-                y: Math.round(ev.layerY)
+                x: Math.round(ev.layerX - world.width * 0.5),
+                y: Math.round(ev.layerY - world.height * 0.5)
             });
 
             this.$store.dispatch("addEntity", { x, y, z }).then(entity => {
@@ -122,6 +129,11 @@ export default {
             left: 50%;
             height: 100%;
             border-left: 1px solid limegreen;
+        }
+
+        .world-offset {
+            top: 50%;
+            left: 50%;
         }
 
         .entity {
