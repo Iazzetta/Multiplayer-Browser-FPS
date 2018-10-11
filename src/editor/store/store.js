@@ -49,6 +49,22 @@ export default new Vuex.Store({
         selectedTile(state) {
             const { tileset, selected_tile } = state;
             return tileset.find(tile => tile.name === selected_tile);
+        },
+        levelExport(state) {
+            const json = {
+                tiles: []
+            };
+
+            state.world.entities.forEach(entity => {
+                json.tiles.push({
+                    id: entity.id,
+                    position: entity.position,
+                    size: entity.tile.size,
+                    mesh: entity.tile.name
+                });
+            });
+
+            return JSON.parse(JSON.stringify(json));
         }
     },
     actions: {

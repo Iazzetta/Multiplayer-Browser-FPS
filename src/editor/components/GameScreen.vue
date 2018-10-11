@@ -4,14 +4,20 @@
 
 <script>
 import { Game } from "../../client/js/game";
+import { loadLevel_wip, playerJoin, setMyPlayerId } from "../../game/actions";
 
-export const game = new Game();
+let game;
 
 export default {
     mounted() {
+        const level = this.$store.getters.levelExport;
+        game = new Game();
         game.loadAssets().then(() => {
             game.container = this.$refs.screen;
             game.run();
+            game.dispatch(loadLevel_wip(level));
+            game.dispatch(setMyPlayerId("editor"));
+            game.dispatch(playerJoin("editor"));
         });
     },
     destroyed() {

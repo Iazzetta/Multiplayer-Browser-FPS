@@ -2,10 +2,16 @@ import * as THREE from "three";
 import sample from "lodash/sample";
 import clamp from "lodash/clamp";
 import { State } from "./state.js";
-import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
+import {
+    PlayerEntity,
+    WallEntity,
+    PlayerGhostEntity,
+    TileEntity
+} from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
+    LOAD_LEVEL_WIP,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SET_PLAYER_MOUSE,
@@ -57,6 +63,23 @@ export function dispatch(state, action) {
                         state.addEntity(wall);
                         break;
                 }
+            });
+
+            return state;
+        }
+        case LOAD_LEVEL_WIP: {
+            const { level } = action.data;
+            state = new State(state);
+
+            const assets = state.assets;
+            level.tiles.forEach(tile => {
+                console.log(tile.id);
+                const entity = new TileEntity(tile.id, assets, {
+                    mesh: tile.mesh,
+                    size: new THREE.Vector3().copy(tile.size)
+                });
+                entity.object3D.position.copy(tile.position);
+                state.addEntity(entity);
             });
 
             return state;
