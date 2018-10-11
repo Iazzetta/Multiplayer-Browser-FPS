@@ -1,5 +1,10 @@
 <template>
     <div class="menu">
+        <button @click="$store.commit('TOGGLE_GAME', !gameRunning)">
+            <span v-if="!gameRunning">PLAY</span>
+            <span v-if="gameRunning">STOP</span>
+        </button>
+
         <div class="tileset">
             <ul>
                 <li v-for="tile in tileset"
@@ -19,8 +24,11 @@ export default {
         tileset() {
             return this.$store.state.tileset;
         },
-        selected_tile(){
+        selected_tile() {
             return this.$store.state.selected_tile;
+        },
+        gameRunning() {
+            return this.$store.state.game_running;
         }
     }
 };

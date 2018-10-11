@@ -4,13 +4,18 @@
 
 <script>
 import { Game } from "../../client/js/game";
+
+export const game = new Game();
+
 export default {
     mounted() {
-        const game = new Game();
         game.loadAssets().then(() => {
             game.container = this.$refs.screen;
             game.run();
         });
+    },
+    destroyed() {
+        game.destroy();
     }
 };
 </script>

@@ -14,7 +14,7 @@ export default new Vuex.Store({
         },
         tileset: [],
         selected_tile: null,
-        game_running: true
+        game_running: false
     },
     mutations: {
         TOGGLE_GAME(state, payload) {
