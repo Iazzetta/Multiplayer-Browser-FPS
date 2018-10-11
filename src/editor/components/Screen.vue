@@ -20,6 +20,7 @@
                         v-for="el in entities"
                         :key="el.entity.id"
                         :style="el.style"
+                        :class="{ selected: selectedEntityId === el.entity.id }"
                         @mousedown="grabEntity($event, el.entity)"></div>
                 </div>
             </div>
@@ -111,6 +112,9 @@ export default {
                 height: this.worldSize.height + "px"
             };
         },
+        selectedEntityId() {
+            return this.$store.state.selected_entity;
+        },
         entities() {
             const world = this.worldSize;
             const entities = this.$store.state.world.entities;
@@ -155,7 +159,9 @@ export default {
                 y: Math.round(ev.layerY - world.height * 0.5)
             });
 
-            this.$store.dispatch("addEntity", { x, z, y });
+            this.$store.dispatch("addEntity", { x, z, y }).then(entity => {
+                this.$store.commit("SELECT_ENTITY", { id: entity.id });
+            });
         },
 
         /**
@@ -166,6 +172,7 @@ export default {
             ev.preventDefault();
             ev.stopPropagation();
             this.grabbedEntity = entity;
+            this.$store.commit("SELECT_ENTITY", { id: entity.id });
         },
 
         /**
@@ -261,6 +268,15 @@ export default {
 
         .entity {
             border: 1px solid white;
+            opacity: 0.25;
+            z-index: 1;
+
+            &.selected {
+                opacity: 0.75;
+                border-color: orange;
+                background-color: cornflowerblue;
+                z-index: 100;
+            }
         }
 
         &.grabbed-entity {

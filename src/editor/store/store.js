@@ -14,6 +14,7 @@ export default new Vuex.Store({
         },
         tileset: [],
         selected_tile: null,
+        selected_entity: null,
         game_running: false
     },
     mutations: {
@@ -39,12 +40,20 @@ export default new Vuex.Store({
                 entity.position.y = y !== undefined ? y : entity.position.y;
                 entity.position.z = z !== undefined ? z : entity.position.z;
             }
+        },
+        SELECT_ENTITY(state, payload) {
+            const { id } = payload;
+            state.selected_entity = id;
         }
     },
     getters: {
         selectedTile(state) {
             const { tileset, selected_tile } = state;
             return tileset.find(tile => tile.name === selected_tile);
+        },
+        selectedEntity(state) {
+            const { world, selected_entity } = state;
+            return world.entities.find(entity => entity.id === selected_entity);
         },
         levelExport(state) {
             const json = {
