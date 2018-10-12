@@ -373,6 +373,7 @@ export function physicsSystem(entity, state, dispatch) {
     if (entity.object3D && entity.velocity) {
         const walls = state.getEntityGroup("wall");
         const velocity = entity.velocity.getForceVector(state.time.delta);
+        const STEP_SIZE = 1;
 
         // Reset collider
         if (entity.collider) {
@@ -406,7 +407,12 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    resolveCollisionX(entity, wall, aabb1, aabb2);
+                    const deltaY = aabb2.max.y - aabb1.min.y;
+                    if (deltaY <= STEP_SIZE) {
+                        resolveCollisionY(entity, wall, aabb1, aabb2);
+                    } else {
+                        resolveCollisionX(entity, wall, aabb1, aabb2);
+                    }
                 }
             });
         }
@@ -418,7 +424,12 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    resolveCollisionZ(entity, wall, aabb1, aabb2);
+                    const deltaY = aabb2.max.y - aabb1.min.y;
+                    if (deltaY <= STEP_SIZE) {
+                        resolveCollisionY(entity, wall, aabb1, aabb2);
+                    } else {
+                        resolveCollisionZ(entity, wall, aabb1, aabb2);
+                    }
                 }
             });
         }

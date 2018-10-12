@@ -72,7 +72,7 @@ export default new Vuex.Store({
             });
         },
         SNAP_ENTITIES_TO_GRID(state, payload) {
-            const GRID = 2;
+            const GRID = 1;
             state.level.entities.forEach(entity => {
                 entity.position.x = Math.round(entity.position.x / GRID) * GRID;
                 entity.position.y = Math.round(entity.position.y / GRID) * GRID;
