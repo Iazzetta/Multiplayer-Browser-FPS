@@ -141,6 +141,14 @@ export default new Vuex.Store({
         },
         deleteEntity(store, payload) {
             store.commit("DELETE_ENTITY", payload);
+        },
+        deleteSelectedEntity(store) {
+            store.getters.entities
+                .filter(entity => entity.selected)
+                .map(entity => entity.id)
+                .forEach(id => {
+                    store.commit("DELETE_ENTITY", { id });
+                });
         }
     }
 });

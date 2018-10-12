@@ -22,7 +22,7 @@
                         :key="el.entity.id"
                         :style="el.style"
                         :class="{ selected: el.entity.selected }"
-                        @mousedown="grabEntity($event, el.entity)"></div>
+                        @mousedown="selectEntity($event, el.entity)"></div>
                 </div>
             </div>
         </div>
@@ -154,9 +154,7 @@ export default {
         onKeydown(ev) {
             const [DEL] = [46];
             if (ev.keyCode === DEL) {
-                this.$store.commit("DELETE_ENTITY", {
-                    id: this.selectedEntityId
-                });
+                this.$store.dispatch("deleteSelectedEntity");
             }
         },
 
@@ -183,7 +181,7 @@ export default {
          * @param {MouseEvent} ev
          * @param {object} entity
          */
-        grabEntity(ev, entity) {
+        selectEntity(ev, entity) {
             ev.preventDefault();
             ev.stopPropagation();
             this.grabbedEntity = entity;
