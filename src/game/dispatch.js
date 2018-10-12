@@ -78,6 +78,12 @@ export function dispatch(state, action) {
                     size: new THREE.Vector3().copy(tile.size)
                 });
                 entity.object3D.position.copy(tile.position);
+                entity.object3D.rotation.set(
+                    tile.rotation.x,
+                    tile.rotation.y,
+                    tile.rotation.z
+                );
+
                 state.addEntity(entity);
             });
 

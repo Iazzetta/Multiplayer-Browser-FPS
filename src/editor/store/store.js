@@ -60,6 +60,8 @@ export default new Vuex.Store({
 
                 const index = state.level.entities.indexOf(entity);
                 const newEntity = new Entity(entity);
+
+                // @ts-ignore
                 Vue.set(state.level.entities, index, newEntity);
             }
         },
@@ -104,6 +106,7 @@ export default new Vuex.Store({
                 json.tiles.push({
                     id: entity.id,
                     position: entity.position,
+                    rotation: entity.rotation,
                     size: entity.size,
                     mesh: entity.tile
                 });
