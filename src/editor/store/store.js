@@ -50,6 +50,19 @@ export default new Vuex.Store({
                 entity.position.z = z !== undefined ? z : entity.position.z;
             }
         },
+        ROTATE_ENTITY(state, payload) {
+            const { id, x, y, z } = payload;
+            const entity = state.level.entities.find(e => e.id === id);
+            if (entity) {
+                entity.rotation.x = x !== undefined ? x : entity.rotation.x;
+                entity.rotation.y = y !== undefined ? y : entity.rotation.y;
+                entity.rotation.z = z !== undefined ? z : entity.rotation.z;
+
+                const index = state.level.entities.indexOf(entity);
+                const newEntity = new Entity(entity);
+                Vue.set(state.level.entities, index, newEntity);
+            }
+        },
         DELETE_ENTITY(state, payload) {
             const { id } = payload;
             state.level.entities = state.level.entities.filter(e => {
@@ -150,6 +163,9 @@ export default new Vuex.Store({
         moveEntity(store, payload) {
             store.commit("MOVE_ENTITY", payload);
         },
+        rotateEntity(store, payload) {
+            store.commit("ROTATE_ENTITY", payload);
+        },
         deleteEntity(store, payload) {
             store.commit("DELETE_ENTITY", payload);
         },
@@ -184,7 +200,19 @@ export class Entity {
 
     getSize() {
         const mesh = game.state.assets.mesh(this.tile);
+
+        // Apply rotation and compute boundingBox
+        mesh.geometry.rotateX(this.rotation.x);
+        mesh.geometry.rotateY(this.rotation.y);
+        mesh.geometry.rotateZ(this.rotation.z);
         mesh.geometry.computeBoundingBox();
-        return mesh.geometry.boundingBox.getSize(new Vector3());
+
+        // Reset rotation
+        const size = mesh.geometry.boundingBox.getSize(new Vector3());
+        mesh.geometry.rotateX(-this.rotation.x);
+        mesh.geometry.rotateY(-this.rotation.y);
+        mesh.geometry.rotateZ(-this.rotation.z);
+
+        return size;
     }
 }

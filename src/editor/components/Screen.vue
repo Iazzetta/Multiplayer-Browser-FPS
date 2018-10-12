@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { toRadians } from "../../game/utils.js";
 import clamp from "lodash/clamp";
 import debounce from "lodash/debounce";
 
@@ -162,9 +163,27 @@ export default {
          * @param {KeyboardEvent} ev
          */
         onKeydown(ev) {
-            const [DEL] = [46];
-            if (ev.keyCode === DEL) {
-                this.$store.dispatch("deleteSelectedEntity");
+            const [DEL, R] = [46, 82];
+            switch (ev.keyCode) {
+                case DEL:
+                    this.$store.dispatch("deleteSelectedEntity");
+                    break;
+                case R:
+                    if (this.selectedEntities.length === 1) {
+                        const [entity] = this.selectedEntities;
+                        const payload = { id: entity.id };
+
+                        if (this.view === "top") {
+                            payload.y = entity.rotation.y + toRadians(90);
+                        } else if (this.view === "front") {
+                            payload.z = entity.rotation.z + toRadians(90);
+                        } else if (this.view === "side") {
+                            payload.x = entity.rotation.x + toRadians(90);
+                        }
+
+                        this.$store.dispatch("rotateEntity", payload);
+                    }
+                    break;
             }
         },
 
