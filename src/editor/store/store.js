@@ -151,17 +151,19 @@ export default new Vuex.Store({
             const { id } = payload;
             store.commit("TOGGLE_ENTITY", { id, selected: true });
         },
+        selectEntityAll(store, payload) {
+            store.getters.entities.map(entity => entity.id).forEach(id => {
+                store.commit("TOGGLE_ENTITY", { id, selected: true });
+            });
+        },
         deselectEntity(store, payload) {
             const { id } = payload;
             store.commit("TOGGLE_ENTITY", { id, selected: false });
         },
         deselectEntityAll(store) {
-            store.getters.entities
-                .filter(entity => entity.selected)
-                .map(entity => entity.id)
-                .forEach(id => {
-                    store.commit("TOGGLE_ENTITY", { id, selected: false });
-                });
+            store.getters.entities.map(entity => entity.id).forEach(id => {
+                store.commit("TOGGLE_ENTITY", { id, selected: false });
+            });
         },
         moveEntity(store, payload) {
             store.commit("MOVE_ENTITY", payload);

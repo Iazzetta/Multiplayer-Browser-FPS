@@ -163,11 +163,22 @@ export default {
          * @param {KeyboardEvent} ev
          */
         onKeydown(ev) {
-            const [DEL, R] = [46, 82];
+            const [DEL, A, R] = [46, 65, 82];
             switch (ev.keyCode) {
                 case DEL:
                     this.$store.dispatch("deleteSelectedEntity");
                     break;
+                case A: {
+                    const all = this.screenEntities.length;
+                    const selected = this.selectedEntities.length;
+
+                    if (selected < all) {
+                        this.$store.dispatch("selectEntityAll")
+                    } else if (selected === all) {
+                        this.$store.dispatch("deselectEntityAll")
+                    }
+                    break;
+                }
                 case R:
                     if (this.selectedEntities.length === 1) {
                         const [entity] = this.selectedEntities;
