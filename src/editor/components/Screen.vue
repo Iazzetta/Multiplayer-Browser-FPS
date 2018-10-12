@@ -7,7 +7,7 @@
 
             <div class="world" ref="world"
                 :style="worldSizeStyle"
-                :class="{ 'grabbed-entity': grabbedEntity !== null }"
+                :class="{ 'grabbed-entity': grab.active }"
                 @mousemove="moveEntity"
                 @mouseup="dropEntity">
 
@@ -18,11 +18,11 @@
 
                 <div class="world-offset">
                     <div class="entity"
-                        v-for="el in entities"
+                        v-for="el in screenEntities"
                         :key="el.entity.id"
                         :style="el.style"
                         :class="{ selected: el.entity.selected }"
-                        @mousedown="selectEntity($event, el.entity)"></div>
+                        @mousedown="grabEntity($event, el.entity)"></div>
                 </div>
             </div>
         </div>
@@ -37,7 +37,9 @@ export default {
         return {
             worldScale: 4,
             worldScaleAnalog: 4,
-            grabbedEntity: null
+            grab: {
+                active: false
+            }
         };
     },
     computed: {
@@ -48,8 +50,8 @@ export default {
             if (view === "front") {
                 return function({ x, y }) {
                     return {
-                        x: Math.round(x / scale),
-                        y: -Math.round(y / scale)
+                        x: x / scale,
+                        y: -(y / scale)
                     };
                 };
             }
@@ -57,8 +59,8 @@ export default {
             if (view === "side") {
                 return function({ x, y }) {
                     return {
-                        z: Math.round(x / scale),
-                        y: -Math.round(y / scale)
+                        z: x / scale,
+                        y: -(y / scale)
                     };
                 };
             }
@@ -66,8 +68,8 @@ export default {
             // Top
             return function({ x, y }) {
                 return {
-                    x: Math.round(x / scale),
-                    z: Math.round(y / scale)
+                    x: x / scale,
+                    z: y / scale
                 };
             };
         },
@@ -113,7 +115,7 @@ export default {
                 height: this.worldSize.height + "px"
             };
         },
-        entities() {
+        screenEntities() {
             const world = this.worldSize;
             const screenSpace = this.worldToScreenSpace;
 
@@ -131,6 +133,11 @@ export default {
                 };
                 return { entity, style };
             });
+        },
+        selectedEntities() {
+            return this.$store.getters.entities.filter(
+                entity => entity.selected
+            );
         }
     },
     methods: {
@@ -181,26 +188,33 @@ export default {
          * @param {MouseEvent} ev
          * @param {object} entity
          */
-        selectEntity(ev, entity) {
+        grabEntity(ev, entity) {
             ev.preventDefault();
             ev.stopPropagation();
-            this.grabbedEntity = entity;
+
             this.$store.dispatch("selectEntity", { id: entity.id });
+            this.grab.active = true;
         },
 
         /**
          * @param {MouseEvent} ev
          */
         moveEntity(ev) {
-            if (this.grabbedEntity !== null) {
+            if (this.grab.active) {
+                console.log({ ev });
                 const world = this.worldSize;
-                const { id } = this.grabbedEntity;
-                const { x, z, y } = this.screenToWorldSpace({
-                    x: Math.round(ev.layerX - world.width * 0.5),
-                    y: Math.round(ev.layerY - world.height * 0.5)
-                });
+                const screenSpace = this.worldToScreenSpace;
+                const worldSpace = this.screenToWorldSpace;
+                this.selectedEntities.forEach(entity => {
+                    const position = screenSpace(entity.position);
+                    const { x, z, y } = worldSpace({
+                        x: Math.round(position.x + ev.movementX),
+                        y: Math.round(position.y + ev.movementY)
+                    });
 
-                this.$store.commit("MOVE_ENTITY", { id, x, z, y });
+                    const { id } = entity;
+                    this.$store.commit("MOVE_ENTITY", { id, x, z, y });
+                });
             }
         },
 
@@ -208,10 +222,10 @@ export default {
          * @param {MouseEvent} ev
          */
         dropEntity(ev) {
-            if (this.grabbedEntity) {
+            if (this.grab.active) {
                 ev.preventDefault();
                 ev.stopPropagation();
-                this.grabbedEntity = null;
+                this.grab.active = false;
             }
         },
 
