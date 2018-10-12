@@ -45,13 +45,13 @@ export default {
     height: 100vh;
     display: grid;
     grid-gap: 4px;
-    grid-template-rows: 32px 1fr 1fr 8px;
+    grid-template-rows: 64px 1fr 1fr 8px;
     grid-template-columns: 32px 200px repeat(7, 1fr) 32px;
 
     .header {
         grid-row: 1/2;
         grid-column: 2/10;
-        line-height: 32px;
+        line-height: 64px;
     }
 
     .footer {
