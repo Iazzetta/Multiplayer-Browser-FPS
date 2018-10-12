@@ -310,13 +310,13 @@ export default {
         .entity {
             border: 1px solid white;
             opacity: 0.25;
-            z-index: 1;
+            z-index: 100;
 
             &.selected {
                 opacity: 0.75;
                 border-color: orange;
                 background-color: cornflowerblue;
-                z-index: 100;
+                z-index: 1;
             }
         }
 
