@@ -3,7 +3,7 @@
         <div class="header">
             {{ view }}
         </div>
-        <div class="world-container" ref="screen" @mousewheel="onScroll">
+        <div class="world-container" ref="screen" @mousewheel="onScroll" @mouseout="mouseIn = false" @mousemove="mouseIn = true">
 
             <div class="world" ref="world"
                 :style="worldSizeStyle"
@@ -39,6 +39,7 @@ export default {
         return {
             worldScale: 4,
             worldScaleAnalog: 4,
+            mouseIn: false,
             grab: {
                 active: false
             }
@@ -251,7 +252,9 @@ export default {
     mounted() {
         this.$nextTick(this.centerWorld);
         document.addEventListener("keydown", ev => {
-            this.onKeydown(ev);
+            if (this.mouseIn) {
+                this.onKeydown(ev);
+            }
         });
     }
 };
