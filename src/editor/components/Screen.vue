@@ -21,7 +21,7 @@
                         v-for="el in entities"
                         :key="el.entity.id"
                         :style="el.style"
-                        :class="{ selected: selectedEntityId === el.entity.id }"
+                        :class="{ selected: el.entity.selected }"
                         @mousedown="grabEntity($event, el.entity)"></div>
                 </div>
             </div>
@@ -113,17 +113,14 @@ export default {
                 height: this.worldSize.height + "px"
             };
         },
-        selectedEntityId() {
-            return this.$store.state.selected_entity;
-        },
         entities() {
             const world = this.worldSize;
-            const entities = this.$store.state.world.entities;
             const screenSpace = this.worldToScreenSpace;
 
+            const entities = this.$store.getters.entities;
             return entities.map(entity => {
                 const position = screenSpace(entity.position);
-                const size = screenSpace(entity.tile.size);
+                const size = screenSpace(entity.size);
                 size.x = Math.abs(size.x);
                 size.y = Math.abs(size.y);
                 const style = {
@@ -168,14 +165,18 @@ export default {
          */
         addEntity(ev) {
             const world = this.worldSize;
+            const tile = this.$store.getters.selectedTile;
             const { x, z, y } = this.screenToWorldSpace({
                 x: Math.round(ev.layerX - world.width * 0.5),
                 y: Math.round(ev.layerY - world.height * 0.5)
             });
 
-            this.$store.dispatch("addEntity", { x, z, y }).then(entity => {
-                this.$store.commit("SELECT_ENTITY", { id: entity.id });
-            });
+            this.$store
+                .dispatch("addEntity", { tile, x, z, y })
+                .then(entity => {
+                    this.$store.dispatch("deselectEntityAll");
+                    this.$store.dispatch("selectEntity", { id: entity.id });
+                });
         },
 
         /**
@@ -186,7 +187,7 @@ export default {
             ev.preventDefault();
             ev.stopPropagation();
             this.grabbedEntity = entity;
-            this.$store.commit("SELECT_ENTITY", { id: entity.id });
+            this.$store.dispatch("selectEntity", { id: entity.id });
         },
 
         /**

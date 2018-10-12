@@ -9,8 +9,8 @@
             <ul>
                 <li v-for="tile in tileset"
                     :key="tile.name"
-                    :class="{ selected: tile.name === selected_tile }"
-                    @click="$store.commit('SELECT_TILE', tile.name)">
+                    :class="{ selected: tile.selected }"
+                    @click="$store.dispatch('selectTile', { tile: tile.name })">
                     {{ tile.name }}
                 </li>
             </ul>
@@ -22,10 +22,7 @@
 export default {
     computed: {
         tileset() {
-            return this.$store.state.tileset;
-        },
-        selected_tile() {
-            return this.$store.state.selected_tile;
+            return this.$store.getters.tileset;
         },
         gameRunning() {
             return this.$store.state.game_running;
