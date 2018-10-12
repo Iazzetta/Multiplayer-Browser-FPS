@@ -71,6 +71,12 @@ export function dispatch(state, action) {
             const { level } = action.data;
             state = new State(state);
 
+            // Player spawns
+            state.playerSpawns = [];
+            level.spawns.forEach(spawn => {
+                state.playerSpawns.push(new THREE.Vector3().copy(spawn));
+            });
+
             const assets = state.assets;
             level.tiles.forEach(tile => {
                 const entity = new TileEntity(tile.id, assets, {

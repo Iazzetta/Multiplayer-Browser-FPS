@@ -99,17 +99,22 @@ export default new Vuex.Store({
         },
         levelExport(state) {
             const json = {
-                tiles: []
+                tiles: [],
+                spawns: []
             };
 
             state.level.entities.forEach(entity => {
-                json.tiles.push({
-                    id: entity.id,
-                    position: entity.position,
-                    rotation: entity.rotation,
-                    size: entity.size,
-                    mesh: entity.tile
-                });
+                if (entity.tile === "player_body") {
+                    json.spawns.push(entity.position);
+                } else {
+                    json.tiles.push({
+                        id: entity.id,
+                        position: entity.position,
+                        rotation: entity.rotation,
+                        size: entity.size,
+                        mesh: entity.tile
+                    });
+                }
             });
 
             return JSON.parse(JSON.stringify(json));
@@ -118,7 +123,7 @@ export default new Vuex.Store({
     actions: {
         load(store) {
             return game.loadAssets().then(() => {
-                const tileset = [];
+                const tileset = ["player_body"];
                 const assets = game.state.assets;
                 assets.objList.forEach((g, name) => {
                     if (name.indexOf("tile--") !== -1) {
