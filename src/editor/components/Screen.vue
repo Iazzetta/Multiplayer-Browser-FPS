@@ -31,6 +31,8 @@
 
 <script>
 import clamp from "lodash/clamp";
+import debounce from "lodash/debounce";
+
 export default {
     props: ["view"],
     data() {
@@ -192,6 +194,10 @@ export default {
             ev.preventDefault();
             ev.stopPropagation();
 
+            if (!ev.shiftKey) {
+                this.$store.dispatch("deselectEntityAll");
+            }
+
             this.$store.dispatch("selectEntity", { id: entity.id });
             this.grab.active = true;
         },
@@ -201,7 +207,6 @@ export default {
          */
         moveEntity(ev) {
             if (this.grab.active) {
-                console.log({ ev });
                 const world = this.worldSize;
                 const screenSpace = this.worldToScreenSpace;
                 const worldSpace = this.screenToWorldSpace;
@@ -215,6 +220,7 @@ export default {
                     const { id } = entity;
                     this.$store.commit("MOVE_ENTITY", { id, x, z, y });
                 });
+                this.snapEntitiesToGrid();
             }
         },
 
@@ -226,8 +232,13 @@ export default {
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.grab.active = false;
+                this.snapEntitiesToGrid();
             }
         },
+
+        snapEntitiesToGrid: debounce(function() {
+            this.$store.commit("SNAP_ENTITIES_TO_GRID");
+        }, 250),
 
         centerWorld() {
             const { screen, world } = this.$refs;
