@@ -394,17 +394,7 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.y = resolveCollision(
-                        aabb1.min.y,
-                        aabb1.max.y,
-                        aabb2.min.y,
-                        aabb2.max.y
-                    );
-                    entity.velocity.y = 0;
-                    entity.collider.y =
-                        entity.object3D.position.y < wall.object3D.position.y
-                            ? -1
-                            : 1;
+                    resolveCollisionY(entity, wall, aabb1, aabb2);
                 }
             });
         }
@@ -416,17 +406,7 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.x = resolveCollision(
-                        aabb1.min.x,
-                        aabb1.max.x,
-                        aabb2.min.x,
-                        aabb2.max.x
-                    );
-                    entity.velocity.x = 0;
-                    entity.collider.x =
-                        entity.object3D.position.x < wall.object3D.position.x
-                            ? -1
-                            : 1;
+                    resolveCollisionX(entity, wall, aabb1, aabb2);
                 }
             });
         }
@@ -438,17 +418,7 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.z = resolveCollision(
-                        aabb1.min.z,
-                        aabb1.max.z,
-                        aabb2.min.z,
-                        aabb2.max.z
-                    );
-                    entity.velocity.z = 0;
-                    entity.collider.z =
-                        entity.object3D.position.z < wall.object3D.position.z
-                            ? -1
-                            : 1;
+                    resolveCollisionZ(entity, wall, aabb1, aabb2);
                 }
             });
         }
@@ -462,4 +432,40 @@ export function resolveCollision(entityMin, entityMax, wallMin, wallMax) {
     } else {
         return wallMax + width;
     }
+}
+
+export function resolveCollisionX(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.x = resolveCollision(
+        aabb1.min.x,
+        aabb1.max.x,
+        aabb2.min.x,
+        aabb2.max.x
+    );
+    entity.velocity.x = 0;
+    entity.collider.x =
+        entity.object3D.position.x < wall.object3D.position.x ? -1 : 1;
+}
+
+export function resolveCollisionY(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.y = resolveCollision(
+        aabb1.min.y,
+        aabb1.max.y,
+        aabb2.min.y,
+        aabb2.max.y
+    );
+    entity.velocity.y = 0;
+    entity.collider.y =
+        entity.object3D.position.y < wall.object3D.position.y ? -1 : 1;
+}
+
+export function resolveCollisionZ(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.z = resolveCollision(
+        aabb1.min.z,
+        aabb1.max.z,
+        aabb2.min.z,
+        aabb2.max.z
+    );
+    entity.velocity.z = 0;
+    entity.collider.z =
+        entity.object3D.position.z < wall.object3D.position.z ? -1 : 1;
 }
