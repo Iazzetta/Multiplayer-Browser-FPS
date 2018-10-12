@@ -374,15 +374,6 @@ export function physicsSystem(entity, state, dispatch) {
         const walls = state.getEntityGroup("wall");
         const velocity = entity.velocity.getForceVector(state.time.delta);
 
-        const resolveCollision = (entityMin, entityMax, wallMin, wallMax) => {
-            const width = (entityMax - entityMin) * 0.50000001;
-            if (entityMin < wallMin) {
-                return wallMin - width;
-            } else {
-                return wallMax + width;
-            }
-        };
-
         // Reset collider
         if (entity.collider) {
             entity.collider.set(0, 0, 0);
@@ -461,5 +452,14 @@ export function physicsSystem(entity, state, dispatch) {
                 }
             });
         }
+    }
+}
+
+export function resolveCollision(entityMin, entityMax, wallMin, wallMax) {
+    const width = (entityMax - entityMin) * 0.50000001;
+    if (entityMin < wallMin) {
+        return wallMin - width;
+    } else {
+        return wallMax + width;
     }
 }
