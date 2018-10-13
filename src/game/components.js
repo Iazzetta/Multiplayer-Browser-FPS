@@ -28,6 +28,7 @@ export class PlayerComponent {
             back: false,
             right: false,
             jump: false,
+            down: false,
             shoot: false,
             reload: false
         };
@@ -53,6 +54,7 @@ export class StatsComponent {
 
         // Weapon stats
         this.damage = 1;
+        this.accuracy = 0.9;
         this.firerate = 100;
         this.reloadSpeed = 2000;
         this.maxLoadedAmmo = 50;
@@ -153,7 +155,7 @@ export class PlayerModelComponent extends THREE.Object3D {
 
         this.root = new THREE.Object3D();
         this.root.position.y = -size.y * 0.5;
-        this.root.position.z = 1
+        this.root.position.z = 1;
         object3D.add(this.root);
 
         this.body = new THREE.Object3D();
@@ -174,7 +176,9 @@ export class PlayerModelComponent extends THREE.Object3D {
         this.camera.position.y = 1;
         this.head.add(this.camera);
 
+        this.povMuzzleflash = new THREE.Object3D();
         this.povWeaponModel = new THREE.Object3D();
+        this.povWeaponModel.add(this.povMuzzleflash);
         this.camera.add(this.povWeaponModel);
     }
 

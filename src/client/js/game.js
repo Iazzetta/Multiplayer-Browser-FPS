@@ -15,17 +15,17 @@ import {
     syncPlayer,
     HIT_PLAYER
 } from "../../game/actions.js";
-import { toRadians } from "../../game/utils.js";
 import debounce from "lodash/debounce";
 
-export const [W, A, S, D, R, SPACE] = [87, 65, 83, 68, 82, 32];
+export const [W, A, S, D, R, SPACE, SHIFT] = [87, 65, 83, 68, 82, 32, 16];
 export const KEY_BINDS = {
     [W]: "forward",
     [A]: "left",
     [S]: "back",
     [D]: "right",
     [R]: "reload",
-    [SPACE]: "jump"
+    [SPACE]: "jump",
+    [SHIFT]: "down"
 };
 
 export class Game extends BaseGame {
@@ -201,11 +201,32 @@ export class Game extends BaseGame {
 
     loadAssets() {
         this.state.assets.loadLevel("level-1", "levels/level.json");
-        this.state.assets.loadObj("wall_tile", "wall_tile.obj");
-        this.state.assets.loadObj("player_head", "player_head.obj");
-        this.state.assets.loadObj("player_body", "player_body.obj");
-        this.state.assets.loadObj("player_pilot", "player_pilot.obj");
-        this.state.assets.loadObj("player_weapon", "player_weapon.obj");
+
+        this.state.assets.loadObj("player_head");
+        this.state.assets.loadObj("player_body");
+        this.state.assets.loadObj("player_pilot");
+        this.state.assets.loadObj("player_weapon");
+        this.state.assets.loadObj("muzzle_flash");
+
+        // Tiles
+        [
+            "tile_box-sm",
+            "tile_box-md",
+            "tile_box-lg",
+
+            "tile_wall-sm",
+            "tile_wall-md",
+            "tile_wall-lg",
+
+            "tile_floor-sm",
+            "tile_floor-lg",
+
+            "tile_pillar-sm",
+            "tile_pillar-md"
+        ].forEach(tile => {
+            this.state.assets.loadObj(tile);
+        });
+
         return this.state.assets.done();
     }
 
@@ -240,6 +261,7 @@ export class Game extends BaseGame {
 
         // Init THREE Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setClearColor(0x63a9db, 1);
 
         // Append to dom
         this.container.innerHTML = "";

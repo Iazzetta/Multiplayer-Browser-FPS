@@ -6,68 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="scss/main.scss" />
+    <link rel="stylesheet" type="text/css" media="screen" href="style.scss" />
 </head>
 
 <body>
-    <div id="editor">
-        <div class="header"></div>
-        <div class="menu">
-            <button @click="playLevel(true)" v-if="!game.running">Play</button>
-            <button @click="playLevel(false)" v-if="game.running">Exit</button>
-            <button ref="export_btn" @mousedown="downloadAsJSON">Download</button>
-            <hr>
-            <button
-                v-for="brush in brushes"
-                :key="brush.type"
-                :class="{ active: selected_brush_type === brush.type }"
-                @click="selected_brush_type = brush.type">{{ brush.name }}</button>
-            <hr>
-            <button title="alt + scroll" @click="zoom(8)">Zoom in</button>
-            <button title="alt + scroll" @click="zoom(-8)">Zoom out</button>
-        </div>
-        <div v-if="game.running" class="game-screen" ref="gameScreen"></div>
-        <div v-else class="viewport" :class="viewportClassList" @mousewheel="onScroll">
-            <div class="level"
-                ref="level"
-                :style="gridSizeStyle"
-                @mousemove="onMouseMove"
-                @mouseup="onMouseUp">
-
-                <level-object v-for="obj in objects"
-                    :key="obj.id"
-                    :obj="obj"
-                    :tile_size="tile_size"
-                    :grabbed="selected_obj_id === obj.id && action === 'grab'"
-                    :selected="selected_obj_id === obj.id"
-                    @grab="grabObj"
-                    @scale="scaleObj"></level-object>
-
-                <div class="grid-background" :style="gridSizeStyle" @click="onGridClick">
-                    <div class="row" v-for="y in rows" :key="y">
-                        <div class="col" v-for="x in cols" :key="x">
-                            <div class="cell" :style="gridCellStyle"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer"></div>
+    <div id="app">
+        <App></App>
     </div>
-
-    <template id="level-object-vue-template">
-        <div class="level-object" :style="objStyle">
-            <div @mousedown="onGrab" class="body"></div>
-            <div v-if="selected">
-                <div @mousedown="onScale($event, 0, -1)" class="control scale up"></div>
-                <div @mousedown="onScale($event, 0, 1)" class="control scale down"></div>
-                <div @mousedown="onScale($event, -1, 0)" class="control scale left"></div>
-                <div @mousedown="onScale($event, 1, 0)" class="control scale right"></div>
-            </div>
-        </div>
-    </template>
-
-    <script src="js/editor.js"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { State } from "./state";
 import { createActionType } from "./utils";
 
@@ -76,7 +77,7 @@ export function playerLeave(id) {
  * @param {string} id
  * @param {THREE.Vector3} spawn
  */
-export function spawnPlayer(id, spawn) {
+export function spawnPlayer(id, spawn = new THREE.Vector3()) {
     return new Action(SPAWN_PLAYER, { id, spawn });
 }
 

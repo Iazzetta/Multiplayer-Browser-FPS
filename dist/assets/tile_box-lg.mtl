@@ -1,22 +1,24 @@
-# Blender MTL File: 'player_mech.blend'
+# Blender MTL File: 'box-lg.blend'
 # Material Count: 2
 
-newmtl gray
-Ns 17.647059
+newmtl Material
+Ns 37.254902
 Ka 1.000000 1.000000 1.000000
-Kd 0.089042 0.127916 0.169255
+Kd 0.640000 0.640000 0.640000
 Ks 0.100000 0.100000 0.100000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd textures\grid.png
 
-newmtl red
-Ns 56.862745
+newmtl gray
+Ns 37.254902
 Ka 1.000000 1.000000 1.000000
-Kd 0.618972 0.036772 0.050413
-Ks 0.400000 0.400000 0.400000
+Kd 0.335082 0.335082 0.335082
+Ks 0.100000 0.100000 0.100000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd textures\grid.png

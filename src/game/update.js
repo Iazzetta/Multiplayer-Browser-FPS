@@ -10,10 +10,11 @@ import {
     clientAction
 } from "./actions";
 import { Entity } from "./entities";
-import { AABB, toRadians } from "./utils";
+import { AABB } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
 import intersection from "ray-aabb-intersection";
 import sample from "lodash/sample";
+import random from "lodash/random";
 
 /**
  * @param {State} state
@@ -21,6 +22,7 @@ import sample from "lodash/sample";
  */
 export function update(state, dispatch) {
     updateTime(state);
+    state.particles.update(state.time.delta);
 
     // Systems
     state.forEachEntity(entity => {
@@ -97,12 +99,18 @@ export function playerControllerSystem(entity, state, dispatch) {
         // Reset state
         player.state = "idle";
 
-        // vetical movement - jumping
-        if (input.jump) {
-            // Normal jump
-            if (entity.collider && entity.collider.bottom()) {
+        if (entity.collider) {
+            if (input.jump && entity.collider.bottom()) {
                 velocity.y = stats.jumpSpeed;
                 input.jump = false;
+            }
+        } else {
+            if (input.down) {
+                velocity.y = -stats.runSpeed;
+            } else if (input.jump) {
+                velocity.y = stats.runSpeed;
+            } else {
+                velocity.y = 0;
             }
         }
 
@@ -168,10 +176,7 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = stats.firerate;
 
-            // Hitscan
-            const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
-
+            // Bullet origin point
             const originMatrix = new THREE.Matrix4();
             originMatrix.copyPosition(playerModel.camera.matrixWorld);
 
@@ -179,8 +184,20 @@ export function shootingSystem(entity, state, dispatch) {
                 .applyMatrix4(originMatrix)
                 .toArray();
 
+            // Bullet direction
+            const dirMatrix = new THREE.Matrix4();
+            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
+
+            const offset = 1 - stats.accuracy;
+            const spread = new THREE.Vector3(
+                random(-offset, offset),
+                random(-offset, offset),
+                random(-offset, offset)
+            );
             const dir = new THREE.Vector3(0, 0, -1)
                 .applyMatrix4(dirMatrix)
+                .add(spread)
+                .normalize()
                 .toArray();
 
             const hitscan = {
@@ -222,6 +239,21 @@ export function shootingSystem(entity, state, dispatch) {
                     }
 
                     sync(killPlayer(target.id));
+                }
+            }
+
+            // Particles
+            if (hitscan.entity) {
+                if (hitscan.entity.health) {
+                    state.particles.bulletImpactPlayer(
+                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.point)
+                    );
+                } else {
+                    state.particles.bulletImpactWall(
+                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.point)
+                    );
                 }
             }
 
@@ -295,6 +327,8 @@ export function povAnimationSystem(entity, state, dispatch) {
         gunModel.position.set(0, 0, 0);
         gunModel.rotation.set(0, 0, 0);
 
+        playerModel.povMuzzleflash.visible = false;
+
         switch (player.state) {
             case "shooting": {
                 const s = weapon.firerateTimer;
@@ -302,6 +336,8 @@ export function povAnimationSystem(entity, state, dispatch) {
                 gunModel.position.x += Math.random() * 0.0001 * s;
                 gunModel.position.y += Math.random() * 0.0001 * s;
                 gunModel.position.z += Math.random() * 0.0002 * s;
+
+                playerModel.povMuzzleflash.visible = Math.random() > 0.5;
                 break;
             }
             case "reloading": {
@@ -337,15 +373,7 @@ export function physicsSystem(entity, state, dispatch) {
     if (entity.object3D && entity.velocity) {
         const walls = state.getEntityGroup("wall");
         const velocity = entity.velocity.getForceVector(state.time.delta);
-
-        const resolveCollision = (entityMin, entityMax, wallMin, wallMax) => {
-            const width = (entityMax - entityMin) * 0.50000001;
-            if (entityMin < wallMin) {
-                return wallMin - width;
-            } else {
-                return wallMax + width;
-            }
-        };
+        const STEP_SIZE = 1;
 
         // Reset collider
         if (entity.collider) {
@@ -367,17 +395,7 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.y = resolveCollision(
-                        aabb1.min.y,
-                        aabb1.max.y,
-                        aabb2.min.y,
-                        aabb2.max.y
-                    );
-                    entity.velocity.y = 0;
-                    entity.collider.y =
-                        entity.object3D.position.y < wall.object3D.position.y
-                            ? -1
-                            : 1;
+                    resolveCollisionY(entity, wall, aabb1, aabb2);
                 }
             });
         }
@@ -389,17 +407,12 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.x = resolveCollision(
-                        aabb1.min.x,
-                        aabb1.max.x,
-                        aabb2.min.x,
-                        aabb2.max.x
-                    );
-                    entity.velocity.x = 0;
-                    entity.collider.x =
-                        entity.object3D.position.x < wall.object3D.position.x
-                            ? -1
-                            : 1;
+                    const deltaY = aabb2.max.y - aabb1.min.y;
+                    if (deltaY <= STEP_SIZE) {
+                        resolveCollisionY(entity, wall, aabb1, aabb2);
+                    } else {
+                        resolveCollisionX(entity, wall, aabb1, aabb2);
+                    }
                 }
             });
         }
@@ -411,19 +424,66 @@ export function physicsSystem(entity, state, dispatch) {
                 const aabb1 = entity.object3D.toAABB();
                 const aabb2 = wall.object3D.toAABB();
                 if (AABB.collision(aabb1, aabb2)) {
-                    entity.object3D.position.z = resolveCollision(
-                        aabb1.min.z,
-                        aabb1.max.z,
-                        aabb2.min.z,
-                        aabb2.max.z
-                    );
-                    entity.velocity.z = 0;
-                    entity.collider.z =
-                        entity.object3D.position.z < wall.object3D.position.z
-                            ? -1
-                            : 1;
+                    const deltaY = aabb2.max.y - aabb1.min.y;
+                    if (deltaY <= STEP_SIZE) {
+                        resolveCollisionY(entity, wall, aabb1, aabb2);
+                    } else {
+                        resolveCollisionZ(entity, wall, aabb1, aabb2);
+                    }
                 }
             });
         }
     }
+}
+
+export function resolveCollision(entityMin, entityMax, wallMin, wallMax) {
+    const width = (entityMax - entityMin) * 0.50000001;
+    if (entityMin < wallMin) {
+        return wallMin - width;
+    } else {
+        return wallMax + width;
+    }
+}
+
+export function resolveCollisionX(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.x = resolveCollision(
+        aabb1.min.x,
+        aabb1.max.x,
+        aabb2.min.x,
+        aabb2.max.x
+    );
+    entity.velocity.x = 0;
+    entity.collider.x =
+        entity.object3D.position.x < wall.object3D.position.x ? -1 : 1;
+}
+
+export function resolveCollisionY(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.y = resolveCollision(
+        aabb1.min.y,
+        aabb1.max.y,
+        aabb2.min.y,
+        aabb2.max.y
+    );
+
+    entity.collider.y =
+        entity.object3D.position.y < wall.object3D.position.y ? -1 : 1;
+
+    if (
+        (entity.collider.y > 0 && entity.velocity.y < 0) ||
+        (entity.collider.y < 0 && entity.velocity.y > 0)
+    ) {
+        entity.velocity.y = 0;
+    }
+}
+
+export function resolveCollisionZ(entity, wall, aabb1, aabb2) {
+    entity.object3D.position.z = resolveCollision(
+        aabb1.min.z,
+        aabb1.max.z,
+        aabb2.min.z,
+        aabb2.max.z
+    );
+    entity.velocity.z = 0;
+    entity.collider.z =
+        entity.object3D.position.z < wall.object3D.position.z ? -1 : 1;
 }

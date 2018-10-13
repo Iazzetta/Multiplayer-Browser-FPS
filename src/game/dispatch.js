@@ -2,7 +2,11 @@ import * as THREE from "three";
 import sample from "lodash/sample";
 import clamp from "lodash/clamp";
 import { State } from "./state.js";
-import { PlayerEntity, WallEntity, PlayerGhostEntity } from "./entities";
+import {
+    PlayerEntity,
+    PlayerGhostEntity,
+    TileEntity
+} from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
@@ -40,23 +44,26 @@ export function dispatch(state, action) {
             const { level } = action.data;
             state = new State(state);
 
-            level.forEach(obj => {
-                const position = new THREE.Vector3();
-                position.copy(obj.position);
+            // Player spawns
+            state.playerSpawns = [];
+            level.spawns.forEach(spawn => {
+                state.playerSpawns.push(new THREE.Vector3().copy(spawn));
+            });
 
-                const size = new THREE.Vector3();
-                size.copy(obj.size);
+            const assets = state.assets;
+            level.tiles.forEach(tile => {
+                const entity = new TileEntity(tile.id, assets, {
+                    mesh: tile.mesh,
+                    size: new THREE.Vector3().copy(tile.size)
+                });
+                entity.object3D.position.copy(tile.position);
+                entity.object3D.rotation.set(
+                    tile.rotation.x,
+                    tile.rotation.y,
+                    tile.rotation.z
+                );
 
-                switch (obj.type) {
-                    case "player":
-                        state.playerSpawns.push(position.clone());
-                        break;
-                    case "wall":
-                        const wall = new WallEntity(obj.id, state.assets, size);
-                        wall.object3D.position.copy(position);
-                        state.addEntity(wall);
-                        break;
-                }
+                state.addEntity(entity);
             });
 
             return state;
@@ -65,7 +72,8 @@ export function dispatch(state, action) {
             const { id, name } = action.data;
             const playerComp = new PlayerComponent({ id, name });
             const playerGhost = new PlayerGhostEntity(playerComp);
-            playerGhost.object3D.position.copy(sample(state.playerSpawns));
+            const spawn = sample(state.playerSpawns) || new THREE.Vector3();
+            playerGhost.object3D.position.copy(spawn);
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
             return state;

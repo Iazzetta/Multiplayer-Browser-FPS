@@ -107,6 +107,7 @@ export class PlayerGhostEntity extends Entity {
 
         this.velocity = new VelocityComponent();
         this.object3D = new Object3DComponent();
+        this.object3D.rotation.y = 0;
 
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.head.rotation.x = toRadians(-80);
@@ -138,6 +139,7 @@ export class PlayerEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1.5));
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
+        this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
         this.playerModel.headModel.add(assets.mesh("player_pilot"));
         this.playerModel.headModel.add(assets.mesh("player_head"));
         this.playerModel.bodyModel.add(assets.mesh("player_body"));
@@ -165,6 +167,27 @@ export class WallEntity extends Entity {
 
         const mesh = assets.mesh("wall_tile");
         mesh.scale.copy(size);
+        this.object3D.add(mesh);
+    }
+}
+
+export class TileEntity extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     * @param {object} config
+     * @param {string} config.mesh
+     * @param {THREE.Vector3} config.size
+     */
+    constructor(id, assets, config) {
+        super(id);
+        this.sleep = true;
+        this.flags = ["wall"];
+
+        const radius = config.size.clone().multiplyScalar(0.5);
+        this.object3D = new Object3DComponent(radius);
+
+        const mesh = assets.mesh(config.mesh);
         this.object3D.add(mesh);
     }
 }
