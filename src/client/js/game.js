@@ -213,11 +213,16 @@ export class Game extends BaseGame {
             "tile_box-sm",
             "tile_box-md",
             "tile_box-lg",
+
             "tile_wall-sm",
             "tile_wall-md",
             "tile_wall-lg",
+
+            "tile_floor-sm",
+            "tile_floor-lg",
+
             "tile_pillar-sm",
-            "tile_pillar-md",
+            "tile_pillar-md"
         ].forEach(tile => {
             this.state.assets.loadObj(tile);
         });
