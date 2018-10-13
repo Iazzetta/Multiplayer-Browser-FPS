@@ -81,6 +81,34 @@ export default new Vuex.Store({
         },
         TOGGLE_GAME(state, payload) {
             state.game_running = payload;
+        },
+        IMPORT_LEVEL(state, payload) {
+            const { level } = payload;
+
+            state.level.entities = [];
+            level.tiles.forEach(tile => {
+                const entity = new Entity({
+                    id: tile.id,
+                    tile: tile.mesh,
+                    position: tile.position,
+                    rotation: tile.rotation,
+                    selected: false
+                });
+
+                state.level.entities.push(entity);
+            });
+
+            level.spawns.forEach((spawn, index) => {
+                const entity = new Entity({
+                    id: ["spawn", index].join("-"),
+                    tile: "player_body",
+                    position: spawn,
+                    rotation: new Vector3(),
+                    selected: false
+                });
+
+                state.level.entities.push(entity);
+            });
         }
     },
     getters: {
@@ -146,7 +174,11 @@ export default new Vuex.Store({
         addEntity(store, payload) {
             const { tile, x, y, z } = payload;
             const entity = new Entity({
-                id: (counter("editor-entity") + 128).toString(16),
+                id: [
+                    Date.now().toString(16),
+                    (Math.random() * 10000).toString(16),
+                    counter("editor-entity").toString(16)
+                ].join("-"),
                 tile,
                 position: new Vector3(),
                 rotation: new Vector3(),
@@ -192,6 +224,9 @@ export default new Vuex.Store({
                 .forEach(id => {
                     store.commit("DELETE_ENTITY", { id });
                 });
+        },
+        importLevel(store, payload) {
+            store.commit("IMPORT_LEVEL", payload);
         }
     }
 });

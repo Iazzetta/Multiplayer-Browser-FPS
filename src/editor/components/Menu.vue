@@ -7,6 +7,8 @@
 
         <button @click="downloadAsJSON">Export</button>
 
+        <input @change="importJSON" type="file" value="json" />
+
         <div class="tileset">
             <ul>
                 <li v-for="tile in tileset"
@@ -31,16 +33,26 @@ export default {
         }
     },
     methods: {
-         downloadAsJSON() {
+        downloadAsJSON() {
             // Download the file
             const json = JSON.stringify(this.$store.getters.levelExport);
-
 
             const a = document.createElement("a");
             const file = new Blob([json], { type: "json" });
             a.href = URL.createObjectURL(file);
             a.download = "level.json";
             a.click();
+        },
+        importJSON(ev) {
+            const [file] = ev.target.files;
+            const reader = new FileReader();
+            reader.onload = event => {
+                if (event.target.readyState === 2) {
+                    const level = JSON.parse(reader.result);
+                    this.$store.dispatch("importLevel", { level });
+                }
+            };
+            reader.readAsText(file);
         }
     }
 };
