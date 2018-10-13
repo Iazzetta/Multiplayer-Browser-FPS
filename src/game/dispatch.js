@@ -4,14 +4,12 @@ import clamp from "lodash/clamp";
 import { State } from "./state.js";
 import {
     PlayerEntity,
-    WallEntity,
     PlayerGhostEntity,
     TileEntity
 } from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
-    LOAD_LEVEL_WIP,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SET_PLAYER_MOUSE,
