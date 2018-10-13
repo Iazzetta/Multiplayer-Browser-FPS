@@ -464,9 +464,16 @@ export function resolveCollisionY(entity, wall, aabb1, aabb2) {
         aabb2.min.y,
         aabb2.max.y
     );
-    entity.velocity.y = 0;
+
     entity.collider.y =
         entity.object3D.position.y < wall.object3D.position.y ? -1 : 1;
+
+    if (
+        (entity.collider.y > 0 && entity.velocity.y < 0) ||
+        (entity.collider.y < 0 && entity.velocity.y > 0)
+    ) {
+        entity.velocity.y = 0;
+    }
 }
 
 export function resolveCollisionZ(entity, wall, aabb1, aabb2) {
