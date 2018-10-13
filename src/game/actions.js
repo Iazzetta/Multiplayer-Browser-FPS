@@ -5,7 +5,6 @@ import { createActionType } from "./utils";
 export const SERVER_ACTION = createActionType("SERVER_ACTION");
 export const CLIENT_ACTION = createActionType("CLIENT_ACTION");
 export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
-export const LOAD_LEVEL_WIP = createActionType("LOAD_LEVEL_WIP");
 export const SET_MY_PLAYER_ID = createActionType("SET_MY_PLAYER_ID");
 export const PLAYER_JOIN = createActionType("PLAYER_JOIN");
 export const PLAYER_LEAVE = createActionType("PLAYER_LEAVE");
@@ -57,13 +56,6 @@ export function setMyPlayerId(id) {
  */
 export function loadLevel(level) {
     return new Action(LOAD_LEVEL, { level });
-}
-
-/**
- * @param {object} level
- */
-export function loadLevel_wip(level) {
-    return new Action(LOAD_LEVEL_WIP, { level });
 }
 
 /**

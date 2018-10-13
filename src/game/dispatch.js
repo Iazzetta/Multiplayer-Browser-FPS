@@ -46,31 +46,6 @@ export function dispatch(state, action) {
             const { level } = action.data;
             state = new State(state);
 
-            level.forEach(obj => {
-                const position = new THREE.Vector3();
-                position.copy(obj.position);
-
-                const size = new THREE.Vector3();
-                size.copy(obj.size);
-
-                switch (obj.type) {
-                    case "player":
-                        state.playerSpawns.push(position.clone());
-                        break;
-                    case "wall":
-                        const wall = new WallEntity(obj.id, state.assets, size);
-                        wall.object3D.position.copy(position);
-                        state.addEntity(wall);
-                        break;
-                }
-            });
-
-            return state;
-        }
-        case LOAD_LEVEL_WIP: {
-            const { level } = action.data;
-            state = new State(state);
-
             // Player spawns
             state.playerSpawns = [];
             level.spawns.forEach(spawn => {

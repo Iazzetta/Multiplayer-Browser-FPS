@@ -4,7 +4,7 @@
 
 <script>
 import { Game } from "../../client/js/game";
-import { loadLevel_wip, playerJoin, setMyPlayerId } from "../../game/actions";
+import { loadLevel, playerJoin, setMyPlayerId } from "../../game/actions";
 
 let game;
 
@@ -15,7 +15,7 @@ export default {
         game.loadAssets().then(() => {
             game.container = this.$refs.screen;
             game.run();
-            game.dispatch(loadLevel_wip(level));
+            game.dispatch(loadLevel(level));
             game.dispatch(setMyPlayerId("editor"));
             game.dispatch(playerJoin("editor"));
         });
