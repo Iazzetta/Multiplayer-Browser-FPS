@@ -126,7 +126,7 @@ export default new Vuex.Store({
                 const tileset = ["player_body"];
                 const assets = game.state.assets;
                 assets.objList.forEach((g, name) => {
-                    if (name.indexOf("tile--") !== -1) {
+                    if (name.split("_")[0] === 'tile') {
                         tileset.push(name);
                     }
                 });

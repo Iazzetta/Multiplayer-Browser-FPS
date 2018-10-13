@@ -202,7 +202,6 @@ export class Game extends BaseGame {
     loadAssets() {
         this.state.assets.loadLevel("level-1", "levels/level.json");
 
-        this.state.assets.loadObj("wall_tile");
         this.state.assets.loadObj("player_head");
         this.state.assets.loadObj("player_body");
         this.state.assets.loadObj("player_pilot");
@@ -211,10 +210,14 @@ export class Game extends BaseGame {
 
         // Tiles
         [
-            "tile--box-lg",
-            "tile--box-md",
-            "tile--wall-x",
-            "tile--wall-y"
+            "tile_box-sm",
+            "tile_box-md",
+            "tile_box-lg",
+            "tile_wall-sm",
+            "tile_wall-md",
+            "tile_wall-lg",
+            "tile_pillar-sm",
+            "tile_pillar-md",
         ].forEach(tile => {
             this.state.assets.loadObj(tile);
         });
