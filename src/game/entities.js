@@ -137,12 +137,23 @@ export class PlayerEntity extends Entity {
         this.collider = new ColliderComponent();
 
         this.object3D = new Object3DComponent(new THREE.Vector3(1.5, 3, 1.25));
+
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
         this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
-        this.playerModel.headModel.add(assets.mesh("player_pilot"));
-        this.playerModel.headModel.add(assets.mesh("player_head"));
-        this.playerModel.bodyModel.add(assets.mesh("player_body"));
+
+        const pilot = assets.mesh("player_pilot");
+        pilot.castShadow = true;
+        this.playerModel.headModel.add(pilot);
+
+        const head = assets.mesh("player_head");
+        head.castShadow = true;
+        this.playerModel.headModel.add(head);
+
+        const body = assets.mesh("player_body");
+        body.castShadow = true;
+        this.playerModel.bodyModel.add(body);
+
         this.playerModel.setMode("third-person");
     }
 }
@@ -164,6 +175,8 @@ export class TileEntity extends Entity {
         this.object3D = new Object3DComponent(radius);
 
         const mesh = assets.mesh(config.mesh);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         this.object3D.add(mesh);
     }
 }

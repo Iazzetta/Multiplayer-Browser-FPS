@@ -262,6 +262,9 @@ export class Game extends BaseGame {
         // Init THREE Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setClearColor(0x63a9db, 1);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.BasicShadowMap;
+        this.renderer.shadowMapDebug = true;
 
         // Append to dom
         this.container.innerHTML = "";

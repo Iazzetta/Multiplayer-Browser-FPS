@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Entity } from "./entities.js";
 import { Assets } from "./assets.js";
 import { ParticleSystem } from "./particles.js";
+import { DEBUG } from "./consts.js";
 
 export class State {
     /**
@@ -63,15 +64,26 @@ export class State {
 
         // Create lights ...
         const dirLight = (color, int) => {
-            return new THREE.DirectionalLight(new THREE.Color(color), int);
+            return new THREE.PointLight(new THREE.Color(color), int);
         };
 
         var light = new THREE.AmbientLight(0x404040);
         this.scene.add(light);
 
         const keyLight = dirLight("#FFE4C4", 1);
-        keyLight.position.set(-100, 50, 100);
+        keyLight.position.set(0, 256, 0);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 512;
+        keyLight.shadow.mapSize.height = 512;
+        keyLight.shadow.camera.near = 0.5;
+        keyLight.shadow.camera.far = 512;
         this.scene.add(keyLight);
+
+        if (DEBUG) {
+            // Show shadow-casting cone
+            const helper = new THREE.CameraHelper(keyLight.shadow.camera);
+            this.scene.add(helper);
+        }
 
         const fillLight = dirLight("#A6D8ED", 0.6);
         fillLight.position.set(100, 50, 100);
