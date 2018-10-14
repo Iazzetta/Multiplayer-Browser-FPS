@@ -136,7 +136,7 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1.5));
+        this.object3D = new Object3DComponent(new THREE.Vector3(1.5, 3, 1.25));
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
         this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
@@ -144,30 +144,6 @@ export class PlayerEntity extends Entity {
         this.playerModel.headModel.add(assets.mesh("player_head"));
         this.playerModel.bodyModel.add(assets.mesh("player_body"));
         this.playerModel.setMode("third-person");
-    }
-}
-
-export class WallEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     * @param {THREE.Vector3} size
-     */
-    constructor(id, assets, size) {
-        const radius = new THREE.Vector3(
-            size.x * 0.5,
-            size.y * 0.5,
-            size.z * 0.5
-        );
-
-        super(id);
-        this.sleep = true;
-        this.flags = ["wall"];
-        this.object3D = new Object3DComponent(radius);
-
-        const mesh = assets.mesh("wall_tile");
-        mesh.scale.copy(size);
-        this.object3D.add(mesh);
     }
 }
 
