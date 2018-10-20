@@ -1,10 +1,10 @@
-# Blender MTL File: 'player_hero.blend'
+# Blender MTL File: 'hero-sculpt-2.blend'
 # Material Count: 1
 
 newmtl base
 Ns 27.450980
 Ka 1.000000 1.000000 1.000000
-Kd 0.327408 0.426212 0.382620
+Kd 0.674047 0.882623 0.790513
 Ks 0.100000 0.100000 0.100000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
