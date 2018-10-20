@@ -154,8 +154,7 @@ export class PlayerModelComponent extends THREE.Object3D {
         const size = object3D.toAABB().size();
 
         this.root = new THREE.Object3D();
-        this.root.position.y = -size.y * 0.5;
-        this.root.position.z = 1;
+        this.root.position.y = -size.y * 0.3;
         object3D.add(this.root);
 
         this.body = new THREE.Object3D();
@@ -173,7 +172,7 @@ export class PlayerModelComponent extends THREE.Object3D {
         this.head.add(this.headModel);
 
         this.camera = new THREE.PerspectiveCamera(90, 1);
-        this.camera.position.y = 1;
+        this.camera.position.y = 0.25;
         this.head.add(this.camera);
 
         this.povMuzzleflash = new THREE.Object3D();

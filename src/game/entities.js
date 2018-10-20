@@ -136,15 +136,11 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.object3D = new Object3DComponent(new THREE.Vector3(1.5, 3, 1.25));
+        this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 1, 0.5));
 
         this.playerModel = new PlayerModelComponent(this.object3D);
         this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
         this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
-
-        const pilot = assets.mesh("player_pilot");
-        pilot.castShadow = true;
-        this.playerModel.headModel.add(pilot);
 
         const head = assets.mesh("player_head");
         head.castShadow = true;
