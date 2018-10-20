@@ -75,8 +75,8 @@ export class State {
         keyLight.castShadow = true;
         keyLight.shadow.mapSize.width = 512;
         keyLight.shadow.mapSize.height = 512;
-        keyLight.shadow.camera.near = 0.5;
-        keyLight.shadow.camera.far = 256;
+        keyLight.shadow.camera.near = 0.1;
+        keyLight.shadow.camera.far = 128;
         this.scene.add(keyLight);
 
         if (DEBUG) {
