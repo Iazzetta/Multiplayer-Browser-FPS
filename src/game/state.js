@@ -71,12 +71,12 @@ export class State {
         this.scene.add(light);
 
         const keyLight = dirLight("#FFE4C4", 1);
-        keyLight.position.set(0, 256, 0);
+        keyLight.position.set(0, 100, 0);
         keyLight.castShadow = true;
         keyLight.shadow.mapSize.width = 512;
         keyLight.shadow.mapSize.height = 512;
         keyLight.shadow.camera.near = 0.5;
-        keyLight.shadow.camera.far = 512;
+        keyLight.shadow.camera.far = 256;
         this.scene.add(keyLight);
 
         if (DEBUG) {
