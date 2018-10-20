@@ -117,6 +117,7 @@ export function playerControllerSystem(entity, state, dispatch) {
         // Horizontal movement
         velocity.z = (input.forward ? -1 : 0) + (input.back ? 1 : 0);
         velocity.x = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+        velocity.x = velocity.x * 0.5;
 
         if (velocity.z !== 0 || velocity.x !== 0) {
             let angle = Math.atan2(velocity.x, velocity.z);
