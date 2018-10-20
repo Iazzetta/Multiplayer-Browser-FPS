@@ -139,8 +139,13 @@ export class PlayerEntity extends Entity {
         this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 1, 0.5));
 
         this.playerModel = new PlayerModelComponent(this.object3D);
-        this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
-        this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
+
+        const weapon = assets.mesh("player_weapon");
+        weapon.receiveShadow = true;
+        this.playerModel.povWeaponModel.add(weapon);
+
+        const muzzle_flash = assets.mesh("muzzle_flash");
+        this.playerModel.povMuzzleflash.add(muzzle_flash);
 
         const head = assets.mesh("player_head");
         head.castShadow = true;

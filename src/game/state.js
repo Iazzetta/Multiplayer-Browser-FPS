@@ -71,12 +71,12 @@ export class State {
         this.scene.add(light);
 
         const keyLight = dirLight("#FFE4C4", 1);
-        keyLight.position.set(0, 100, 0);
+        keyLight.position.set(0, 150, 0);
         keyLight.castShadow = true;
         keyLight.shadow.mapSize.width = 512;
         keyLight.shadow.mapSize.height = 512;
         keyLight.shadow.camera.near = 0.1;
-        keyLight.shadow.camera.far = 128;
+        keyLight.shadow.camera.far = 200;
         this.scene.add(keyLight);
 
         if (DEBUG) {
@@ -85,12 +85,12 @@ export class State {
             this.scene.add(helper);
         }
 
-        const fillLight = dirLight("#A6D8ED", 0.6);
-        fillLight.position.set(100, 50, 100);
+        const fillLight = dirLight("#A6D8ED", 0.5);
+        fillLight.position.set(200, 100, 200);
         this.scene.add(fillLight);
 
         const backLight = dirLight("#FFFFFF", 0.5);
-        backLight.position.set(100, 0, -100).normalize();
+        backLight.position.set(-200, 100, -200).normalize();
         this.scene.add(backLight);
     }
 

@@ -54,7 +54,7 @@ export class StatsComponent {
 
         // Weapon stats
         this.damage = 1;
-        this.accuracy = 0.9;
+        this.accuracy = 1;
         this.firerate = 100;
         this.reloadSpeed = 2000;
         this.maxLoadedAmmo = 50;
