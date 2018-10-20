@@ -200,16 +200,15 @@ export class Game extends BaseGame {
     }
 
     loadAssets() {
-        this.state.assets.loadLevel("level-1", "levels/level.json");
+        const models = [
+            // Player model
+            "player_head",
+            "player_body",
+            "player_pilot",
+            "player_weapon",
+            "muzzle_flash",
 
-        this.state.assets.loadObj("player_head");
-        this.state.assets.loadObj("player_body");
-        this.state.assets.loadObj("player_pilot");
-        this.state.assets.loadObj("player_weapon");
-        this.state.assets.loadObj("muzzle_flash");
-
-        // Tiles
-        [
+            // Tiles
             "tile_box-sm",
             "tile_box-md",
             "tile_box-lg",
@@ -223,11 +222,12 @@ export class Game extends BaseGame {
 
             "tile_pillar-sm",
             "tile_pillar-md"
-        ].forEach(tile => {
-            this.state.assets.loadObj(tile);
-        });
+        ];
 
-        return this.state.assets.done();
+        const assets = this.state.assets;
+        assets.loadLevel("level-1", "levels/level.json");
+        models.forEach(obj => assets.loadObj(obj));
+        return assets.done();
     }
 
     initSocket() {
