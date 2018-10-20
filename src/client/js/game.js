@@ -205,6 +205,7 @@ export class Game extends BaseGame {
             "player_head",
             "player_body",
             "player_pilot",
+            "player_hover_board",
             "player_weapon",
             "muzzle_flash",
 
