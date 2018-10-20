@@ -92,6 +92,11 @@ export class Game extends BaseGame {
     run(mode = "single-player") {
         const game = this;
 
+        // Init systems
+        game.initRenderer();
+        game.initMouseInput();
+        game.initKeyboardInput();
+
         if (mode === "single-player") {
             game.subscriptions.push(action => {
                 if (action.type !== SERVER_ACTION) return;
@@ -111,17 +116,13 @@ export class Game extends BaseGame {
             this.bloodScreen = 500;
         });
 
-        // Init systems
-        game.initRenderer();
-        game.initMouseInput();
-        game.initKeyboardInput();
-
-        // Init game world
-        const level = game.state.assets.level("level-1");
-        game.dispatch(setMyPlayerId("player-1"));
-        game.dispatch(loadLevel(level));
-        game.dispatch(playerJoin("player-1", "Player"));
-        game.dispatch(playerJoin("player-2", "Enemy player"));
+        if (mode === "single-player") {
+            const level = game.state.assets.level("level-1");
+            game.dispatch(setMyPlayerId("player-1"));
+            game.dispatch(loadLevel(level));
+            game.dispatch(playerJoin("player-1", "Player"));
+            game.dispatch(playerJoin("player-2", "Enemy player"));
+        }
 
         // Run game
         game.running = true;
