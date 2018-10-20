@@ -67,7 +67,7 @@ export class State {
             return new THREE.PointLight(new THREE.Color(color), int);
         };
 
-        var light = new THREE.AmbientLight(0x404040);
+        var light = new THREE.AmbientLight(0x404040, 1.75);
         this.scene.add(light);
 
         const keyLight = dirLight("#FFE4C4", 1);
@@ -88,10 +88,6 @@ export class State {
         const fillLight = dirLight("#A6D8ED", 0.5);
         fillLight.position.set(200, 100, 200);
         this.scene.add(fillLight);
-
-        const backLight = dirLight("#FFFFFF", 0.5);
-        backLight.position.set(-200, 100, -200).normalize();
-        this.scene.add(backLight);
     }
 
     /**
