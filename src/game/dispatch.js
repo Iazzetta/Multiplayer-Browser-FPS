@@ -2,14 +2,11 @@ import * as THREE from "three";
 import sample from "lodash/sample";
 import clamp from "lodash/clamp";
 import { State } from "./state.js";
-import {
-    PlayerEntity,
-    PlayerGhostEntity,
-    TileEntity
-} from "./entities";
+import { PlayerEntity, PlayerGhostEntity, TileEntity } from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
+    EVENT_MESSAGE,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SET_PLAYER_MOUSE,
@@ -25,7 +22,8 @@ import {
     // Actions
     Action,
     spawnPlayer,
-    playerJoin
+    playerJoin,
+    eventMessage
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -76,6 +74,9 @@ export function dispatch(state, action) {
             playerGhost.object3D.position.copy(spawn);
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
+
+            dispatch(state, eventMessage(`${name} joined`));
+
             return state;
         }
         case PLAYER_LEAVE: {
@@ -210,6 +211,11 @@ export function dispatch(state, action) {
             syncPlayerActions.forEach(syncPlayer => {
                 dispatch(state, syncPlayer);
             });
+            return state;
+        }
+        case EVENT_MESSAGE: {
+            const { msg, ttl } = action.data;
+            state.messages.unshift({ msg, ttl });
             return state;
         }
         default:

@@ -428,6 +428,17 @@ export class Game extends BaseGame {
             });
         }
 
+        // Messages
+        {
+            const x = this.hud.width - 200;
+            const y = 20;
+            this.ctx.fillStyle = "white";
+            this.ctx.font = "16px Arial";
+            this.state.messages.forEach((row, index) => {
+                this.ctx.fillText(row.msg, x, y + index * 16);
+            });
+        }
+
         // Cursor
         const cursor = { x: this.hud.width * 0.5, y: this.hud.height * 0.5 };
         const radius = 16;

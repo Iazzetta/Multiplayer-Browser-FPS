@@ -27,6 +27,11 @@ export class State {
         this.assets = prev ? prev.assets : new Assets();
 
         /**
+         * @type {{ msg:string, ttl:number }[]}
+         */
+        this.messages = [];
+
+        /**
          * @type {THREE.Scene}
          */
         this.scene = new THREE.Scene();
