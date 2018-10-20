@@ -35,7 +35,7 @@ export class ParticleSystem extends THREE.Object3D {
      * @param {THREE.Vector3} entry
      */
     bulletImpact(material, origin, entry) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 10; i++) {
             const particle = new Particle(GEOMETRY, material);
             particle.position.copy(entry);
             particle.rotation.set(random(0, 6), random(0, 6), random(0, 6));
@@ -50,7 +50,7 @@ export class ParticleSystem extends THREE.Object3D {
                         random(-0.5, 0.5)
                     )
                 )
-                .multiplyScalar(-0.01);
+                .multiplyScalar(-0.005);
 
             particle.velocity.y = JUMP_SPEED * 0.2 * Math.random();
 
@@ -69,7 +69,7 @@ export class ParticleSystem extends THREE.Object3D {
                     particle.position.x += particle.velocity.x * dt;
                     particle.position.y += particle.velocity.y * dt;
                     particle.position.z += particle.velocity.z * dt;
-                    particle.scale.multiplyScalar(0.95);
+                    particle.scale.multiplyScalar(0.99);
                 }
             }
         });
@@ -81,5 +81,8 @@ export class Particle extends THREE.Mesh {
         super(geometry, material);
         this.ttl = random(1000, 5000);
         this.velocity = new THREE.Vector3();
+
+        const size = random(0.1, 0.5);
+        this.scale.set(size, size, size);
     }
 }
