@@ -49,7 +49,7 @@ export function clientAction(id, action) {
  * @param {string} msg
  * @param {number=} ttl
  */
-export function eventMessage(msg, ttl = 30000) {
+export function eventMessage(msg, ttl = 10000) {
     return new Action(EVENT_MESSAGE, { msg, ttl });
 }
 

@@ -7,7 +7,8 @@ import {
     killPlayer,
     spawnPlayer,
     syncPlayerScore,
-    clientAction
+    clientAction,
+    eventMessage
 } from "./actions";
 import { Entity } from "./entities";
 import { AABB } from "./utils";
@@ -41,6 +42,17 @@ export function update(state, dispatch) {
             Object.assign(entity.player.prevInput, entity.player.input);
         }
     });
+
+    // Update messages
+    let removeMsg = false;
+    state.messages.forEach(row => {
+        row.ttl -= state.time.delta;
+        removeMsg = removeMsg || row.ttl < 0;
+    });
+
+    if (removeMsg) {
+        state.messages = state.messages.filter(row => row.ttl > 0);
+    }
 }
 
 /**
@@ -237,6 +249,13 @@ export function shootingSystem(entity, state, dispatch) {
                     if (target.player) {
                         const { id, kills, deaths } = target.player;
                         sync(syncPlayerScore(id, kills, deaths + 1));
+                    }
+
+                    if (killer && killer.player && target.player) {
+                        const killerName = killer.player.name;
+                        const targetName = target.player.name;
+                        const msg = `${killerName} >>> ${targetName}`;
+                        sync(eventMessage(msg));
                     }
 
                     sync(killPlayer(target.id));
