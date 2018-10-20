@@ -86,27 +86,29 @@ export class Game extends BaseGame {
         return this.state.getEntityComponents(this.playerId);
     }
 
-    run() {
+    /**
+     * @param {"single-player"|"multiplayer"} mode
+     */
+    run(mode = "single-player") {
         const game = this;
+
+        if (mode === "single-player") {
+            game.subscriptions.push(action => {
+                if (action.type !== SERVER_ACTION) return;
+                game.dispatch(action.data);
+            });
+        }
+
         game.subscriptions.push(action => {
-            switch (action.type) {
-                case CLIENT_ACTION:
-                    if (action.data.id === this.playerId) {
-                        this.syncDispatch(action.data.action);
-                    }
-                    break;
-                case SERVER_ACTION:
-                    if (!this.socket.connected) {
-                        game.dispatch(action.data);
-                    }
-                    break;
-                case HIT_PLAYER: {
-                    if (action.data.id === this.playerId) {
-                        this.bloodScreen = 500;
-                    }
-                    break;
-                }
-            }
+            if (action.type !== CLIENT_ACTION) return;
+            if (action.data.id !== this.playerId) return;
+            this.syncDispatch(action.data.action);
+        });
+
+        game.subscriptions.push(action => {
+            if (action.type !== HIT_PLAYER) return;
+            if (action.data.id !== this.playerId) return;
+            this.bloodScreen = 500;
         });
 
         // Init systems
@@ -120,7 +122,6 @@ export class Game extends BaseGame {
         game.dispatch(loadLevel(level));
         game.dispatch(playerJoin("player-1", "Player"));
         game.dispatch(playerJoin("player-2", "Enemy player"));
-        game.initSocket();
 
         // Run game
         game.running = true;
@@ -232,10 +233,12 @@ export class Game extends BaseGame {
     }
 
     initSocket() {
-        const url = location.href.replace(location.port, PORT);
-        this.socket = SocketIO(url, { reconnection: false });
-
-        this.socket.on("connect", () => {
+        return new Promise((resolve, reject) => {
+            const url = location.href.replace(location.port, PORT);
+            this.socket = SocketIO(url, { reconnection: false });
+            this.socket.on("connect", () => resolve(this));
+            this.socket.on("connect_error", () => reject(this));
+        }).then(() => {
             console.log("Connected");
 
             const id = this.socket.id;
