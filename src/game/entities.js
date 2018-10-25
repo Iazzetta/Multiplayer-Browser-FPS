@@ -203,9 +203,10 @@ export class WallEntity extends Entity {
         this.flags = ["wall"];
 
         const { tile, position, rotation } = config;
-        const mesh = assets.mesh(tile);
 
         this.tile = new TileComponent(tile, assets);
+        this.tile.mesh.castShadow = true;
+        this.tile.mesh.receiveShadow = true;
         this.tile.rotation.copy(rotation);
 
         this.object3D = new Object3DComponent();
