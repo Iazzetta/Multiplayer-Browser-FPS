@@ -1,9 +1,8 @@
 import * as THREE from "three";
 import { Game } from "../client/js/game";
-import { playerJoin, setMyPlayerId, spawnTileEntity } from "../game/actions";
-import { hitScan } from "../game/utils";
-import times from "lodash/times";
-import { TileEntity } from "../game/entities";
+import { playerJoin, setMyPlayerId } from "../game/actions";
+import { hitScan, toRadians } from "../game/utils";
+import { WallEntity } from "../game/entities";
 
 class Editor extends Game {
     constructor() {
@@ -31,7 +30,7 @@ class Editor extends Game {
     onKeyDown(ev) {
         super.onKeyDown(ev);
 
-        const [TAB, DEL] = [9, 46];
+        const [TAB, DEL, ROTATE] = [9, 46, 82];
 
         if (ev.keyCode === TAB) {
             ev.preventDefault();
@@ -46,13 +45,30 @@ class Editor extends Game {
 
             const id = this.activeTileId;
             const mesh = this.tiles[this.tileIndex];
-            this.dispatch(spawnTileEntity(id, mesh));
+            const wall = this.createWall(id, mesh);
+            this.state.addEntity(wall);
         }
 
         if (ev.keyCode === DEL) {
             if (this.activeTileId) {
                 this.state.deleteEntity(this.activeTileId);
                 this.activeTileId = null;
+            }
+        }
+
+        if (ev.keyCode === ROTATE) {
+            if (this.activeTileId) {
+                const wall = this.state.getEntity(this.activeTileId);
+                wall.tile.rotation.y += toRadians(90);
+
+                const newWall = this.createWall(
+                    wall.id,
+                    wall.tile.type,
+                    wall.object3D.position,
+                    wall.tile.rotation
+                );
+
+                this.state.addEntity(newWall);
             }
         }
     }
@@ -69,8 +85,7 @@ class Editor extends Game {
                 this.state,
                 this.activeTileId
             );
-
-            if (hitscan.entity instanceof TileEntity) {
+            if (hitscan.entity instanceof WallEntity) {
                 if (hitscan.entity.id !== "flor") {
                     this.activeTileId = hitscan.entity.id;
                 }
@@ -98,6 +113,7 @@ class Editor extends Game {
 
         if (hitscan.entity) {
             const tile = this.state.getEntity(this.activeTileId);
+
             if (tile && tile !== hitscan.entity) {
                 const entry = new THREE.Vector3(...hitscan.point);
 
@@ -134,13 +150,33 @@ class Editor extends Game {
         }
     }
 
+    /**
+     * @param {string} id
+     * @param {string} tile
+     * @param {THREE.Vector3} position
+     * @param {THREE.Euler} rotation
+     */
+    createWall(
+        id,
+        tile,
+        position = new THREE.Vector3(),
+        rotation = new THREE.Euler()
+    ) {
+        return new WallEntity(id, this.state.assets, {
+            tile,
+            position,
+            rotation
+        });
+    }
+
     run() {
         this.loadAssets().then(() => {
             const PLAYER_ID = "player-1";
             this.dispatch(playerJoin(PLAYER_ID, "editor"));
             this.dispatch(setMyPlayerId(PLAYER_ID));
-            this.dispatch(spawnTileEntity("flor", "tile_floor-lg"));
-            this.dispatch(spawnTileEntity(this.activeTileId, "tile_box-sm"));
+
+            const flor = this.createWall("flor", "tile_floor-lg");
+            this.state.addEntity(flor);
 
             super.run("editor");
         });

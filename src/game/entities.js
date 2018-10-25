@@ -8,7 +8,8 @@ import {
     ColliderComponent,
     WeaponComponent,
     StatsComponent,
-    PlayerModelComponent
+    PlayerModelComponent,
+    TileComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -62,6 +63,11 @@ export class Entity {
          * @type {PlayerModelComponent}
          */
         this.playerModel = undefined;
+
+        /**
+         * @type {TileComponent}
+         */
+        this.tile = undefined;
 
         /**
          * @type {StatsComponent}
@@ -179,5 +185,33 @@ export class TileEntity extends Entity {
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         this.object3D.add(mesh);
+    }
+}
+
+export class WallEntity extends Entity {
+    /**
+     * @param {string} id
+     * @param {Assets} assets
+     * @param {object} config
+     * @param {string} config.tile
+     * @param {THREE.Vector3} config.position
+     * @param {THREE.Euler} config.rotation
+     */
+    constructor(id, assets, config) {
+        super(id);
+        this.sleep = true;
+        this.flags = ["wall"];
+
+        const { tile, position, rotation } = config;
+        const mesh = assets.mesh(tile);
+
+        this.tile = new TileComponent(tile, assets);
+        this.tile.rotation.copy(rotation);
+
+        this.object3D = new Object3DComponent();
+        this.object3D.setSize(this.tile.getSize());
+        this.object3D.position.copy(position);
+        this.object3D.rotation.copy(rotation);
+        this.object3D.add(this.tile.mesh);
     }
 }

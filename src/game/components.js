@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { DEBUG, RUN_SPEED, JUMP_SPEED } from "./consts.js";
 import { AABB, createDebugMesh } from "./utils";
+import { Assets } from "./assets";
 
 export class PlayerComponent {
     /**
@@ -128,6 +129,13 @@ export class Object3DComponent extends THREE.Object3D {
         }
     }
 
+    /**
+     * @param {THREE.Vector3} size
+     */
+    setSize(size) {
+        this.radius = size.clone().multiplyScalar(0.5);
+    }
+
     toAABB() {
         return new AABB(
             new THREE.Vector3(
@@ -200,5 +208,35 @@ export class PlayerModelComponent extends THREE.Object3D {
                 return;
             }
         }
+    }
+}
+
+export class TileComponent {
+    /**
+     * @param {string} type
+     * @param {Assets} assets
+     */
+    constructor(type, assets) {
+        this.type = type;
+        this.mesh = assets.mesh(type);
+        this.rotation = new THREE.Euler();
+    }
+
+    getSize() {
+        // Apply rotation and compute boundingBox
+        this.mesh.geometry.rotateX(this.rotation.x);
+        this.mesh.geometry.rotateY(this.rotation.y);
+        this.mesh.geometry.rotateZ(this.rotation.z);
+        this.mesh.geometry.computeBoundingBox();
+
+        // Reset rotation
+        const size = this.mesh.geometry.boundingBox.getSize(
+            new THREE.Vector3()
+        );
+        this.mesh.geometry.rotateX(-this.rotation.x);
+        this.mesh.geometry.rotateY(-this.rotation.y);
+        this.mesh.geometry.rotateZ(-this.rotation.z);
+
+        return size;
     }
 }
