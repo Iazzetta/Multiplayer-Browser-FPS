@@ -23,7 +23,8 @@ import {
     Action,
     spawnPlayer,
     playerJoin,
-    eventMessage
+    eventMessage,
+    SPAWN_TILE_ENTITY
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -216,6 +217,19 @@ export function dispatch(state, action) {
         case EVENT_MESSAGE: {
             const { msg, ttl } = action.data;
             state.messages.unshift({ msg, ttl });
+            return state;
+        }
+        case SPAWN_TILE_ENTITY: {
+            const { id, mesh } = action.data;
+
+            const obj = state.assets.mesh(mesh);
+            obj.geometry.computeBoundingBox();
+
+            const size = obj.geometry.boundingBox.getSize(new THREE.Vector3());
+            const tile = new TileEntity(id, state.assets, { mesh, size });
+
+            state.addEntity(tile);
+
             return state;
         }
         default:

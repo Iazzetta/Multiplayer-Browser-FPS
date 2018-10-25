@@ -87,7 +87,7 @@ export class Game extends BaseGame {
     }
 
     /**
-     * @param {"single-player"|"multiplayer"} mode
+     * @param {"single-player"|"multiplayer"|"editor"} mode
      */
     run(mode = "single-player") {
         const game = this;
@@ -402,7 +402,7 @@ export class Game extends BaseGame {
             });
         }
 
-        if (!this.socket.connected) {
+        if (!this.socket || !this.socket.connected) {
             this.ctx.fillStyle = "gray";
             this.ctx.fillText("offline", 16, 80);
         } else {
