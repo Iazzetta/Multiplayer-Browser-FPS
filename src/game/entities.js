@@ -155,10 +155,6 @@ export class PlayerEntity extends Entity {
         body.castShadow = true;
         this.playerModel.bodyModel.add(body);
 
-        const board = assets.mesh("player_hover_board");
-        board.castShadow = false;
-        this.playerModel.bodyModel.add(board);
-
         this.playerModel.setMode("third-person");
     }
 }
