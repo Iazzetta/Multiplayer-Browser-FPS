@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import intersection from "ray-aabb-intersection";
 import { Entity } from "./entities";
+import { type } from "os";
 
 export class AABB {
     constructor(min = new THREE.Vector3(), max = new THREE.Vector3()) {
@@ -93,6 +94,7 @@ export function createActionType(name) {
  * @param {object} state
  * @param {function((entity:Entity) => any)} state.forEachEntity
  * @param {string} ignoreId
+ * @returns {{ entity: Entity|null, origin: number[], point: Float32Array, dist:number }}
  */
 export function hitScan(camera, state, ignoreId = null) {
     // Bullet origin point
@@ -113,9 +115,9 @@ export function hitScan(camera, state, ignoreId = null) {
         .toArray();
 
     const hitscan = {
+        entity: null,
         origin,
         point: new Float32Array(3),
-        entity: null,
         dist: Infinity
     };
 
