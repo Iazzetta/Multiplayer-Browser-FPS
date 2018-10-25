@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import intersection from "ray-aabb-intersection";
+import { Entity } from "./entities";
 
 export class AABB {
     constructor(min = new THREE.Vector3(), max = new THREE.Vector3()) {
@@ -84,4 +86,50 @@ export function createActionType(name) {
     createActionType.prototype.count = createActionType.prototype.count || 1;
     createActionType.prototype.count++;
     return counter("action-types");
+}
+
+/**
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {object} state
+ * @param {function((entity:Entity) => any)} state.forEachEntity
+ * @param {string} ignoreId
+ */
+export function hitScan(camera, state, ignoreId = null) {
+    // Bullet origin point
+    const originMatrix = new THREE.Matrix4();
+    originMatrix.copyPosition(camera.matrixWorld);
+
+    const origin = new THREE.Vector3(0, 0, 0)
+        .applyMatrix4(originMatrix)
+        .toArray();
+
+    // Bullet direction
+    const dirMatrix = new THREE.Matrix4();
+    dirMatrix.extractRotation(camera.matrixWorld);
+
+    const dir = new THREE.Vector3(0, 0, -1)
+        .applyMatrix4(dirMatrix)
+        .normalize()
+        .toArray();
+
+    const hitscan = {
+        origin,
+        point: new Float32Array(3),
+        entity: null,
+        dist: Infinity
+    };
+
+    state.forEachEntity(target => {
+        if (target.id === ignoreId) return;
+        if (!target.object3D) return;
+        const aabb = target.object3D.toAABB().toArray();
+        const dist = intersection.distance(origin, dir, aabb);
+        if (dist > 0 && dist < hitscan.dist) {
+            hitscan.entity = target;
+            hitscan.dist = dist;
+            intersection(hitscan.point, origin, dir, aabb);
+        }
+    });
+
+    return hitscan;
 }

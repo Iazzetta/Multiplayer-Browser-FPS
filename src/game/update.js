@@ -11,11 +11,9 @@ import {
     eventMessage
 } from "./actions";
 import { Entity } from "./entities";
-import { AABB } from "./utils";
+import { AABB, hitScan } from "./utils";
 import { GRAVITY, DEBUG } from "./consts";
-import intersection from "ray-aabb-intersection";
 import sample from "lodash/sample";
-import random from "lodash/random";
 
 /**
  * @param {State} state
@@ -189,47 +187,7 @@ export function shootingSystem(entity, state, dispatch) {
             weapon.loadedAmmo = Math.max(weapon.loadedAmmo - 1, 0);
             weapon.firerateTimer = stats.firerate;
 
-            // Bullet origin point
-            const originMatrix = new THREE.Matrix4();
-            originMatrix.copyPosition(playerModel.camera.matrixWorld);
-
-            const origin = new THREE.Vector3(0, 0, 0)
-                .applyMatrix4(originMatrix)
-                .toArray();
-
-            // Bullet direction
-            const dirMatrix = new THREE.Matrix4();
-            dirMatrix.extractRotation(playerModel.camera.matrixWorld);
-
-            const offset = 1 - stats.accuracy;
-            const spread = new THREE.Vector3(
-                random(-offset, offset),
-                random(-offset, offset),
-                random(-offset, offset)
-            );
-            const dir = new THREE.Vector3(0, 0, -1)
-                .applyMatrix4(dirMatrix)
-                .add(spread)
-                .normalize()
-                .toArray();
-
-            const hitscan = {
-                point: new Float32Array(3),
-                entity: null,
-                dist: Infinity
-            };
-
-            state.forEachEntity(target => {
-                if (target.id === entity.id) return;
-                if (!target.object3D) return;
-                const aabb = target.object3D.toAABB().toArray();
-                const dist = intersection.distance(origin, dir, aabb);
-                if (dist > 0 && dist < hitscan.dist) {
-                    hitscan.entity = target;
-                    hitscan.dist = dist;
-                    intersection(hitscan.point, origin, dir, aabb);
-                }
-            });
+            const hitscan = hitScan(playerModel.camera, state, player.id);
 
             if (hitscan.entity && hitscan.entity.health) {
                 const target = hitscan.entity;
@@ -266,12 +224,12 @@ export function shootingSystem(entity, state, dispatch) {
             if (hitscan.entity) {
                 if (hitscan.entity.health) {
                     state.particles.bulletImpactPlayer(
-                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.origin),
                         new THREE.Vector3(...hitscan.point)
                     );
                 } else {
                     state.particles.bulletImpactWall(
-                        new THREE.Vector3(...origin),
+                        new THREE.Vector3(...hitscan.origin),
                         new THREE.Vector3(...hitscan.point)
                     );
                 }
@@ -279,7 +237,7 @@ export function shootingSystem(entity, state, dispatch) {
 
             if (false) {
                 // Bullet trace
-                const p1 = new THREE.Vector3(...origin);
+                const p1 = new THREE.Vector3(...hitscan.origin);
                 const p2 = new THREE.Vector3(...hitscan.point);
 
                 const material = new THREE.LineBasicMaterial({
