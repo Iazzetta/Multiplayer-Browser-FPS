@@ -1,12 +1,13 @@
-# Blender MTL File: 'hero-sculpt-2.blend'
+# Blender MTL File: 'boro.blend'
 # Material Count: 1
 
-newmtl base
-Ns 27.450980
+newmtl player-texture
+Ns 17.647059
 Ka 1.000000 1.000000 1.000000
-Kd 0.674047 0.882623 0.790513
-Ks 0.100000 0.100000 0.100000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
+illum 1
+map_Kd player-texture-boro.png
