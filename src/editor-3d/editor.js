@@ -208,6 +208,11 @@ export class Editor extends Game {
             this.dispatch(playerJoin(PLAYER_ID, "editor"));
             this.dispatch(setMyPlayerId(PLAYER_ID));
 
+            const player = this.state.getEntity(PLAYER_ID);
+            if (player && player.stats) {
+                player.stats.runSpeed = 0.1;
+            }
+
             const flor = this.createWall("flor", "tile_floor-lg");
             this.state.addEntity(flor);
 
