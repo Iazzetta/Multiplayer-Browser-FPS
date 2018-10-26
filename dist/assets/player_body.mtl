@@ -1,22 +1,13 @@
-# Blender MTL File: 'player_mech.blend'
-# Material Count: 2
+# Blender MTL File: 'boro.blend'
+# Material Count: 1
 
-newmtl gray
+newmtl player-texture
 Ns 17.647059
 Ka 1.000000 1.000000 1.000000
-Kd 0.089042 0.127916 0.169255
-Ks 0.100000 0.100000 0.100000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 2
-
-newmtl red
-Ns 56.862745
-Ka 1.000000 1.000000 1.000000
-Kd 0.618972 0.036772 0.050413
-Ks 0.400000 0.400000 0.400000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
+illum 1
+map_Kd player-texture-boro.png

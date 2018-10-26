@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Entity } from "./entities.js";
 import { Assets } from "./assets.js";
 import { ParticleSystem } from "./particles.js";
+import { DEBUG } from "./consts.js";
 
 export class State {
     /**
@@ -24,6 +25,11 @@ export class State {
          * @type {Assets}
          */
         this.assets = prev ? prev.assets : new Assets();
+
+        /**
+         * @type {{ msg:string, ttl:number }[]}
+         */
+        this.messages = [];
 
         /**
          * @type {THREE.Scene}
@@ -63,23 +69,30 @@ export class State {
 
         // Create lights ...
         const dirLight = (color, int) => {
-            return new THREE.DirectionalLight(new THREE.Color(color), int);
+            return new THREE.PointLight(new THREE.Color(color), int);
         };
 
-        var light = new THREE.AmbientLight(0x404040);
+        var light = new THREE.AmbientLight(0x404040, 1.75);
         this.scene.add(light);
 
         const keyLight = dirLight("#FFE4C4", 1);
-        keyLight.position.set(-100, 50, 100);
+        keyLight.position.set(0, 150, 0);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 512;
+        keyLight.shadow.mapSize.height = 512;
+        keyLight.shadow.camera.near = 0.1;
+        keyLight.shadow.camera.far = 200;
         this.scene.add(keyLight);
 
-        const fillLight = dirLight("#A6D8ED", 0.6);
-        fillLight.position.set(100, 50, 100);
-        this.scene.add(fillLight);
+        if (DEBUG) {
+            // Show shadow-casting cone
+            const helper = new THREE.CameraHelper(keyLight.shadow.camera);
+            this.scene.add(helper);
+        }
 
-        const backLight = dirLight("#FFFFFF", 0.5);
-        backLight.position.set(100, 0, -100).normalize();
-        this.scene.add(backLight);
+        const fillLight = dirLight("#A6D8ED", 0.5);
+        fillLight.position.set(200, 100, 200);
+        this.scene.add(fillLight);
     }
 
     /**

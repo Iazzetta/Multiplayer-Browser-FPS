@@ -5,11 +5,12 @@ import { State } from "./state.js";
 import {
     PlayerEntity,
     PlayerGhostEntity,
-    TileEntity
+    WallEntity
 } from "./entities";
 import {
     SET_MY_PLAYER_ID,
     LOAD_LEVEL,
+    EVENT_MESSAGE,
     PLAYER_JOIN,
     PLAYER_LEAVE,
     SET_PLAYER_MOUSE,
@@ -25,7 +26,8 @@ import {
     // Actions
     Action,
     spawnPlayer,
-    playerJoin
+    playerJoin,
+    eventMessage,
 } from "./actions.js";
 import { PlayerComponent } from "./components.js";
 
@@ -44,26 +46,13 @@ export function dispatch(state, action) {
             const { level } = action.data;
             state = new State(state);
 
-            // Player spawns
-            state.playerSpawns = [];
-            level.spawns.forEach(spawn => {
-                state.playerSpawns.push(new THREE.Vector3().copy(spawn));
-            });
-
-            const assets = state.assets;
             level.tiles.forEach(tile => {
-                const entity = new TileEntity(tile.id, assets, {
-                    mesh: tile.mesh,
-                    size: new THREE.Vector3().copy(tile.size)
+                const wall = new WallEntity(tile.id, state.assets, {
+                    tile: tile.type,
+                    position: new THREE.Vector3().copy(tile.position),
+                    rotation: new THREE.Euler().copy(tile.rotation)
                 });
-                entity.object3D.position.copy(tile.position);
-                entity.object3D.rotation.set(
-                    tile.rotation.x,
-                    tile.rotation.y,
-                    tile.rotation.z
-                );
-
-                state.addEntity(entity);
+                state.addEntity(wall);
             });
 
             return state;
@@ -76,6 +65,9 @@ export function dispatch(state, action) {
             playerGhost.object3D.position.copy(spawn);
             playerGhost.object3D.position.y += 30;
             state.addEntity(playerGhost);
+
+            dispatch(state, eventMessage(`${name} joined`));
+
             return state;
         }
         case PLAYER_LEAVE: {
@@ -210,6 +202,11 @@ export function dispatch(state, action) {
             syncPlayerActions.forEach(syncPlayer => {
                 dispatch(state, syncPlayer);
             });
+            return state;
+        }
+        case EVENT_MESSAGE: {
+            const { msg, ttl } = action.data;
+            state.messages.unshift({ msg, ttl });
             return state;
         }
         default:

@@ -8,7 +8,8 @@ import {
     ColliderComponent,
     WeaponComponent,
     StatsComponent,
-    PlayerModelComponent
+    PlayerModelComponent,
+    TileComponent
 } from "./components";
 import { toRadians } from "./utils";
 
@@ -62,6 +63,11 @@ export class Entity {
          * @type {PlayerModelComponent}
          */
         this.playerModel = undefined;
+
+        /**
+         * @type {TileComponent}
+         */
+        this.tile = undefined;
 
         /**
          * @type {StatsComponent}
@@ -136,13 +142,25 @@ export class PlayerEntity extends Entity {
         this.velocity = new VelocityComponent();
         this.collider = new ColliderComponent();
 
-        this.object3D = new Object3DComponent(new THREE.Vector3(2, 3, 1.5));
+        this.object3D = new Object3DComponent(new THREE.Vector3(0.5, 1, 0.5));
+
         this.playerModel = new PlayerModelComponent(this.object3D);
-        this.playerModel.povWeaponModel.add(assets.mesh("player_weapon"));
-        this.playerModel.povMuzzleflash.add(assets.mesh("muzzle_flash"));
-        this.playerModel.headModel.add(assets.mesh("player_pilot"));
-        this.playerModel.headModel.add(assets.mesh("player_head"));
-        this.playerModel.bodyModel.add(assets.mesh("player_body"));
+
+        const weapon = assets.mesh("player_weapon");
+        weapon.receiveShadow = true;
+        this.playerModel.povWeaponModel.add(weapon);
+
+        const muzzle_flash = assets.mesh("muzzle_flash");
+        this.playerModel.povMuzzleflash.add(muzzle_flash);
+
+        const head = assets.mesh("player_head");
+        head.castShadow = true;
+        this.playerModel.headModel.add(head);
+
+        const body = assets.mesh("player_body");
+        body.castShadow = true;
+        this.playerModel.bodyModel.add(body);
+
         this.playerModel.setMode("third-person");
     }
 }
@@ -151,43 +169,27 @@ export class WallEntity extends Entity {
     /**
      * @param {string} id
      * @param {Assets} assets
-     * @param {THREE.Vector3} size
-     */
-    constructor(id, assets, size) {
-        const radius = new THREE.Vector3(
-            size.x * 0.5,
-            size.y * 0.5,
-            size.z * 0.5
-        );
-
-        super(id);
-        this.sleep = true;
-        this.flags = ["wall"];
-        this.object3D = new Object3DComponent(radius);
-
-        const mesh = assets.mesh("wall_tile");
-        mesh.scale.copy(size);
-        this.object3D.add(mesh);
-    }
-}
-
-export class TileEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
      * @param {object} config
-     * @param {string} config.mesh
-     * @param {THREE.Vector3} config.size
+     * @param {string} config.tile
+     * @param {THREE.Vector3} config.position
+     * @param {THREE.Euler} config.rotation
      */
     constructor(id, assets, config) {
         super(id);
         this.sleep = true;
         this.flags = ["wall"];
 
-        const radius = config.size.clone().multiplyScalar(0.5);
-        this.object3D = new Object3DComponent(radius);
+        const { tile, position, rotation } = config;
 
-        const mesh = assets.mesh(config.mesh);
-        this.object3D.add(mesh);
+        this.tile = new TileComponent(tile, assets);
+        this.tile.mesh.castShadow = true;
+        this.tile.mesh.receiveShadow = true;
+        this.tile.rotation.copy(rotation);
+
+        this.object3D = new Object3DComponent();
+        this.object3D.setSize(this.tile.getSize());
+        this.object3D.position.copy(position);
+        this.object3D.rotation.copy(rotation);
+        this.object3D.add(this.tile.mesh);
     }
 }

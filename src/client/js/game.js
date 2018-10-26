@@ -86,41 +86,43 @@ export class Game extends BaseGame {
         return this.state.getEntityComponents(this.playerId);
     }
 
-    run() {
+    /**
+     * @param {"single-player"|"multiplayer"|"editor"} mode
+     */
+    run(mode = "single-player") {
         const game = this;
-        game.subscriptions.push(action => {
-            switch (action.type) {
-                case CLIENT_ACTION:
-                    if (action.data.id === this.playerId) {
-                        this.syncDispatch(action.data.action);
-                    }
-                    break;
-                case SERVER_ACTION:
-                    if (!this.socket.connected) {
-                        game.dispatch(action.data);
-                    }
-                    break;
-                case HIT_PLAYER: {
-                    if (action.data.id === this.playerId) {
-                        this.bloodScreen = 500;
-                    }
-                    break;
-                }
-            }
-        });
 
         // Init systems
         game.initRenderer();
         game.initMouseInput();
         game.initKeyboardInput();
 
-        // Init game world
-        const level = game.state.assets.level("level-1");
-        game.dispatch(setMyPlayerId("player-1"));
-        game.dispatch(loadLevel(level));
-        game.dispatch(playerJoin("player-1", "Player"));
-        game.dispatch(playerJoin("player-2", "Enemy player"));
-        game.initSocket();
+        if (mode === "single-player") {
+            game.subscriptions.push(action => {
+                if (action.type !== SERVER_ACTION) return;
+                game.dispatch(action.data);
+            });
+        }
+
+        game.subscriptions.push(action => {
+            if (action.type !== CLIENT_ACTION) return;
+            if (action.data.id !== this.playerId) return;
+            this.syncDispatch(action.data.action);
+        });
+
+        game.subscriptions.push(action => {
+            if (action.type !== HIT_PLAYER) return;
+            if (action.data.id !== this.playerId) return;
+            this.bloodScreen = 500;
+        });
+
+        if (mode === "single-player") {
+            const level = game.state.assets.level("level-1");
+            game.dispatch(setMyPlayerId("player-1"));
+            game.dispatch(loadLevel(level));
+            game.dispatch(playerJoin("player-1", "Player"));
+            game.dispatch(playerJoin("player-2", "Enemy player"));
+        }
 
         // Run game
         game.running = true;
@@ -197,19 +199,20 @@ export class Game extends BaseGame {
     destroy() {
         this.running = false;
         this.container.innerHTML = "";
+        this.subscriptions = [];
     }
 
     loadAssets() {
-        this.state.assets.loadLevel("level-1", "levels/level.json");
+        const models = [
+            // Player model
+            "player_head",
+            "player_body",
+            "player_pilot",
+            "player_hover_board",
+            "player_weapon",
+            "muzzle_flash",
 
-        this.state.assets.loadObj("player_head");
-        this.state.assets.loadObj("player_body");
-        this.state.assets.loadObj("player_pilot");
-        this.state.assets.loadObj("player_weapon");
-        this.state.assets.loadObj("muzzle_flash");
-
-        // Tiles
-        [
+            // Tiles
             "tile_box-sm",
             "tile_box-md",
             "tile_box-lg",
@@ -223,18 +226,21 @@ export class Game extends BaseGame {
 
             "tile_pillar-sm",
             "tile_pillar-md"
-        ].forEach(tile => {
-            this.state.assets.loadObj(tile);
-        });
+        ];
 
-        return this.state.assets.done();
+        const assets = this.state.assets;
+        assets.loadLevel("level-1", "levels/level.json");
+        models.forEach(obj => assets.loadObj(obj));
+        return assets.done();
     }
 
     initSocket() {
-        const url = location.href.replace(location.port, PORT);
-        this.socket = SocketIO(url, { reconnection: false });
-
-        this.socket.on("connect", () => {
+        return new Promise((resolve, reject) => {
+            const url = location.href.replace(location.port, PORT);
+            this.socket = SocketIO(url, { reconnection: false });
+            this.socket.on("connect", () => resolve(this));
+            this.socket.on("connect_error", () => reject(this));
+        }).then(() => {
             console.log("Connected");
 
             const id = this.socket.id;
@@ -262,6 +268,9 @@ export class Game extends BaseGame {
         // Init THREE Renderer
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setClearColor(0x63a9db, 1);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMapDebug = true;
 
         // Append to dom
         this.container.innerHTML = "";
@@ -394,7 +403,7 @@ export class Game extends BaseGame {
             });
         }
 
-        if (!this.socket.connected) {
+        if (!this.socket || !this.socket.connected) {
             this.ctx.fillStyle = "gray";
             this.ctx.fillText("offline", 16, 80);
         } else {
@@ -421,6 +430,17 @@ export class Game extends BaseGame {
                     this.ctx.fillStyle = health ? "white" : "red";
                     this.ctx.fillText(name, 80, 128 + 32 * index);
                 }
+            });
+        }
+
+        // Messages
+        {
+            const x = this.hud.width - 200;
+            const y = 20;
+            this.ctx.fillStyle = "white";
+            this.ctx.font = "16px Arial";
+            this.state.messages.forEach((row, index) => {
+                this.ctx.fillText(row.msg, x, y + index * 16);
             });
         }
 

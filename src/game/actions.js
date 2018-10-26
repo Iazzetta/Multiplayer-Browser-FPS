@@ -4,6 +4,7 @@ import { createActionType } from "./utils";
 
 export const SERVER_ACTION = createActionType("SERVER_ACTION");
 export const CLIENT_ACTION = createActionType("CLIENT_ACTION");
+export const EVENT_MESSAGE = createActionType("EVENT_MESSAGE");
 export const LOAD_LEVEL = createActionType("LOAD_LEVEL");
 export const SET_MY_PLAYER_ID = createActionType("SET_MY_PLAYER_ID");
 export const PLAYER_JOIN = createActionType("PLAYER_JOIN");
@@ -42,6 +43,14 @@ export function serverAction(action) {
  */
 export function clientAction(id, action) {
     return new Action(CLIENT_ACTION, { id, action });
+}
+
+/**
+ * @param {string} msg
+ * @param {number=} ttl
+ */
+export function eventMessage(msg, ttl = 10000) {
+    return new Action(EVENT_MESSAGE, { msg, ttl });
 }
 
 /**
