@@ -71,15 +71,6 @@ export class Editor extends Game {
                 this.state.addEntity(newWall);
             }
         }
-
-        if (ev.keyCode === E) {
-            const level = this.levelJson();
-            this.dispatch(loadLevel(level));
-
-            const PLAYER_ID = "player-1";
-            this.dispatch(playerJoin(PLAYER_ID, "editor"));
-            this.dispatch(setMyPlayerId(PLAYER_ID));
-        }
     }
 
     /**
@@ -106,7 +97,7 @@ export class Editor extends Game {
         }
     }
 
-    levelJson() {
+    exportLevelJson() {
         const tiles = this.state.getEntityGroup("wall").map(wall => {
             return {
                 id: wall.id,
@@ -117,6 +108,14 @@ export class Editor extends Game {
         });
 
         return JSON.parse(JSON.stringify({ tiles }));
+    }
+
+    importLevelJson(level){
+        this.dispatch(loadLevel(level));
+
+            const PLAYER_ID = "player-1";
+            this.dispatch(playerJoin(PLAYER_ID, "editor"));
+            this.dispatch(setMyPlayerId(PLAYER_ID));
     }
 
     update() {
