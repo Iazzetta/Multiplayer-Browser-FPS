@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Game } from "../client/js/game";
-import { playerJoin, setMyPlayerId } from "../game/actions";
+import { playerJoin, setMyPlayerId, loadLevel } from "../game/actions";
 import { hitScan, toRadians } from "../game/utils";
 import { WallEntity } from "../game/entities";
 
@@ -30,7 +30,7 @@ class Editor extends Game {
     onKeyDown(ev) {
         super.onKeyDown(ev);
 
-        const [TAB, DEL, ROTATE] = [9, 46, 82];
+        const [TAB, DEL, E, L, R] = [9, 46, 69, 76, 82];
 
         if (ev.keyCode === TAB) {
             ev.preventDefault();
@@ -56,7 +56,7 @@ class Editor extends Game {
             }
         }
 
-        if (ev.keyCode === ROTATE) {
+        if (ev.keyCode === R) {
             if (this.activeTileId) {
                 const wall = this.state.getEntity(this.activeTileId);
                 wall.tile.rotation.y += toRadians(90);
@@ -70,6 +70,15 @@ class Editor extends Game {
 
                 this.state.addEntity(newWall);
             }
+        }
+
+        if (ev.keyCode === E) {
+            const level = this.levelJson();
+            this.dispatch(loadLevel(level));
+
+            const PLAYER_ID = "player-1";
+            this.dispatch(playerJoin(PLAYER_ID, "editor"));
+            this.dispatch(setMyPlayerId(PLAYER_ID));
         }
     }
 
@@ -97,8 +106,17 @@ class Editor extends Game {
         }
     }
 
-    onMouseMove(ev) {
-        super.onMouseMove(ev);
+    levelJson() {
+        const tiles = this.state.getEntityGroup("wall").map(wall => {
+            return {
+                id: wall.id,
+                type: wall.tile.type,
+                rotation: wall.tile.rotation,
+                position: wall.object3D.position
+            };
+        });
+
+        return JSON.parse(JSON.stringify({ tiles }));
     }
 
     update() {

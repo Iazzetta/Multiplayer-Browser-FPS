@@ -165,29 +165,6 @@ export class PlayerEntity extends Entity {
     }
 }
 
-export class TileEntity extends Entity {
-    /**
-     * @param {string} id
-     * @param {Assets} assets
-     * @param {object} config
-     * @param {string} config.mesh
-     * @param {THREE.Vector3} config.size
-     */
-    constructor(id, assets, config) {
-        super(id);
-        this.sleep = true;
-        this.flags = ["wall"];
-
-        const radius = config.size.clone().multiplyScalar(0.5);
-        this.object3D = new Object3DComponent(radius);
-
-        const mesh = assets.mesh(config.mesh);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        this.object3D.add(mesh);
-    }
-}
-
 export class WallEntity extends Entity {
     /**
      * @param {string} id

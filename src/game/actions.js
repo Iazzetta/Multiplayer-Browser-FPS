@@ -18,7 +18,6 @@ export const SET_PLAYER_INPUT = createActionType("SET_PLAYER_INPUT");
 export const SET_PLAYER_MOUSE = createActionType("SET_PLAYER_MOUSE");
 export const HIT_PLAYER = createActionType("HIT_PLAYER");
 export const KILL_PLAYER = createActionType("KILL_PLAYER");
-export const SPAWN_TILE_ENTITY = createActionType("SPAWN_TILE_ENTITY");
 
 export class Action {
     /**
@@ -176,12 +175,4 @@ export function syncGameState(state) {
         .map(player => player.id)
         .map(id => syncPlayer(id, state));
     return new Action(SYNC_GAME_STATE, { syncPlayerActions });
-}
-
-/**
- * @param {string} id
- * @param {string} mesh
- */
-export function spawnTileEntity(id, mesh) {
-    return new Action(SPAWN_TILE_ENTITY, { id, mesh });
 }
