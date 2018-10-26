@@ -30,7 +30,7 @@ export class Editor extends Game {
     onKeyDown(ev) {
         super.onKeyDown(ev);
 
-        const [TAB, DEL, E, L, R] = [9, 46, 69, 76, 82];
+        const [TAB, ESC, DEL,  R] = [9, 27, 46,  82];
 
         if (ev.keyCode === TAB) {
             ev.preventDefault();
@@ -77,6 +77,8 @@ export class Editor extends Game {
      * @param {MouseEvent} ev
      */
     onMouseDown(ev) {
+        super.onMouseDown(ev);
+
         if (ev.button === 2) {
             // Select
             const { playerModel } = this.myComponents;
@@ -110,12 +112,12 @@ export class Editor extends Game {
         return JSON.parse(JSON.stringify({ tiles }));
     }
 
-    importLevelJson(level){
+    importLevelJson(level) {
         this.dispatch(loadLevel(level));
 
-            const PLAYER_ID = "player-1";
-            this.dispatch(playerJoin(PLAYER_ID, "editor"));
-            this.dispatch(setMyPlayerId(PLAYER_ID));
+        const PLAYER_ID = "player-1";
+        this.dispatch(playerJoin(PLAYER_ID, "editor"));
+        this.dispatch(setMyPlayerId(PLAYER_ID));
     }
 
     update() {
@@ -184,6 +186,15 @@ export class Editor extends Game {
             position,
             rotation
         });
+    }
+
+    playGame() {
+        const level = this.exportLevelJson();
+        super.run("single-player");
+        this.dispatch(loadLevel(level));
+        this.dispatch(setMyPlayerId("player-1"));
+        this.dispatch(playerJoin("player-1", "Player"));
+        this.dispatch(playerJoin("player-2", "Enemy player"));
     }
 
     run() {

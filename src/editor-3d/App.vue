@@ -7,6 +7,8 @@
                 <input @change="importJSON" id="file" name="file" type="file" value="json" />
             </label>
             <button class="btn" @click="downloadJSON">DOWNLOAD</button>
+            <hr>
+            <button class="btn" @click="play">PLAY</button>
         </div>
     </div>
 </template>
@@ -30,8 +32,8 @@ export default {
                         editor.importLevelJson(level);
                     }
                 } catch (e) {
-                    // console.log(e);
-                    // alert("Invalid file");
+                    console.log(e);
+                    alert("Invalid file");
                 }
             };
             reader.readAsText(file);
@@ -43,6 +45,9 @@ export default {
             a.href = URL.createObjectURL(file);
             a.download = "level.json";
             a.click();
+        },
+        play() {
+            editor.playGame();
         }
     },
 
