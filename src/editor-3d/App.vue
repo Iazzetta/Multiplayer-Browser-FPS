@@ -8,7 +8,8 @@
             </label>
             <button class="btn" @click="downloadJSON">DOWNLOAD</button>
             <hr>
-            <button class="btn" @click="play">PLAY</button>
+            <button v-if="!game_running" class="btn" @click="play">PLAY</button>
+            <button v-if="game_running" class="btn" @click="stop">STOP</button>
         </div>
     </div>
 </template>
@@ -20,6 +21,12 @@ import { loadLevel } from "../game/actions.js";
 const editor = new Editor();
 
 export default {
+    data() {
+        return {
+            game_running: false
+        };
+    },
+
     methods: {
         importJSON(ev) {
             const [file] = ev.target.files;
@@ -47,7 +54,12 @@ export default {
             a.click();
         },
         play() {
-            editor.playGame();
+            this.game_running = true;
+            editor.runGame();
+        },
+        stop() {
+            this.game_running = false;
+            editor.runEditor();
         }
     },
 

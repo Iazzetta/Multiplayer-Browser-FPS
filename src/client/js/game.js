@@ -199,6 +199,7 @@ export class Game extends BaseGame {
     destroy() {
         this.running = false;
         this.container.innerHTML = "";
+        this.subscriptions = [];
     }
 
     loadAssets() {

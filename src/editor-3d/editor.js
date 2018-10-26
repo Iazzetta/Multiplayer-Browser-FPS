@@ -30,7 +30,7 @@ export class Editor extends Game {
     onKeyDown(ev) {
         super.onKeyDown(ev);
 
-        const [TAB, ESC, DEL,  R] = [9, 27, 46,  82];
+        const [TAB, ESC, DEL, R] = [9, 27, 46, 82];
 
         if (ev.keyCode === TAB) {
             ev.preventDefault();
@@ -188,23 +188,34 @@ export class Editor extends Game {
         });
     }
 
-    playGame() {
+    runGame() {
         const level = this.exportLevelJson();
-        super.run("single-player");
-        this.dispatch(loadLevel(level));
-        this.dispatch(setMyPlayerId("player-1"));
-        this.dispatch(playerJoin("player-1", "Player"));
-        this.dispatch(playerJoin("player-2", "Enemy player"));
+
+        this.destroy();
+        setTimeout(() => {
+            super.run("single-player");
+            this.dispatch(loadLevel(level));
+            this.dispatch(setMyPlayerId("player-1"));
+            this.dispatch(playerJoin("player-1", "Player"));
+            this.dispatch(playerJoin("player-2", "Enemy player"));
+        }, 100);
+    }
+
+    runEditor() {
+        this.destroy();
+        setTimeout(() => {
+            const PLAYER_ID = "player-1";
+            this.dispatch(playerJoin(PLAYER_ID, "editor"));
+            this.dispatch(setMyPlayerId(PLAYER_ID));
+
+            const flor = this.createWall("flor", "tile_floor-lg");
+            this.state.addEntity(flor);
+
+            super.run("editor");
+        }, 100);
     }
 
     run() {
-        const PLAYER_ID = "player-1";
-        this.dispatch(playerJoin(PLAYER_ID, "editor"));
-        this.dispatch(setMyPlayerId(PLAYER_ID));
-
-        const flor = this.createWall("flor", "tile_floor-lg");
-        this.state.addEntity(flor);
-
-        super.run("editor");
+        this.runEditor();
     }
 }
