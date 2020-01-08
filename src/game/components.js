@@ -59,7 +59,7 @@ export class StatsComponent {
         this.firerate = 100;
         this.reloadSpeed = 2000;
         this.maxLoadedAmmo = 50;
-        this.maxReservedAmmo = 2500;
+        this.maxReservedAmmo = 300;
     }
 }
 

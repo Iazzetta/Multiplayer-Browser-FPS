@@ -212,7 +212,7 @@ export function shootingSystem(entity, state, dispatch) {
                     if (killer && killer.player && target.player) {
                         const killerName = killer.player.name;
                         const targetName = target.player.name;
-                        const msg = `${killerName} >>> ${targetName}`;
+                        const msg = `${killerName} matou ${targetName}`;
                         sync(eventMessage(msg));
                     }
 
