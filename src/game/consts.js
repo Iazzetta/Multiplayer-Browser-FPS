@@ -1,6 +1,6 @@
 export const DEBUG = false;
 
-export const PORT = "8080";
+export const PORT = "80";
 
 export const RESPAWN_TIME = 3000;
 
