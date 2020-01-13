@@ -237,7 +237,7 @@ export class Game extends BaseGame {
     initSocket() {
         return new Promise((resolve, reject) => {
             const url = location.href.replace(location.port, PORT);
-            this.socket = SocketIO(url, { reconnection: false });
+            this.socket = SocketIO(url, { reconnection: true });
             this.socket.on("connect", () => resolve(this));
             this.socket.on("connect_error", () => reject(this));
         }).then(() => {
